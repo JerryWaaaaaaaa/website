@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Navigation Bar — Style Guide</title>
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500&display=swap">
+  <style>
+    /* ── Design tokens (from colors.md) ─────────────────────────── */
+    :root {
+      --color-white:        #FFFFFF;
+      --color-shade-light:  #F3F8FF;
+      --color-shade-medium: #E3EDFC;
+      --color-shade-dark:   #D2DEF2;
+      --color-blue:         #0C5CFF;
+      --color-pink:         #E0D5FF;
+      --color-black:        #000000;
+      --color-gray:         #4C4C4C;
+      --color-gray-light:   #999999;
+
+      --bg-neutral:        var(--color-white);
+      --bg-accent-light:   var(--color-shade-light);
+      --bg-accent-medium:  var(--color-shade-medium);
+      --bg-accent-dark:    var(--color-shade-dark);
+      --bg-highlight-blue: var(--color-blue);
+      --bg-contrast:       var(--color-black);
+      --text-primary:      var(--color-black);
+      --text-secondary:    var(--color-gray);
+      --text-highlight:    var(--color-blue);
+      --text-contrast:     var(--color-white);
+      --stroke:            var(--color-shade-medium);
+    }
+
+    /* ── Reset ──────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-neutral);
+    }
+
+    /* ── Layout ─────────────────────────────────────────────────── */
+    .sg-shell {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ────────────────────────────────────────────────── */
+    .sg-sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 32px 24px;
+      background: var(--bg-accent-light);
+      border-right: 1px solid var(--stroke);
+    }
+
+    .sg-sidebar-title {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--text-highlight);
+      text-decoration: none;
+      display: block;
+      margin-bottom: 32px;
+    }
+
+    .sg-sidebar-title:hover { text-decoration: underline; }
+
+    .sg-nav-section { margin-bottom: 24px; }
+
+    .sg-nav-heading {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      padding-left: 12px;
+    }
+
+    .sg-nav-link {
+      display: block;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 150ms ease, color 150ms ease;
+    }
+
+    .sg-nav-link:hover {
+      background: var(--bg-accent-medium);
+      color: var(--text-primary);
+    }
+
+    .sg-nav-link.sg-nav-active {
+      background: var(--bg-accent-medium);
+      color: var(--text-highlight);
+      font-weight: 500;
+    }
+
+    /* ── Main content ───────────────────────────────────────────── */
+    .sg-main {
+      padding: 48px 64px 96px;
+      max-width: 900px;
+    }
+
+    /* ── Typography for rendered markdown ────────────────────────── */
+    .sg-main h1 {
+      font-size: 36px;
+      font-weight: 500;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+
+    .sg-main h2 {
+      font-size: 24px;
+      font-weight: 500;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-top: 48px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--stroke);
+    }
+
+    .sg-main h3 {
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.3;
+      margin-top: 32px;
+      margin-bottom: 12px;
+    }
+
+    .sg-main h4 {
+      font-size: 16px;
+      font-weight: 500;
+      margin-top: 24px;
+      margin-bottom: 8px;
+    }
+
+    .sg-main p {
+      margin-bottom: 16px;
+      color: var(--text-secondary);
+    }
+
+    .sg-main strong { color: var(--text-primary); }
+
+    .sg-main a {
+      color: var(--text-highlight);
+      text-decoration: none;
+    }
+    .sg-main a:hover { text-decoration: underline; }
+
+    .sg-main ul, .sg-main ol {
+      padding-left: 24px;
+      margin-bottom: 16px;
+    }
+    .sg-main li {
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+    }
+    .sg-main li strong { color: var(--text-primary); }
+
+    .sg-main hr {
+      border: none;
+      border-top: 1px solid var(--stroke);
+      margin: 40px 0;
+    }
+
+    .sg-main blockquote {
+      margin: 16px 0;
+      padding: 12px 20px;
+      border-left: 3px solid var(--text-highlight);
+      background: var(--bg-accent-light);
+      border-radius: 0 8px 8px 0;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .sg-main blockquote p { margin-bottom: 8px; }
+    .sg-main blockquote p:last-child { margin-bottom: 0; }
+
+    /* ── Tables ──────────────────────────────────────────────────── */
+    .sg-main table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 24px;
+      font-size: 14px;
+    }
+
+    .sg-main th {
+      text-align: left;
+      padding: 10px 14px;
+      font-weight: 500;
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      background: var(--bg-accent-light);
+      border-bottom: 2px solid var(--stroke);
+    }
+
+    .sg-main td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--stroke);
+      color: var(--text-secondary);
+      vertical-align: top;
+    }
+
+    .sg-main tr:last-child td { border-bottom: none; }
+
+    /* ── Code blocks ────────────────────────────────────────────── */
+    .sg-main code {
+      font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+      font-size: 13px;
+      background: var(--bg-accent-light);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--text-highlight);
+    }
+
+    .sg-main pre {
+      margin: 16px 0 24px;
+      padding: 20px 24px;
+      background: #1a1a2e;
+      border-radius: 10px;
+      overflow-x: auto;
+      line-height: 1.5;
+    }
+
+    .sg-main pre code {
+      background: none;
+      padding: 0;
+      border-radius: 0;
+      color: #e0e0e0;
+      font-size: 13px;
+    }
+
+    /* ── Responsive ─────────────────────────────────────────────── */
+    .sg-menu-toggle {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 200;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: none;
+      background: var(--bg-contrast);
+      color: var(--text-contrast);
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    @media (max-width: 768px) {
+      .sg-shell { grid-template-columns: 1fr; }
+
+      .sg-sidebar {
+        position: fixed;
+        left: 0; top: 0; bottom: 0;
+        z-index: 100;
+        width: 280px;
+        transform: translateX(-100%);
+        transition: transform 250ms ease;
+      }
+
+      .sg-sidebar.is-open { transform: translateX(0); }
+
+      .sg-menu-toggle { display: block; }
+
+      .sg-main { padding: 32px 20px 96px; }
+      .sg-main h1 { font-size: 28px; }
+      .sg-main h2 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sg-shell">
+    <aside class="sg-sidebar" id="sg-sidebar">
+      <a class="sg-sidebar-title" href="../index.html">Style Guide</a>
+<div class="sg-nav-section">
+  <div class="sg-nav-heading">Foundations</div>
+  <a class="sg-nav-link" href="../colors.html">Color Tokens</a>
+  <a class="sg-nav-link" href="../typography.html">Typography</a>
+</div>
+<div class="sg-nav-section">
+  <div class="sg-nav-heading">Components</div>
+  <a class="sg-nav-link" href="../components/chip.html">Chip / Label Tag</a>
+  <a class="sg-nav-link" href="../components/button.html">Button</a>
+  <a class="sg-nav-link sg-nav-active" href="../components/nav-bar.html">Navigation Bar</a>
+</div>
+
+    </aside>
+
+    <main class="sg-main">
+<h1>Navigation Bar</h1>
+<p>A fixed navigation bar at the top of every page. It exists in two states that transition based on scroll position: a full-width <strong>default</strong> state when the page is at the top, and a centered frosted-glass <strong>pill</strong> state once the user scrolls down.</p>
+<hr>
+<h2>States</h2>
+<h3>Default (at top of page)</h3>
+<p>The nav sits at full viewport width with a near-transparent background. No pill shape, no border.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Width</td>
+<td><code>100vw</code> (full viewport)</td>
+</tr>
+<tr>
+<td>Background</td>
+<td><code>rgba(255, 255, 255, 0.01)</code></td>
+</tr>
+<tr>
+<td>Backdrop blur</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Border</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Border radius</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Padding</td>
+<td><code>16px 24px</code></td>
+</tr>
+</tbody></table>
+<h3>Scrolled (pill)</h3>
+<p>Once <code>scrollY &gt; 50px</code>, the nav collapses into a centered frosted-glass pill. Uses the <a href="../colors.html#frosted-glass-surface">Frosted Glass Surface</a> tokens.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Background</td>
+<td><code>var(--glass-bg)</code> — <code>rgba(252, 253, 255, 0.80)</code></td>
+</tr>
+<tr>
+<td>Backdrop blur</td>
+<td><code>blur(var(--glass-blur))</code> — <code>blur(16px)</code></td>
+</tr>
+<tr>
+<td>Border</td>
+<td><code>var(--glass-border)</code> — <code>1px solid var(--border-subtle)</code></td>
+</tr>
+<tr>
+<td>Border radius</td>
+<td><code>32px</code></td>
+</tr>
+<tr>
+<td>Max width</td>
+<td><code>1024px</code></td>
+</tr>
+<tr>
+<td>Width</td>
+<td><code>1024px</code> (centered)</td>
+</tr>
+<tr>
+<td>Padding</td>
+<td><code>12px 18px 12px 24px</code></td>
+</tr>
+<tr>
+<td>Height</td>
+<td><code>78px</code> (outer container including <code>16px</code> top offset)</td>
+</tr>
+<tr>
+<td>Position</td>
+<td><code>fixed</code>, <code>top: 16px</code>, horizontally centered</td>
+</tr>
+</tbody></table>
+<h3>Transition</h3>
+<p>Animate between states on scroll. Transition the following properties at <code>250ms ease</code>:
+<code>background</code>, <code>backdrop-filter</code>, <code>border-color</code>, <code>border-radius</code>, <code>max-width</code>, <code>padding</code>.</p>
+<hr>
+<h2>Layout</h2>
+<p><strong><code>[Logo] — [Nav links (centered)] — [Sign in + Get started now]</code></strong></p>
+<table>
+<thead>
+<tr>
+<th>Slot</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Logo</td>
+<td><code>zoom / AI Create</code> wordmark, <code>95×36px</code></td>
+</tr>
+<tr>
+<td>Nav links</td>
+<td>Flex row, centered, <code>gap: 20px</code></td>
+</tr>
+<tr>
+<td>CTA buttons</td>
+<td>Secondary + Primary, <code>gap: 12px</code>, right-aligned</td>
+</tr>
+</tbody></table>
+<h3>Nav link specs</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Font</td>
+<td>Button Label style (<code>16px</code> / <code>500</code> / <code>letter-spacing: -0.01em</code>)</td>
+</tr>
+<tr>
+<td>Color</td>
+<td><code>var(--text-primary)</code></td>
+</tr>
+<tr>
+<td>Chevron icon</td>
+<td><code>14×14px</code> inline after label</td>
+</tr>
+<tr>
+<td>Cursor</td>
+<td><code>pointer</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h2>CTA Buttons</h2>
+<p>Uses the standard <a href="./button.html">Button</a> component.</p>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>Variant</th>
+<th>Label</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Left</td>
+<td>Secondary</td>
+<td>Sign in</td>
+</tr>
+<tr>
+<td>Right</td>
+<td>Primary</td>
+<td>Get started now</td>
+</tr>
+</tbody></table>
+<p>Gap between buttons: <code>12px</code>.</p>
+<hr>
+<h2>Dropdown Panels</h2>
+<p>Each nav link opens a dropdown panel on click. The panel appears directly below the nav bar, flush with the nav&#39;s inner content edge.</p>
+<h3>Panel shell (all dropdowns)</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Background</td>
+<td><code>var(--glass-bg)</code></td>
+</tr>
+<tr>
+<td>Backdrop blur</td>
+<td><code>blur(var(--glass-blur))</code></td>
+</tr>
+<tr>
+<td>Border</td>
+<td><code>var(--glass-border)</code></td>
+</tr>
+<tr>
+<td>Border radius</td>
+<td><code>16px</code></td>
+</tr>
+<tr>
+<td>Padding</td>
+<td><code>12px</code></td>
+</tr>
+<tr>
+<td>Max width</td>
+<td><code>1024px</code> (matches scrolled nav)</td>
+</tr>
+</tbody></table>
+<h3>Products</h3>
+<p>A grid of 6 product cards, displayed as a single row on desktop.</p>
+<p><strong>Cards:</strong> AI Docs · AI Slides · AI Sheets · AI Data table · AI Classic Docs · Hub</p>
+<p>Each card:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Width</td>
+<td><code>~160px</code> (equal flex columns)</td>
+</tr>
+<tr>
+<td>Height</td>
+<td><code>125px</code></td>
+</tr>
+<tr>
+<td>Image well</td>
+<td><code>64px</code> tall, light tinted background, icon centered</td>
+</tr>
+<tr>
+<td>Label</td>
+<td><code>16px / 500</code>, centered below image well, <code>var(--text-primary)</code></td>
+</tr>
+<tr>
+<td>Border radius</td>
+<td><code>8px</code></td>
+</tr>
+<tr>
+<td>Hover</td>
+<td><code>background: var(--bg-accent-light)</code></td>
+</tr>
+</tbody></table>
+<h3>Features</h3>
+<p>A horizontal row of 4 text links.</p>
+<p><strong>Items:</strong> AI Auto Writing · AI Templates · Knowledge Base · Sites</p>
+<p>Each item:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Font</td>
+<td>Button Label (<code>16px / 500</code>)</td>
+</tr>
+<tr>
+<td>Color</td>
+<td><code>var(--text-primary)</code></td>
+</tr>
+<tr>
+<td>Padding</td>
+<td><code>16px 20px</code></td>
+</tr>
+<tr>
+<td>Hover</td>
+<td><code>color: var(--text-highlight)</code></td>
+</tr>
+</tbody></table>
+<h3>Explore</h3>
+<p>A horizontal row of 3 text links.</p>
+<p><strong>Items:</strong> Use Cases · Templates · Help center</p>
+<p>Same specs as Features.</p>
+<hr>
+<h2>HTML Pattern</h2>
+<pre><code class="language-html">&lt;!-- Outer wrapper handles the scroll-state class --&gt;
+&lt;header class=&quot;nav-wrap&quot;&gt;
+  &lt;nav class=&quot;nav-bar&quot;&gt;
+    &lt;a class=&quot;nav-logo&quot; href=&quot;/&quot;&gt;
+      &lt;img src=&quot;...&quot; alt=&quot;zoom AI Create&quot; width=&quot;95&quot; height=&quot;36&quot; /&gt;
+    &lt;/a&gt;
+
+    &lt;ul class=&quot;nav-links&quot;&gt;
+      &lt;li class=&quot;nav-trigger&quot; data-menu=&quot;products&quot;&gt;
+        &lt;button class=&quot;nav-link&quot;&gt;Products &lt;span class=&quot;nav-chevron&quot;&gt;&lt;/span&gt;&lt;/button&gt;
+        &lt;div class=&quot;nav-dropdown&quot; id=&quot;menu-products&quot;&gt;
+          &lt;!-- 6 product cards --&gt;
+        &lt;/div&gt;
+      &lt;/li&gt;
+      &lt;li class=&quot;nav-trigger&quot; data-menu=&quot;features&quot;&gt;
+        &lt;button class=&quot;nav-link&quot;&gt;Features &lt;span class=&quot;nav-chevron&quot;&gt;&lt;/span&gt;&lt;/button&gt;
+        &lt;div class=&quot;nav-dropdown&quot; id=&quot;menu-features&quot;&gt;
+          &lt;!-- 4 feature links --&gt;
+        &lt;/div&gt;
+      &lt;/li&gt;
+      &lt;li class=&quot;nav-trigger&quot; data-menu=&quot;explore&quot;&gt;
+        &lt;button class=&quot;nav-link&quot;&gt;Explore &lt;span class=&quot;nav-chevron&quot;&gt;&lt;/span&gt;&lt;/button&gt;
+        &lt;div class=&quot;nav-dropdown&quot; id=&quot;menu-explore&quot;&gt;
+          &lt;!-- 3 explore links --&gt;
+        &lt;/div&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;div class=&quot;nav-cta&quot;&gt;
+      &lt;button class=&quot;btn btn-secondary&quot;&gt;Sign in&lt;/button&gt;
+      &lt;button class=&quot;btn btn-primary&quot;&gt;Get started now&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/nav&gt;
+&lt;/header&gt;
+</code></pre>
+<h2>CSS</h2>
+<pre><code class="language-css">/* ── Wrapper ── */
+.nav-wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  padding-top: 16px;
+  pointer-events: none;
+}
+
+/* ── Nav bar ── */
+.nav-bar {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 100vw;
+  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.01);
+  border-radius: 0;
+  transition:
+    background 250ms ease,
+    backdrop-filter 250ms ease,
+    border-color 250ms ease,
+    border-radius 250ms ease,
+    max-width 250ms ease,
+    padding 250ms ease;
+}
+
+/* ── Scrolled pill state ── */
+.nav-wrap.is-scrolled .nav-bar {
+  max-width: 1024px;
+  padding: 12px 18px 12px 24px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: var(--glass-border);
+  border-radius: 32px;
+}
+
+/* ── Links ── */
+.nav-links {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: &quot;General Sans&quot;, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px 0;
+  white-space: nowrap;
+}
+
+.nav-chevron {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+}
+
+/* ── CTA ── */
+.nav-cta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ── Dropdown panels ── */
+.nav-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 1024px;
+  width: 1024px;
+  padding: 12px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: var(--glass-border);
+  border-radius: 16px;
+  opacity: 0;
+  translate: 0 -6px;
+  transition: opacity 200ms ease, translate 200ms ease;
+}
+
+.nav-trigger.is-open .nav-dropdown {
+  display: block;
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* Products grid */
+.nav-product-grid {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-product-card {
+  flex: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.nav-product-card:hover {
+  background: var(--bg-accent-light);
+}
+
+.nav-product-icon {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-accent-light);
+}
+
+.nav-product-label {
+  padding: 8px;
+  font-family: &quot;General Sans&quot;, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+/* Features / Explore list */
+.nav-link-list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-link-list a {
+  display: block;
+  padding: 16px 20px;
+  font-family: &quot;General Sans&quot;, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav-link-list a:hover {
+  color: var(--text-highlight);
+}
+</code></pre>
+<h2>JavaScript</h2>
+<pre><code class="language-js">// Scroll state
+const navWrap = document.querySelector(&#39;.nav-wrap&#39;);
+window.addEventListener(&#39;scroll&#39;, () =&gt; {
+  navWrap.classList.toggle(&#39;is-scrolled&#39;, window.scrollY &gt; 50);
+}, { passive: true });
+
+// Dropdowns — open on click, close on outside click or Escape
+const triggers = document.querySelectorAll(&#39;.nav-trigger&#39;);
+triggers.forEach(trigger =&gt; {
+  trigger.querySelector(&#39;.nav-link&#39;).addEventListener(&#39;click&#39;, (e) =&gt; {
+    const isOpen = trigger.classList.contains(&#39;is-open&#39;);
+    triggers.forEach(t =&gt; t.classList.remove(&#39;is-open&#39;));
+    if (!isOpen) trigger.classList.add(&#39;is-open&#39;);
+    e.stopPropagation();
+  });
+});
+
+document.addEventListener(&#39;click&#39;, () =&gt; {
+  triggers.forEach(t =&gt; t.classList.remove(&#39;is-open&#39;));
+});
+
+document.addEventListener(&#39;keydown&#39;, (e) =&gt; {
+  if (e.key === &#39;Escape&#39;) triggers.forEach(t =&gt; t.classList.remove(&#39;is-open&#39;));
+});
+</code></pre>
+<hr>
+<h2>Rules</h2>
+<ul>
+<li>The nav is always horizontally centered within the page.</li>
+<li>The pill state uses the Frosted Glass Surface tokens (<code>--glass-bg</code>, <code>--glass-blur</code>, <code>--glass-border</code>) exclusively — never hardcode these values.</li>
+<li>Do not switch to a solid background in either state.</li>
+<li>Do not add more than 3 top-level nav link groups.</li>
+<li>Dropdown panels open on click only — never on hover.</li>
+<li>Always pair the secondary (&quot;Sign in&quot;) and primary (&quot;Get started now&quot;) buttons. Never show one without the other.</li>
+</ul>
+
+    </main>
+  </div>
+
+  <button class="sg-menu-toggle" id="sg-menu-toggle" aria-label="Toggle navigation">&#9776;</button>
+
+  <script>
+    const toggle = document.getElementById('sg-menu-toggle');
+    const sidebar = document.getElementById('sg-sidebar');
+    toggle.addEventListener('click', () => sidebar.classList.toggle('is-open'));
+    document.querySelector('.sg-main').addEventListener('click', () => sidebar.classList.remove('is-open'));
+  </script>
+</body>
+</html>

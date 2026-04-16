@@ -1,0 +1,11 @@
+{
+  "name": "zoom-ai-create-microsite",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:style-guide": "node scripts/build-style-guide.js"
+  },
+  "devDependencies": {
+    "marked": "^15.0.0"
+  }
+}
