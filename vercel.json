@@ -1,3 +1,5 @@
 {
-  "framework": null
+  "framework": null,
+  "buildCommand": "node scripts/build-style-guide.js",
+  "outputDirectory": "."
 }
