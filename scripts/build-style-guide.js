@@ -1,5 +1,5 @@
 import { marked } from 'marked';
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, appendFileSync } from 'node:fs';
 import { resolve, dirname, basename, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -436,6 +436,12 @@ function ensureDir(dir) {
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 }
 
+// #region agent log
+const LOG_PATH = resolve(ROOT, '.cursor/debug-f5660f.log');
+function dbg(msg, data, hyp) { try { appendFileSync(LOG_PATH, JSON.stringify({sessionId:'f5660f',location:'build-style-guide.js',message:msg,data,hypothesisId:hyp,timestamp:Date.now()})+'\n'); } catch(e){} }
+dbg('build-start', { ROOT, DS_DIR, OUT_DIR, pagesFound: allPages.map(p=>p.htmlPath) }, 'H1');
+// #endregion
+
 console.log('Building style guide…\n');
 
 ensureDir(OUT_DIR);
@@ -455,5 +461,9 @@ for (const page of allPages) {
     console.log(`  ✓ ${page.htmlPath}`);
   }
 }
+
+// #region agent log
+dbg('build-complete', { totalPages: allPages.length + 1, outDir: OUT_DIR, filesWritten: ['index.html', ...allPages.map(p=>p.htmlPath)] }, 'H1');
+// #endregion
 
 console.log(`\nDone — ${allPages.length + 1} pages written to style-guide/\n`);
