@@ -1,5 +1,6 @@
 {
   "framework": null,
+  "trailingSlash": true,
   "installCommand": "npm install",
   "buildCommand": "node scripts/build-style-guide.js",
   "outputDirectory": "."
