@@ -6,7 +6,7 @@
     "build": "node scripts/build-style-guide.js",
     "build:style-guide": "node scripts/build-style-guide.js"
   },
-  "devDependencies": {
+  "dependencies": {
     "marked": "^15.0.0"
   }
 }
