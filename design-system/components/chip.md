@@ -1,7 +1,5 @@
 # Chip / Label Tag
 
-A small pill used above every section heading to identify the section category.
-
 **Anatomy:** single line of uppercase text inside a pill container.
 
 ## Specs
