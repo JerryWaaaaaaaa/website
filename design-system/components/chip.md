@@ -1,5 +1,7 @@
 # Chip / Label Tag
 
+> **Tokens & rules summary:** see [`/DESIGN.md` — Chip](../../DESIGN.md#chip--label-tag)
+
 **Anatomy:** single line of uppercase text inside a pill container.
 
 ## Specs
@@ -8,7 +10,7 @@
 |---|---|
 | Background | `var(--bg-accent-light)` — `#F3F8FF` |
 | Text color | `var(--text-highlight)` — `#0C5CFF` |
-| Font | Overline style (12px / 500 / uppercase) |
+| Font | Overline role — see [DESIGN.md type scale](../../DESIGN.md#type-scale) |
 | Padding | `6px 12px` |
 | Border radius | `999px` |
 | Height | `24px` |
@@ -28,6 +30,7 @@
   padding: 6px 12px;
   background: var(--bg-accent-light);
   color: var(--text-highlight);
+  /* Overline role — DESIGN.md#type-scale */
   font-family: "General Sans", sans-serif;
   font-size: 12px;
   font-weight: 500;

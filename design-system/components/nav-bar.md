@@ -1,5 +1,7 @@
 # Navigation Bar
 
+> **Tokens & rules summary:** see [`/DESIGN.md` — Navigation Bar](../../DESIGN.md#navigation-bar)
+
 A fixed navigation bar at the top of every page. It exists in two states that transition based on scroll position: a full-width **default** state when the page is at the top, and a centered frosted-glass **pill** state once the user scrolls down.
 
 ---
@@ -56,7 +58,7 @@ Animate between states on scroll. Transition the following properties at `250ms 
 
 | Property | Value |
 |---|---|
-| Font | Button Label style (`16px` / `500` / `letter-spacing: -0.01em`) |
+| Font | Button Label role — see [DESIGN.md type scale](../../DESIGN.md#type-scale) |
 | Color | `var(--text-primary)` |
 | Chevron icon | `14×14px` inline after label |
 | Cursor | `pointer` |
@@ -233,6 +235,7 @@ Same specs as Features.
   display: inline-flex;
   align-items: center;
   gap: 5px;
+  /* Button Label role — DESIGN.md#type-scale */
   font-family: "General Sans", sans-serif;
   font-size: 16px;
   font-weight: 500;
@@ -312,6 +315,7 @@ Same specs as Features.
 
 .nav-product-label {
   padding: 8px;
+  /* Button Label role — DESIGN.md#type-scale */
   font-family: "General Sans", sans-serif;
   font-size: 16px;
   font-weight: 500;
@@ -331,6 +335,7 @@ Same specs as Features.
 .nav-link-list a {
   display: block;
   padding: 16px 20px;
+  /* Button Label role — DESIGN.md#type-scale */
   font-family: "General Sans", sans-serif;
   font-size: 16px;
   font-weight: 500;

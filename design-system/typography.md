@@ -1,27 +1,11 @@
-# Typography
+# Typography — Implementation Reference
+
+> **Type scale & responsive sizes:** see [`/DESIGN.md` — Typography](../DESIGN.md#typography)
 
 **Primary font family:** [General Sans](https://www.fontshare.com/fonts/general-sans) (weights: 400, 500)  
 **Fallback stack:** `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`
 
 > General Sans must be loaded before any other type styles are applied. Use a `@font-face` or CDN import at the top of your global stylesheet.
-
-## Type Scale & Responsive Sizes
-
-Sizes vary across three breakpoints. Letter-spacing and line-height are constant at all sizes — because letter-spacing is expressed in `em` it scales automatically with font size.
-
-| Role | Desktop ≥1200px | Tablet 640–1199px | Mobile <640px | Weight | Line Height | Letter Spacing |
-|---|---|---|---|---|---|---|
-| Heading 1 | `60px` | `48px` | `36px` | `500` | `1.0` | `-0.01em` |
-| Heading 2 | `44px` | `36px` | `28px` | `500` | `1.0` | `-0.02em` |
-| Heading 3 | `32px` | `26px` | `22px` | `500` | `1.1` | `-0.01em` |
-| Heading 4 | `22px` | `20px` | `18px` | `500` | `1.0` | `-0.01em` |
-| Heading 5 | `20px` | `18px` | `16px` | `500` | `1.5` | `0` |
-| Body | `18px` | `16px` | `16px` | `400` | `1.4` | `0` |
-| Button Label | `16px` | `16px` | `14px` | `500` | `1.2` | `-0.01em` |
-| Caption | `14px` | `14px` | `14px` | `400` | `16px` | `0` |
-| Overline | `12px` | `12px` | `12px` | `500` | `1.0` | `+0.01em` |
-
-> Caption line-height is a fixed `16px` (not a multiplier) as defined in Figma.
 
 ## Use Cases
 

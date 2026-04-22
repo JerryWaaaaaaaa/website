@@ -1,5 +1,7 @@
 # Button
 
+> **Tokens & rules summary:** see [`/DESIGN.md` — Button](../../DESIGN.md#button)
+
 A pill-shaped action trigger used for CTAs and navigation actions. Available in two variants.
 
 ## Variants
@@ -15,7 +17,7 @@ These properties are the same across all variants.
 
 | Property | Value |
 |---|---|
-| Font | Button Label style (16px / 500 / `letter-spacing: -0.01em`) |
+| Font | Button Label role — see [DESIGN.md type scale](../../DESIGN.md#type-scale) |
 | Height | `46px` |
 | Padding | `0 20px` |
 | Border radius | `999px` |
@@ -45,6 +47,7 @@ These properties are the same across all variants.
   justify-content: center;
   height: 46px;
   padding: 0 20px;
+  /* Button Label role — DESIGN.md#type-scale */
   font-family: "General Sans", sans-serif;
   font-size: 16px;
   font-weight: 500;
