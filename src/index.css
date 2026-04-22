@@ -1,0 +1,248 @@
+@import 'tailwindcss';
+
+/* =============================================================================
+   Design Tokens — single source of truth (mirrors DESIGN.md)
+   ========================================================================== */
+:root {
+  /* Primitive */
+  --color-white: #ffffff;
+  --color-shade-light: #f3f8ff;
+  --color-shade-medium: #e3edfc;
+  --color-shade-dark: #d2def2;
+  --color-blue: #0c5cff;
+  --color-pink: #e0d5ff;
+  --color-black: #000000;
+  --color-gray: #4c4c4c;
+  --color-gray-light: #999999;
+
+  /* Semantic: Backgrounds */
+  --bg-neutral: var(--color-white);
+  --bg-accent-light: var(--color-shade-light);
+  --bg-accent-medium: var(--color-shade-medium);
+  --bg-accent-dark: var(--color-shade-dark);
+  --bg-highlight-blue: var(--color-blue);
+  --bg-highlight-pink: var(--color-pink);
+  --bg-contrast: var(--color-black);
+
+  /* Semantic: Text */
+  --text-primary: var(--color-black);
+  --text-secondary: var(--color-gray);
+  --text-highlight: var(--color-blue);
+  --text-contrast: var(--color-white);
+  --text-contrast-secondary: var(--color-gray-light);
+
+  /* Semantic: Stroke */
+  --stroke: var(--color-shade-medium);
+
+  /* Semantic: Gradient */
+  --gradient-accent: radial-gradient(
+    ellipse at center,
+    #f8f2ff 7%,
+    #e9f5ff 69%,
+    #bfd1fb 93%,
+    #98b6f5 100%
+  );
+
+  /* Legacy borders (used by nav glass surface) */
+  --border-subtle: rgba(117, 115, 114, 0.15);
+  --border-white: rgba(255, 255, 255, 0.4);
+
+  /* Frosted Glass Surface */
+  --glass-bg: rgba(252, 253, 255, 0.8);
+  --glass-blur: 16px;
+  --glass-border: 1px solid var(--border-subtle);
+}
+
+/* Tailwind v4 theme bridge — makes tokens available as utility classes
+   (e.g. bg-bg-accent-light, text-text-secondary) so reactbits and one-off
+   utilities resolve through our token system. */
+@theme {
+  --color-bg-neutral: var(--bg-neutral);
+  --color-bg-accent-light: var(--bg-accent-light);
+  --color-bg-accent-medium: var(--bg-accent-medium);
+  --color-bg-accent-dark: var(--bg-accent-dark);
+  --color-bg-highlight-blue: var(--bg-highlight-blue);
+  --color-bg-highlight-pink: var(--bg-highlight-pink);
+  --color-bg-contrast: var(--bg-contrast);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-highlight: var(--text-highlight);
+  --color-text-contrast: var(--text-contrast);
+  --color-text-contrast-secondary: var(--text-contrast-secondary);
+
+  --color-stroke: var(--stroke);
+
+  --font-sans: 'General Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  --radius-pill: 999px;
+}
+
+/* =============================================================================
+   Base / Reset
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: 'General Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+  background: var(--bg-neutral);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =============================================================================
+   Button — pill-shaped CTA (primary + secondary)
+   See: design-system/components/button.md
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 0 20px;
+  font-family: 'General Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: opacity 150ms ease, background 150ms ease;
+}
+
+.btn-primary {
+  background: var(--bg-contrast);
+  color: var(--text-contrast);
+}
+.btn-primary:hover {
+  opacity: 0.85;
+}
+
+.btn-secondary {
+  background: var(--bg-accent-light);
+  color: var(--text-secondary);
+}
+.btn-secondary:hover {
+  background: var(--bg-accent-medium);
+}
+
+/* =============================================================================
+   Chip — uppercase pill label above section headings
+   See: design-system/components/chip.md
+   ========================================================================== */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: var(--bg-accent-light);
+  color: var(--text-highlight);
+  font-family: 'General Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* =============================================================================
+   Page sections — type ramp + container patterns
+   ========================================================================== */
+
+.section {
+  width: 100%;
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 96px 40px;
+}
+
+.section-full {
+  width: 100%;
+  padding: 96px 40px;
+}
+
+.section-eyebrow {
+  margin-bottom: 20px;
+}
+
+.section h2,
+.section-full h2 {
+  font-family: 'General Sans', sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0 0 20px;
+}
+
+.section h3,
+.section-full h3 {
+  font-family: 'General Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+}
+
+.section p.lede,
+.section-full p.lede {
+  font-family: 'General Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  margin: 0 0 48px;
+  max-width: 600px;
+}
+
+/* H1 — only used in the hero */
+.h1 {
+  font-family: 'General Sans', sans-serif;
+  font-size: 60px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin: 0 0 24px;
+}
+
+/* Responsive type ramp — matches DESIGN.md */
+@media (max-width: 1199px) {
+  .h1 { font-size: 48px; }
+  .section h2,
+  .section-full h2 { font-size: 36px; }
+  .section h3,
+  .section-full h3 { font-size: 20px; }
+  .section,
+  .section-full { padding: 72px 32px; }
+}
+
+@media (max-width: 639px) {
+  .h1 { font-size: 36px; }
+  .section h2,
+  .section-full h2 { font-size: 28px; }
+  .section h3,
+  .section-full h3 { font-size: 18px; }
+  .section,
+  .section-full { padding: 56px 20px; }
+}
+
