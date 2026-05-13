@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'motion/react';
 import s from './Nav.module.css';
 
 type Panel = 'products' | 'features' | 'explore' | null;
+
+const SPRING = { type: 'spring' as const, damping: 25, stiffness: 300 };
 
 const PRODUCT_CARDS = [
   {
@@ -110,9 +113,34 @@ export function Nav() {
   const triggerClass = (panel: Exclude<Panel, null>) =>
     [s.navTrigger, openPanel === panel ? s.isOpen : ''].filter(Boolean).join(' ');
 
+  const wrapStyle = { padding: scrolled ? '20px 24px 0' : 0 };
+  const barStyle = {
+    maxWidth: scrolled ? 1024 : '100%',
+    borderRadius: scrolled
+      ? openPanel
+        ? '32px 32px 32px 32px'
+        : 32
+      : openPanel
+        ? '0 0 32px 32px'
+        : 0,
+  };
+
   return (
-    <header className={wrapClass} ref={navRef}>
-      <nav className={barClass} role="navigation" aria-label="Main navigation">
+    <motion.header
+      layout
+      transition={SPRING}
+      className={wrapClass}
+      style={wrapStyle}
+      ref={navRef}
+    >
+      <motion.nav
+        layout
+        transition={SPRING}
+        className={barClass}
+        style={barStyle}
+        role="navigation"
+        aria-label="Main navigation"
+      >
         <div className={s.navRow}>
           <Link to="/" className={s.navLogo} aria-label="Zoom AI Create — home">
             <span className={s.navLogoZoom}>zoom</span>
@@ -232,7 +260,7 @@ export function Nav() {
             </div>
           </div>
         </div>
-      </nav>
-    </header>
+      </motion.nav>
+    </motion.header>
   );
 }
