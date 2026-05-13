@@ -11,8 +11,6 @@
   z-index: 100;
   display: flex;
   justify-content: center;
-  padding: 0;
-  transition: padding 250ms ease;
   pointer-events: none;
 }
 
@@ -22,24 +20,19 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: none;
   background: rgba(255, 255, 255, 0.01);
   border: 1px solid transparent;
-  border-radius: 0;
   transition:
-    max-width 250ms ease,
     background 250ms ease,
     backdrop-filter 250ms ease,
     -webkit-backdrop-filter 250ms ease,
-    border-color 250ms ease,
-    border-radius 250ms ease;
+    border-color 250ms ease;
 }
 
 .navBar.productsOpen,
 .navBar.featuresOpen,
 .navBar.exploreOpen {
   background: var(--bg-neutral);
-  border-radius: 0 0 32px 32px;
 }
 
 .navRow {
@@ -50,16 +43,11 @@
 }
 
 /* Scrolled pill state */
-.navWrap.isScrolled {
-  padding: 20px 24px 0;
-}
 .navWrap.isScrolled .navBar {
-  max-width: 1024px;
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border-color: var(--border-subtle);
-  border-radius: 32px;
   overflow: hidden;
 }
 .navWrap.isScrolled .navRow {
