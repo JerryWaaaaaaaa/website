@@ -169,7 +169,7 @@ export function Nav() {
 
           <div className={s.navCta}>
             <button className="btn btn-secondary">Sign in</button>
-            <button className="btn btn-primary">Get started now</button>
+            <button className="btn btn-primary">Get started today</button>
           </div>
         </div>
 
