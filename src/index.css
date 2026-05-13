@@ -246,3 +246,85 @@ body {
   .section-full { padding: 56px 20px; }
 }
 
+/* =============================================================================
+   Animated gradient — subtle drifting background
+   ========================================================================== */
+@keyframes gradient-drift {
+  0%   { background-position: 0% 0%; }
+  50%  { background-position: 200% 200%; }
+  100% { background-position: 0% 0%; }
+}
+
+.animated-gradient {
+  background-size: 200% 200%;
+  animation: gradient-drift 12s ease infinite;
+}
+
+/* =============================================================================
+   Hero V2 — curved transcript + artifact cards
+   ========================================================================== */
+
+/* Static curved transcript behind the prompt card */
+.hero-transcript {
+  position: absolute;
+  top: max(165px, calc(385px - 18.06vw));
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-transcript svg {
+  width: 100%;
+  height: auto;
+}
+
+.hero-transcript-text {
+  font-family: 'General Sans', sans-serif;
+  font-style: normal;
+  font-size: 18px;
+  font-weight: 400;
+  fill: var(--text-primary);
+}
+
+/* Artifact track — infinite marquee scroll */
+@keyframes hero-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.hero-artifact-track {
+  display: flex;
+  gap: 50px;
+  width: max-content;
+  animation: hero-marquee 28s linear infinite;
+}
+
+.hero-artifact-track:hover {
+  animation-play-state: paused;
+}
+
+.hero-artifact {
+  flex: 0 0 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.hero-artifact img {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+}
+
+.hero-artifact-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'General Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+}
+

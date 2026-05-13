@@ -16,7 +16,7 @@ export function Hero() {
   return (
     <section
       style={{
-        background: 'var(--gradient-accent)',
+        backgroundImage: 'var(--gradient-accent)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
