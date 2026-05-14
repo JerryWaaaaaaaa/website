@@ -38,7 +38,7 @@ export function HeroV2() {
     >
       {/* Curved transcript */}
       <div className="hero-transcript" aria-hidden="true">
-        <svg viewBox="-110 -30 1550 290">
+        <svg viewBox="0 -30 1440 290">
           <defs>
             <path
               id="hero-transcript-curve"
