@@ -5,6 +5,7 @@ import { Hero } from '../sections/Hero';
 import { HeroV2 } from '../sections/HeroV2';
 import { Flow } from '../sections/Flow';
 import { FromConversation } from '../sections/FromConversation';
+import { MeetingDoc } from '../sections/MeetingDoc';
 import { OneMeetingOneDoc } from '../sections/OneMeetingOneDoc';
 import { ProductTabs } from '../sections/ProductTabs';
 import { WhyChoose } from '../sections/WhyChoose';
@@ -22,6 +23,7 @@ export function Marketing() {
       <Nav />
       <main>
         {heroVariant === 'v2' ? <HeroV2 /> : <Hero />}
+        <MeetingDoc />
         <Flow />
         <FromConversation />
         <OneMeetingOneDoc />
