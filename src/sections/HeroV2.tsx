@@ -24,18 +24,7 @@ export function HeroV2() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   return (
-    <section
-      style={{
-        position: 'relative',
-        backgroundImage: 'var(--gradient-accent)',
-        minHeight: 1040,
-        paddingTop: 355,
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
+    <section className="hero-v2">
       {/* Curved transcript */}
       <div className="hero-transcript" aria-hidden="true">
         <svg viewBox="0 -30 1440 290">
@@ -71,32 +60,9 @@ export function HeroV2() {
       </div>
 
       {/* Prompt card */}
-      <div
-        style={{
-          position: 'relative',
-          zIndex: 2,
-          width: '100%',
-          maxWidth: 702,
-          margin: '0 24px',
-          padding: 36,
-          background: '#ffffff',
-          borderRadius: 24,
-          boxShadow: '0 24px 64px rgba(12, 92, 255, 0.10)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 28,
-        }}
-      >
+      <div className="hero-prompt">
         {/* Heading */}
-        <h1
-          className="h1"
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '0px 12px',
-            margin: 0,
-          }}
-        >
+        <h1 className="h1 hero-prompt-heading">
           {'You just talk, Let AI turns your meeting into '.split(' ').map((word, i) => (
             <span key={i} style={{ whiteSpace: 'nowrap' }}>
               {word}
@@ -107,26 +73,18 @@ export function HeroV2() {
           <motion.span
             layout
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              height: 60,
-              overflow: 'hidden',
-            }}
+            className="hero-rotating"
           >
             <AnimatePresence mode="popLayout" initial={false}>
               <motion.img
                 key={currentIndex}
                 src={PRODUCTS[currentIndex].icon}
                 alt=""
-                width={36}
-                height={36}
+                className="hero-rotating-icon"
                 initial={{ y: '100%', opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: '-120%', opacity: 0 }}
                 transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                style={{ flexShrink: 0 }}
               />
             </AnimatePresence>
 
@@ -146,24 +104,8 @@ export function HeroV2() {
         </h1>
 
         {/* Subtitle + CTA row */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 64,
-          }}
-        >
-          <p
-            style={{
-              fontSize: 16,
-              lineHeight: 1.5,
-              color: 'var(--text-secondary)',
-              margin: 0,
-              flex: 1,
-              maxWidth: 420,
-            }}
-          >
+        <div className="hero-prompt-row">
+          <p className="hero-prompt-subtitle">
             AI meeting flow handles all the meeting grunt work, so you can focus on what really matters
           </p>
           <Button variant="primary">Get started today</Button>
@@ -171,16 +113,8 @@ export function HeroV2() {
       </div>
 
       {/* Artifact carousel — looping marquee */}
-      <div
-        style={{
-          position: 'relative',
-          zIndex: 1,
-          marginTop: -120,
-          width: '100%',
-          overflow: 'hidden',
-        }}
-      >
-        <div style={{ transform: 'rotate(1.1deg)' }}>
+      <div className="hero-artifact-wrap">
+        <div className="hero-artifact-tilt">
           <div className="hero-artifact-track">
             {[...ARTIFACTS, ...ARTIFACTS].map((src, i) => (
               <div className="hero-artifact" key={i}>

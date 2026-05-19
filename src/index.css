@@ -264,6 +264,86 @@ body {
    Hero V2 — curved transcript + artifact cards
    ========================================================================== */
 
+/* Section wrapper */
+.hero-v2 {
+  position: relative;
+  background-image: var(--gradient-accent);
+  min-height: clamp(680px, 80vh, 1040px);
+  padding-top: clamp(140px, 24vw, 355px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Prompt card — width reserves 24px gutter on each side at every viewport */
+.hero-prompt {
+  position: relative;
+  z-index: 2;
+  width: calc(100% - 48px);
+  max-width: 702px;
+  margin: 0;
+  padding: 36px;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 24px 64px rgba(12, 92, 255, 0.10);
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.hero-prompt-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+  margin: 0;
+}
+
+/* Rotating product carousel — sized in em so it tracks the .h1 ramp */
+.hero-rotating {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 1em;
+  overflow: hidden;
+}
+
+.hero-rotating-icon {
+  width: 0.6em;
+  height: 0.6em;
+  flex-shrink: 0;
+}
+
+/* Subtitle + CTA row */
+.hero-prompt-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 64px;
+}
+
+.hero-prompt-subtitle {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0;
+  flex: 1;
+  max-width: 420px;
+}
+
+/* Artifact carousel wrappers */
+.hero-artifact-wrap {
+  position: relative;
+  z-index: 1;
+  margin-top: -120px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.hero-artifact-tilt {
+  transform: rotate(1.1deg);
+}
+
 /* Static curved transcript behind the prompt card */
 .hero-transcript {
   position: absolute;
@@ -289,8 +369,8 @@ body {
 
 /* Artifact track — infinite marquee scroll */
 @keyframes hero-marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
 }
 
 .hero-artifact-track {
@@ -328,3 +408,24 @@ body {
   line-height: 1;
 }
 
+/* Hero V2 — tablet */
+@media (max-width: 1199px) {
+  .hero-prompt { padding: 28px; gap: 20px; max-width: 600px; }
+  .hero-prompt-row { gap: 32px; }
+  .hero-artifact-wrap { margin-top: -90px; }
+  .hero-artifact { flex: 0 0 380px; }
+  .hero-artifact-track { gap: 32px; }
+}
+
+/* Hero V2 — mobile */
+@media (max-width: 639px) {
+  .hero-v2 { min-height: 0; }
+  .hero-prompt { padding: 20px; gap: 16px; border-radius: 20px; }
+  .hero-prompt-row { flex-direction: column; align-items: stretch; gap: 16px; }
+  .hero-prompt-subtitle { max-width: none; }
+  .hero-prompt-row .btn { width: 100%; }
+  .hero-transcript { display: none; }
+  .hero-artifact-wrap { margin-top: -40px; }
+  .hero-artifact { flex: 0 0 280px; }
+  .hero-artifact-track { gap: 20px; }
+}
