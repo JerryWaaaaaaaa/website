@@ -7,12 +7,14 @@ import { Typography } from './routes/styleguide/Typography';
 import { ButtonPage } from './routes/styleguide/components/ButtonPage';
 import { ChipPage } from './routes/styleguide/components/ChipPage';
 import { NavBarPage } from './routes/styleguide/components/NavBarPage';
+import { GradientGenerator } from './routes/GradientGenerator';
 
 export function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Marketing />} />
+        <Route path="/gradient-generator" element={<GradientGenerator />} />
         <Route path="/style-guide" element={<StyleGuideLayout />}>
           <Route index element={<StyleGuideIndex />} />
           <Route path="colors" element={<Colors />} />

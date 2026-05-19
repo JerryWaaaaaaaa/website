@@ -264,6 +264,86 @@ body {
    Hero V2 — curved transcript + artifact cards
    ========================================================================== */
 
+/* Section wrapper */
+.hero-v2 {
+  position: relative;
+  background-image: var(--gradient-accent);
+  min-height: clamp(680px, 80vh, 1040px);
+  padding-top: clamp(140px, 24vw, 355px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Prompt card — width reserves 24px gutter on each side at every viewport */
+.hero-prompt {
+  position: relative;
+  z-index: 2;
+  width: calc(100% - 48px);
+  max-width: 702px;
+  margin: 0;
+  padding: 36px;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 24px 64px rgba(12, 92, 255, 0.10);
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.hero-prompt-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+  margin: 0;
+}
+
+/* Rotating product carousel — sized in em so it tracks the .h1 ramp */
+.hero-rotating {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 1em;
+  overflow: hidden;
+}
+
+.hero-rotating-icon {
+  width: 0.6em;
+  height: 0.6em;
+  flex-shrink: 0;
+}
+
+/* Subtitle + CTA row */
+.hero-prompt-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 64px;
+}
+
+.hero-prompt-subtitle {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0;
+  flex: 1;
+  max-width: 420px;
+}
+
+/* Artifact carousel wrappers */
+.hero-artifact-wrap {
+  position: relative;
+  z-index: 1;
+  margin-top: -120px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.hero-artifact-tilt {
+  transform: rotate(1.1deg);
+}
+
 /* Static curved transcript behind the prompt card */
 .hero-transcript {
   position: absolute;
@@ -289,8 +369,8 @@ body {
 
 /* Artifact track — infinite marquee scroll */
 @keyframes hero-marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
 }
 
 .hero-artifact-track {
@@ -328,3 +408,371 @@ body {
   line-height: 1;
 }
 
+/* Hero V2 — tablet */
+@media (max-width: 1199px) {
+  .hero-prompt { padding: 28px; gap: 20px; max-width: 600px; }
+  .hero-prompt-row { gap: 32px; }
+  .hero-artifact-wrap { margin-top: -90px; }
+  .hero-artifact { flex: 0 0 380px; }
+  .hero-artifact-track { gap: 32px; }
+}
+
+/* Hero V2 — mobile */
+@media (max-width: 639px) {
+  .hero-v2 { min-height: 0; }
+  .hero-prompt { padding: 20px; gap: 16px; border-radius: 20px; }
+  .hero-prompt-row { flex-direction: column; align-items: stretch; gap: 16px; }
+  .hero-prompt-subtitle { max-width: none; }
+  .hero-prompt-row .btn { width: 100%; }
+  .hero-transcript { display: none; }
+  .hero-artifact-wrap { margin-top: -40px; }
+  .hero-artifact { flex: 0 0 280px; }
+  .hero-artifact-track { gap: 20px; }
+}
+
+/* =============================================================================
+   Meeting Doc — interactive tabs (Figma nodes 3074:128940 / 3074:128994 / 3076:129054)
+   ========================================================================== */
+
+.meeting-doc {
+  width: 100%;
+  padding: 80px 48px;
+  background: var(--bg-neutral);
+}
+
+.meeting-doc-content {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+
+/* Header row */
+.meeting-doc-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 0 32px;
+}
+
+.meeting-doc-title {
+  font-family: 'General Sans', sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0;
+  max-width: 480px;
+}
+
+.meeting-doc-desc {
+  font-family: 'General Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 410px;
+}
+
+/* Card shell — height is driven by the image at desktop / tablet */
+.meeting-doc-card {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  background: var(--bg-accent-light);
+  border: 1px solid var(--stroke);
+  border-radius: 32px;
+  overflow: hidden;
+}
+
+/* Left column — outer padding only; .meeting-doc-inner provides the gutter
+   that the active row's overlay can break out of, and hosts the absolute
+   positioned actions bar. */
+.meeting-doc-left {
+  position: relative;
+  flex: 1 0 0;
+  min-width: 0;
+  padding: 32px;
+  align-self: stretch;
+  display: flex;
+}
+
+.meeting-doc-inner {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Scroll container — hidden scrollbar, fade is provided by the actions bar */
+.meeting-doc-scroll {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.meeting-doc-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.meeting-doc-features {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0 32px;
+}
+
+/* Feature row — also acts as the clickable tab button */
+.meeting-doc-feature {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  height: fit-content;
+  flex-shrink: 0;
+  padding: 19px 0;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text-secondary);
+  transition: color 200ms ease;
+}
+
+.meeting-doc-feature::before {
+  content: '';
+  position: absolute;
+  inset: 0 -32px;
+  background: var(--bg-highlight-blue);
+  border-radius: 20px;
+  opacity: 0;
+  transition: opacity 250ms ease;
+  z-index: 0;
+}
+
+.meeting-doc-feature > * {
+  position: relative;
+  z-index: 1;
+}
+
+.meeting-doc-feature.is-active {
+  color: var(--text-contrast);
+  padding: 23px 0 24px;
+}
+
+.meeting-doc-feature.is-active::before {
+  opacity: 1;
+}
+
+.meeting-doc-feature:not(.is-active):hover {
+  color: var(--text-primary);
+}
+
+.meeting-doc-feature-title {
+  display: flex;
+  flex-direction: column;
+  font-family: 'General Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.meeting-doc-feature-title-line {
+  display: block;
+}
+
+.meeting-doc-feature-body-wrap {
+  display: block;
+  overflow: hidden;
+  width: 100%;
+}
+
+.meeting-doc-feature-body {
+  display: block;
+  padding-top: 16px;
+  font-family: 'General Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--text-contrast);
+}
+
+/* Actions — shared base; positioning is set by the variant */
+.meeting-doc-actions {
+  display: flex;
+  gap: 12px;
+  z-index: 2;
+}
+
+/* In-column variant — pinned to the bottom of .meeting-doc-inner with a
+   gradient fade so scrolled text dissolves behind the arrow buttons. */
+.meeting-doc-actions--col {
+  position: absolute;
+  left: 32px;
+  right: 32px;
+  bottom: 0;
+  padding: 24px 0 0;
+  justify-content: flex-end;
+}
+
+.meeting-doc-actions--col::before {
+  content: '';
+  position: absolute;
+  inset: -24px 0 0 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(243, 248, 255, 0) 0%,
+    var(--bg-accent-light) 50%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Overlay variant — floats over the image at tablet + mobile */
+.meeting-doc-actions--overlay {
+  display: none;
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+}
+
+.meeting-doc-arrow {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 46px;
+  padding: 0 20px;
+  background: var(--bg-accent-medium);
+  border: none;
+  border-radius: 999px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.meeting-doc-arrow:hover {
+  background: var(--bg-accent-dark);
+}
+
+.meeting-doc-arrow:active {
+  transform: scale(0.96);
+}
+
+/* Right column — image preview */
+.meeting-doc-image-wrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 520px;
+  height: 520px;
+  overflow: hidden;
+}
+
+.meeting-doc-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* =============================================================================
+   Meeting Doc — Tablet (header stacks, arrows move onto the image)
+   ========================================================================== */
+@media (max-width: 1199px) {
+  .meeting-doc { padding: 64px 32px; }
+  .meeting-doc-content { gap: 40px; }
+
+  .meeting-doc-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0;
+    gap: 16px;
+  }
+  .meeting-doc-title { font-size: 38px; max-width: 640px; }
+  .meeting-doc-desc { font-size: 16px; max-width: 640px; }
+
+  .meeting-doc-card { height: 400px; }
+  .meeting-doc-left { padding: 24px; }
+  .meeting-doc-features { padding: 0 24px; }
+  .meeting-doc-feature::before { inset: 0 -24px; }
+  .meeting-doc-image-wrap { width: 400px; height: 400px; }
+  .meeting-doc-feature-title { font-size: 20px; }
+  .meeting-doc-feature-body { font-size: 16px; }
+
+  .meeting-doc-actions--col { display: none; }
+  .meeting-doc-actions--overlay { display: flex; }
+}
+
+/* =============================================================================
+   Meeting Doc — Mobile (card stacks; image on top with overlaid arrows;
+                         only the active feature renders below)
+   ========================================================================== */
+@media (max-width: 639px) {
+  .meeting-doc { padding: 48px 16px; }
+  .meeting-doc-content { gap: 24px; }
+  .meeting-doc-title { font-size: 32px; }
+
+  .meeting-doc-card {
+    flex-direction: column;
+    border-radius: 24px;
+    height: auto;
+  }
+
+  .meeting-doc-image-wrap {
+    order: 0;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .meeting-doc-left {
+    order: 1;
+    padding: 0;
+    align-self: auto;
+  }
+
+  .meeting-doc-inner {
+    overflow: visible;
+  }
+
+  .meeting-doc-scroll {
+    height: auto;
+    overflow: visible;
+  }
+
+  .meeting-doc-features {
+    padding: 0;
+  }
+
+  /* Hide every collapsed tab — only the selected one renders */
+  .meeting-doc-feature:not(.is-active) {
+    display: none;
+  }
+
+  /* Active feature becomes the full-bleed blue panel under the image,
+     inheriting the card's bottom rounded corners from overflow: hidden */
+  .meeting-doc-feature.is-active {
+    padding: 20px;
+  }
+  .meeting-doc-feature.is-active::before {
+    inset: 0;
+    border-radius: 0;
+  }
+
+  .meeting-doc-feature-title { font-size: 22px; }
+  .meeting-doc-feature-body { font-size: 16px; padding-top: 12px; }
+}
