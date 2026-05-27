@@ -1,6 +1,12 @@
-import { Fragment, useEffect, useRef } from 'react';
+import { Fragment, useEffect, useId, useRef } from 'react';
 
-const SPEAKERS = [
+export interface Speaker {
+  name: string;
+  src: string;
+  text: string;
+}
+
+export const DEFAULT_SPEAKERS: Speaker[] = [
   {
     name: 'Claire',
     src: '/avatars/claire.png',
@@ -29,27 +35,39 @@ const SPEAKERS = [
 ];
 
 const REPEAT = 4;
-const CURVE_D = 'M -101 89 C 134 227 200 60 380 30 C 540 5 660 90 720 230';
+export const DEFAULT_CURVE_D =
+  'M -101 89 C 134 227 200 60 380 30 C 540 5 660 90 720 230';
 
 export interface HeroTranscriptProps {
+  speakers?: Speaker[];
+  curveD?: string;
+  reverseText?: boolean;
   avatarSize?: number;
   avatarGap?: number;
   avatarOffset?: number;
   fontSize?: number;
+  textOffsetY?: number;
   ribbonThickness?: number;
   ribbonColor?: string;
   cycleMs?: number;
 }
 
 export function HeroTranscript({
+  speakers = DEFAULT_SPEAKERS,
+  curveD = DEFAULT_CURVE_D,
+  reverseText = false,
   avatarSize = 48,
   avatarGap = 2,
   avatarOffset = 0,
   fontSize = 20,
+  textOffsetY = 0,
   ribbonThickness = 58,
   ribbonColor = '#d2def2',
   cycleMs = 30000,
 }: HeroTranscriptProps) {
+  const uid = useId();
+  const pathId = `hero-transcript-curve-${uid}`;
+  const clipId = `hero-avatar-clip-${uid}`;
   const svgRef = useRef<SVGSVGElement | null>(null);
   const pathRef = useRef<SVGPathElement | null>(null);
   const textPathRef = useRef<SVGTextPathElement | null>(null);
@@ -70,7 +88,7 @@ export function HeroTranscript({
     // Measure each quote's rendered width on the path. The trailing em-space
     // in the measured string matches the trailing em-space inside each rendered
     // <tspan>, so the loop period along the path equals the sum of these widths.
-    const quoteWidths = SPEAKERS.map((s) => {
+    const quoteWidths = speakers.map((s) => {
       measure.textContent = `\u201C${s.text}\u201D\u2003`;
       return measure.getComputedTextLength();
     });
@@ -83,7 +101,7 @@ export function HeroTranscript({
     const offsets: number[] = [];
     for (let rep = 0; rep < REPEAT; rep++) {
       let acc = rep * W;
-      for (let i = 0; i < SPEAKERS.length; i++) {
+      for (let i = 0; i < speakers.length; i++) {
         offsets.push(acc);
         acc += quoteWidths[i];
       }
@@ -101,7 +119,8 @@ export function HeroTranscript({
 
     const tick = (now: number) => {
       const t = ((now - start) % cycleMs) / cycleMs;
-      const currentOffset = -W + t * W;
+      const tt = reverseText ? 1 - t : t;
+      const currentOffset = -W + tt * W;
 
       textPath.setAttribute('startOffset', String(currentOffset));
 
@@ -142,7 +161,7 @@ export function HeroTranscript({
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [avatarSize, avatarGap, ribbonThickness, fontSize, cycleMs]);
+  }, [speakers, curveD, reverseText, avatarSize, avatarGap, ribbonThickness, fontSize, cycleMs]);
 
   const textStyle = {
     fontFamily: "'General Sans', sans-serif",
@@ -154,27 +173,27 @@ export function HeroTranscript({
 
   return (
     <div className="hero-transcript" aria-hidden="true">
-      <svg viewBox="0 -30 1440 290" ref={svgRef}>
+      <svg viewBox="0 -30 1440 290" overflow="visible" ref={svgRef}>
         <defs>
-          <path ref={pathRef} id="hero-transcript-curve" d={CURVE_D} fill="none" />
-          <clipPath id="hero-avatar-clip">
+          <path ref={pathRef} id={pathId} d={curveD} fill="none" />
+          <clipPath id={clipId}>
             <circle cx={avatarSize / 2} cy={avatarSize / 2} r={avatarSize / 2} />
           </clipPath>
         </defs>
         {/* Ribbon background */}
         <path
-          d={CURVE_D}
+          d={curveD}
           fill="none"
           stroke={ribbonColor}
           strokeWidth={ribbonThickness}
           strokeLinecap="butt"
         />
         {/* Animated text on path — startOffset driven by rAF in useEffect */}
-        <text style={textStyle}>
-          <textPath ref={textPathRef} href="#hero-transcript-curve" startOffset={0}>
+        <text style={textStyle} dominantBaseline="central">
+          <textPath ref={textPathRef} href={`#${pathId}`} startOffset={0} dy={textOffsetY}>
             {Array.from({ length: REPEAT }).map((_, rep) => (
               <Fragment key={rep}>
-                {SPEAKERS.map((s, i) => (
+                {speakers.map((s, i) => (
                   <tspan key={i}>{`\u201C${s.text}\u201D\u2003`}</tspan>
                 ))}
               </Fragment>
@@ -191,13 +210,13 @@ export function HeroTranscript({
         {/* Avatars — one <image> per (repetition, speaker), positioned per frame */}
         <g ref={avatarLayerRef}>
           {Array.from({ length: REPEAT }).flatMap((_, rep) =>
-            SPEAKERS.map((s, i) => (
+            speakers.map((s, i) => (
               <image
                 key={`${rep}-${i}`}
                 href={s.src}
                 width={avatarSize}
                 height={avatarSize}
-                clipPath="url(#hero-avatar-clip)"
+                clipPath={`url(#${clipId})`}
                 style={{ visibility: 'hidden' }}
               />
             )),

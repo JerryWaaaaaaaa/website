@@ -7,7 +7,7 @@ import {
   type RibbonConfig,
 } from '../components/RibbonControls';
 import { RibbonTunerPanel } from '../components/RibbonTunerPanel';
-import { HeroTranscript } from './HeroTranscript';
+import { HeroTranscript, type Speaker } from './HeroTranscript';
 
 const PRODUCTS = [
   { name: 'Slides', color: '#fb327e', icon: '/Icon/product-slides.svg' },
@@ -23,6 +23,35 @@ const ARTIFACTS = [
   '/hero-images/data-table.png',
 ];
 
+// Second ribbon — drawn left-to-right so text reads right-side-up; combined
+// with `reverseText` on the second <HeroTranscript> below, the visual scroll
+// flows opposite to ribbon 1.
+const HERO_TRANSCRIPT_CURVE_2 =
+  'M 720 230 C 791 101 899 34 1055 80 C 1156 106 1300 28 1162 -210';
+
+const HERO_TRANSCRIPT_SPEAKERS_2: Speaker[] = [
+  {
+    name: 'Avery',
+    src: '/avatars/Avatar.png',
+    text: 'Roadmap check — Q3 launch is on track and beta feedback came in strong.',
+  },
+  {
+    name: 'Mateo',
+    src: '/avatars/Avatar-1.png',
+    text: 'Any blockers from the design review yet?',
+  },
+  {
+    name: 'Lila',
+    src: '/avatars/Avatar-2.png',
+    text: "Just one — we're aligning on the empty state pattern.",
+  },
+  {
+    name: 'Theo',
+    src: '/avatars/Avatar-3.png',
+    text: 'I can have a final spec ready by Friday afternoon.',
+  },
+];
+
 export function HeroV2() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [ribbonConfig, setRibbonConfig] = useState<RibbonConfig>(RIBBON_DEFAULTS);
@@ -31,6 +60,12 @@ export function HeroV2() {
     <section className="hero-v2">
       {/* Curved transcript */}
       <HeroTranscript {...ribbonConfig} />
+      <HeroTranscript
+        {...ribbonConfig}
+        speakers={HERO_TRANSCRIPT_SPEAKERS_2}
+        curveD={HERO_TRANSCRIPT_CURVE_2}
+        reverseText
+      />
 
       {/* Prompt card */}
       <div className="hero-prompt">

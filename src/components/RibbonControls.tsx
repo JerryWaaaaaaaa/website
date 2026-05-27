@@ -6,6 +6,7 @@ export interface RibbonConfig {
   avatarGap: number;
   avatarOffset: number;
   fontSize: number;
+  textOffsetY: number;
   ribbonThickness: number;
   ribbonColor: string;
   cycleMs: number;
@@ -16,6 +17,7 @@ export const RIBBON_DEFAULTS: RibbonConfig = {
   avatarGap: 2,
   avatarOffset: 0,
   fontSize: 20,
+  textOffsetY: 0,
   ribbonThickness: 58,
   ribbonColor: '#d2def2',
   cycleMs: 30000,
@@ -85,6 +87,7 @@ export function RibbonControls({ config, onChange, onReset }: RibbonControlsProp
   avatarGap={${config.avatarGap}}
   avatarOffset={${config.avatarOffset}}
   fontSize={${config.fontSize}}
+  textOffsetY={${config.textOffsetY}}
   ribbonThickness={${config.ribbonThickness}}
   ribbonColor="${config.ribbonColor}"
   cycleMs={${config.cycleMs}}
@@ -128,6 +131,14 @@ export function RibbonControls({ config, onChange, onReset }: RibbonControlsProp
         min={12}
         max={32}
         onChange={set('fontSize')}
+      />
+      <RangeControl
+        label="Vertical offset"
+        value={config.textOffsetY}
+        min={-10}
+        max={10}
+        step={0.5}
+        onChange={set('textOffsetY')}
       />
 
       <h3 className="rc-heading">Ribbon</h3>
