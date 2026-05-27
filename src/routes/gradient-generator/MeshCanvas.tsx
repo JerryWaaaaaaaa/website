@@ -14,14 +14,15 @@ function hexToRgb(hex: string): Rgb {
   };
 }
 
-function smoothstep(t: number): number {
-  return t * t * (3 - 2 * t);
-}
-
 /**
- * Render a bilinearly-interpolated mesh gradient to a canvas via ImageData.
- * Uses smoothstep interpolation so neighboring cells blend without visible
- * tile edges.
+ * Render a Gaussian/RBF-weighted mesh gradient to a canvas via ImageData.
+ *
+ * For each pixel, every control point contributes a color weighted by
+ *   w_i = point.weight * exp(-d² / (2 * sigma²))
+ * where d is the Euclidean distance from the pixel to the point. The final
+ * pixel color is the weight-normalized sum. This is roughly the same idea as
+ * a 2D Gaussian RBF interpolator; the `softness` parameter maps sigma between
+ * a crisp 10% of the canvas (low) and a dreamy 45% (high).
  */
 export function renderMesh(
   ctx: CanvasRenderingContext2D,
@@ -30,51 +31,60 @@ export function renderMesh(
   width: number,
   height: number,
 ): void {
-  const { rows, cols, cells } = preset;
-  const cellColors: Rgb[] = cells.map((paletteKey) =>
-    hexToRgb(resolveToken(palette[paletteKey])),
+  const points = preset.points;
+  if (points.length === 0) {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, width, height);
+    return;
+  }
+
+  const colors: Rgb[] = points.map((point) =>
+    hexToRgb(resolveToken(palette[point.paletteKey])),
   );
+  const px = points.map((point) => (point.x / 100) * width);
+  const py = points.map((point) => (point.y / 100) * height);
+  const pw = points.map((point) => Math.max(0, point.weight));
+
+  const softness = Math.max(0, Math.min(1, preset.softness));
+  const sigma = (0.1 + softness * 0.35) * Math.min(width, height);
+  const twoSigmaSq = 2 * sigma * sigma;
+
+  // If only one point, fill flat.
+  if (points.length === 1) {
+    const c = colors[0];
+    ctx.fillStyle = `rgb(${c.r}, ${c.g}, ${c.b})`;
+    ctx.fillRect(0, 0, width, height);
+    return;
+  }
 
   const img = ctx.createImageData(width, height);
   const data = img.data;
 
-  const lastRow = rows - 1;
-  const lastCol = cols - 1;
-
+  const n = points.length;
   for (let y = 0; y < height; y++) {
-    const v = height === 1 ? 0 : y / (height - 1);
-    const fy = v * lastRow;
-    const y0 = Math.min(Math.floor(fy), lastRow);
-    const y1 = Math.min(y0 + 1, lastRow);
-    const ty = smoothstep(fy - y0);
-
     for (let x = 0; x < width; x++) {
-      const u = width === 1 ? 0 : x / (width - 1);
-      const fx = u * lastCol;
-      const x0 = Math.min(Math.floor(fx), lastCol);
-      const x1 = Math.min(x0 + 1, lastCol);
-      const tx = smoothstep(fx - x0);
+      let totalW = 0;
+      let r = 0;
+      let g = 0;
+      let b = 0;
 
-      const c00 = cellColors[y0 * cols + x0];
-      const c10 = cellColors[y0 * cols + x1];
-      const c01 = cellColors[y1 * cols + x0];
-      const c11 = cellColors[y1 * cols + x1];
+      for (let i = 0; i < n; i++) {
+        const dx = x - px[i];
+        const dy = y - py[i];
+        const distSq = dx * dx + dy * dy;
+        const w = pw[i] * Math.exp(-distSq / twoSigmaSq);
+        totalW += w;
+        const c = colors[i];
+        r += c.r * w;
+        g += c.g * w;
+        b += c.b * w;
+      }
 
-      const top_r = c00.r + (c10.r - c00.r) * tx;
-      const top_g = c00.g + (c10.g - c00.g) * tx;
-      const top_b = c00.b + (c10.b - c00.b) * tx;
-      const bot_r = c01.r + (c11.r - c01.r) * tx;
-      const bot_g = c01.g + (c11.g - c01.g) * tx;
-      const bot_b = c01.b + (c11.b - c01.b) * tx;
-
-      const r = top_r + (bot_r - top_r) * ty;
-      const g = top_g + (bot_g - top_g) * ty;
-      const b = top_b + (bot_b - top_b) * ty;
-
+      const inv = totalW > 0 ? 1 / totalW : 0;
       const offset = (y * width + x) * 4;
-      data[offset] = r;
-      data[offset + 1] = g;
-      data[offset + 2] = b;
+      data[offset] = r * inv;
+      data[offset + 1] = g * inv;
+      data[offset + 2] = b * inv;
       data[offset + 3] = 255;
     }
   }
@@ -101,28 +111,36 @@ type Props = {
   palette: Palette;
   width?: number;
   height?: number;
+  /** When true, render at low res (256x192) and let CSS scale up — fast drag mode. */
+  lowRes?: boolean;
   className?: string;
   style?: React.CSSProperties;
 };
 
 const DEFAULT_W = 256;
-const DEFAULT_H = 192;
+const DEFAULT_H = 256;
+const LOW_RES_W = 192;
+const LOW_RES_H = 192;
 
 export function MeshCanvas({
   preset,
   palette,
-  width = DEFAULT_W,
-  height = DEFAULT_H,
+  width,
+  height,
+  lowRes = false,
   className,
   style,
 }: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
 
+  const w = lowRes ? LOW_RES_W : (width ?? DEFAULT_W);
+  const h = lowRes ? LOW_RES_H : (height ?? DEFAULT_H);
+
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
-    renderMeshToCanvas(canvas, preset, palette, width, height);
-  }, [preset, palette, width, height]);
+    renderMeshToCanvas(canvas, preset, palette, w, h);
+  }, [preset, palette, w, h]);
 
   return (
     <canvas
@@ -132,7 +150,6 @@ export function MeshCanvas({
         display: 'block',
         width: '100%',
         height: '100%',
-        imageRendering: 'auto',
         ...style,
       }}
       aria-hidden="true"

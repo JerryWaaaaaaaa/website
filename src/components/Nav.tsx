@@ -143,8 +143,7 @@ export function Nav() {
       >
         <div className={s.navRow}>
           <Link to="/" className={s.navLogo} aria-label="Zoom AI Create — home">
-            <span className={s.navLogoZoom}>zoom</span>
-            <span className={s.navLogoProduct}>AI Create</span>
+            <img src="/zm-prod-suite-stacked-color01.svg" alt="Zoom AI Create" height={36} />
           </Link>
 
           <ul className={s.navLinks} role="list">

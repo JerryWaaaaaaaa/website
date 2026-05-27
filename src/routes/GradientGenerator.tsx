@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { BlobEditor } from './gradient-generator/BlobEditor';
 import { EditorDrawer } from './gradient-generator/EditorDrawer';
 import { GradientCard } from './gradient-generator/GradientCard';
 import { MeshCard } from './gradient-generator/MeshCard';
 import { MeshEditorDrawer } from './gradient-generator/MeshEditorDrawer';
 import { PalettePanel } from './gradient-generator/PalettePanel';
 import { serializeAllAsCss, serializeAllAsJson } from './gradient-generator/buildCss';
+import { blobToSvgString } from './gradient-generator/blobExport';
 import { useGradientStore } from './gradient-generator/useGradientStore';
 import './gradient-generator.css';
 
 export function GradientGenerator() {
   const store = useGradientStore();
-  const { palette, presets, meshPresets, mode } = store;
+  const { palette, presets, meshPresets, blob, mode } = store;
 
   const [editingCssId, setEditingCssId] = useState<string | null>(null);
   const [editingMeshId, setEditingMeshId] = useState<string | null>(null);
@@ -26,17 +28,30 @@ export function GradientGenerator() {
   };
 
   const copyAllJson = () => {
-    const payload =
-      mode === 'css'
-        ? serializeAllAsJson(palette, presets)
-        : JSON.stringify({ palette, meshPresets }, null, 2);
+    let payload: string;
+    if (mode === 'css') {
+      payload = serializeAllAsJson(palette, presets);
+    } else if (mode === 'mesh') {
+      payload = JSON.stringify({ palette, meshPresets }, null, 2);
+    } else {
+      payload = JSON.stringify({ palette, blob }, null, 2);
+    }
     navigator.clipboard.writeText(payload).catch(() => {});
   };
 
-  const subtitle =
-    mode === 'css'
-      ? `${presets.length} mesh-style CSS gradients · click to edit · hover to copy`
-      : `${meshPresets.length} true mesh gradients · click to edit · hover to download`;
+  const copyBlobSvg = () => {
+    const svg = blobToSvgString(blob, palette);
+    navigator.clipboard.writeText(svg).catch(() => {});
+  };
+
+  let subtitle: string;
+  if (mode === 'css') {
+    subtitle = `${presets.length} mesh-style CSS gradients · click to edit · hover to copy`;
+  } else if (mode === 'mesh') {
+    subtitle = `${meshPresets.length} mesh gradients · click any card to edit live · drag the dots to move points`;
+  } else {
+    subtitle = `Blob playground · drag the dots to move shapes · load a starter to begin`;
+  }
 
   return (
     <div className="gg-shell">
@@ -65,9 +80,10 @@ export function GradientGenerator() {
           }}
           onCopyAllCss={copyAllCss}
           onCopyAllJson={copyAllJson}
+          onCopyBlobSvg={copyBlobSvg}
         />
 
-        {mode === 'css' ? (
+        {mode === 'css' && (
           <div className="gg-grid">
             {presets.map((preset) => (
               <GradientCard
@@ -78,7 +94,9 @@ export function GradientGenerator() {
               />
             ))}
           </div>
-        ) : (
+        )}
+
+        {mode === 'mesh' && (
           <div className="gg-grid">
             {meshPresets.map((preset) => (
               <MeshCard
@@ -89,6 +107,10 @@ export function GradientGenerator() {
               />
             ))}
           </div>
+        )}
+
+        {mode === 'blob' && (
+          <BlobEditor store={store} palette={palette} />
         )}
       </main>
 

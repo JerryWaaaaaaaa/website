@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# Auto-generate a handoff doc for the range of commits about to be pushed.
+#
+# - Reads refs being pushed from stdin (per the git pre-push hook contract).
+# - Computes the range origin/<branch>..HEAD per ref.
+# - Skips if no non-[handoff] commits are in the range.
+# - Skips if HEAD is already a [handoff] commit (second click of "Push").
+# - Otherwise runs the generator synchronously, then aborts this push so the
+#   newly-created [handoff] commit is included on the next click.
+
+set -u
+
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+cd "$REPO_ROOT" || exit 0
+
+# GitHub Desktop launches hooks with a minimal PATH; restore typical user paths
+# so `node` and `cursor-agent` are findable.
+export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+
+[ "${SKIP_HANDOFF:-0}" = "1" ] && exit 0
+
+REMOTE_NAME="${1:-origin}"
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  # Skip ref deletions (local_sha is all zeros).
+  if [[ "$local_sha" =~ ^0+$ ]]; then
+    continue
+  fi
+
+  # Determine the baseline to diff against.
+  if [[ "$remote_sha" =~ ^0+$ ]]; then
+    # First push of this branch: fall back to the remote's default branch.
+    default="$(git symbolic-ref "refs/remotes/${REMOTE_NAME}/HEAD" 2>/dev/null \
+              | sed "s|^refs/remotes/${REMOTE_NAME}/||")"
+    BASE="${REMOTE_NAME}/${default:-main}"
+  else
+    BASE="$remote_sha"
+  fi
+
+  RANGE="${BASE}..${local_sha}"
+
+  # Count non-[handoff] commits in the push range.
+  NON_HANDOFF="$(git log --pretty=%s "$RANGE" 2>/dev/null \
+                | grep -cv "^\[handoff\]" || true)"
+
+  if [ "${NON_HANDOFF:-0}" -eq 0 ]; then
+    continue
+  fi
+
+  # If the tip is already a fresh [handoff] commit, the user is on their
+  # second push click — let it through without regenerating.
+  HEAD_MSG="$(git log -1 --pretty=%s "$local_sha")"
+  case "$HEAD_MSG" in
+    "[handoff]"*) continue ;;
+  esac
+
+  echo ""
+  echo "[handoff] Generating handoff doc for ${NON_HANDOFF} commit(s) in ${RANGE}..."
+  echo "[handoff] This may take 30-60 seconds."
+
+  if ! node "$REPO_ROOT/scripts/generate-handoff.mjs" "$RANGE"; then
+    echo ""
+    echo "[handoff] ERROR: doc generation failed (see output above)."
+    echo "[handoff] To push without a handoff doc this once:"
+    echo "[handoff]   SKIP_HANDOFF=1 git push"
+    exit 1
+  fi
+
+  echo ""
+  echo "[handoff] Doc generated and committed locally."
+  echo "[handoff] Aborting this push so the new commit is included."
+  echo "[handoff] >>> Click Push AGAIN in GitHub Desktop to ship everything <<<"
+  echo ""
+  exit 1
+done
+
+exit 0

@@ -1,0 +1,116 @@
+.rt-shell {
+  min-height: 100vh;
+  background: var(--bg-accent-light);
+  color: var(--text-primary);
+  font-family: 'General Sans', sans-serif;
+}
+
+.rt-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--stroke);
+}
+
+.rt-topbar-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 20px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.rt-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.rt-subtitle {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.rt-back-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: var(--bg-neutral);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.rt-back-link:hover {
+  background: var(--bg-accent-light);
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+.rt-main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 32px 96px;
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .rt-main {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rt-panel {
+  background: var(--bg-neutral);
+  border: 1px solid var(--stroke);
+  border-radius: 16px;
+  padding: 20px;
+  position: sticky;
+  top: 96px;
+}
+
+.rt-preview {
+  background: var(--bg-neutral);
+  border: 1px solid var(--stroke);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rt-preview-heading {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.rt-preview-stage {
+  position: relative;
+  height: 300px;
+  background: var(--bg-accent-light);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.rt-preview-stage .hero-transcript {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
