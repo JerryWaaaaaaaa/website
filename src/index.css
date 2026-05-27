@@ -268,9 +268,10 @@ body {
 .hero-v2 {
   position: relative;
   background-image: var(--gradient-accent);
-  min-height: clamp(680px, 80vh, 1040px);
-  padding-top: 200px;
-  padding-bottom: 40px;
+  /* Prompt-card overlap only: nav clearance (80px) is owned by the ribbon
+     container (.hero-transcript) and compensated on .hero-prompt margin. */
+  padding-top: calc(100vw * (290 / 1440) * 0.6);
+  padding-bottom: 48px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -283,7 +284,7 @@ body {
   z-index: 2;
   width: calc(100% - 48px);
   max-width: 702px;
-  margin: 0;
+  margin: 80px 0 0 0;
   padding: 36px;
   background: #ffffff;
   border-radius: 24px;
@@ -344,9 +345,10 @@ body {
 /* Static curved transcript behind the prompt card */
 .hero-transcript {
   position: absolute;
-  top: 80px;
+  top: 0;
   left: 0;
   width: 100%;
+  padding-top: 80px;
   pointer-events: none;
   z-index: 0;
 }
@@ -412,12 +414,10 @@ body {
 
 /* Hero V2 — mobile */
 @media (max-width: 639px) {
-  .hero-v2 { min-height: 0; }
   .hero-prompt { padding: 20px; gap: 16px; border-radius: 20px; }
   .hero-prompt-row { flex-direction: column; align-items: stretch; gap: 16px; }
   .hero-prompt-subtitle { max-width: none; }
   .hero-prompt-row .btn { width: 100%; }
-  .hero-transcript { display: none; }
   .hero-artifact-wrap { margin-top: -40px; }
   .hero-artifact { flex: 0 0 280px; }
   .hero-artifact-track { gap: 20px; }
