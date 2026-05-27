@@ -1,0 +1,124 @@
+.rtp-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 180px;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  font-family: 'General Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+
+.rtp-fab:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+  border-color: var(--text-secondary);
+}
+
+.rtp-fab:active {
+  transform: translateY(0);
+}
+
+.rtp-fab-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #fb327e, #0d6bde);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+}
+
+.rtp-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 180px;
+  z-index: 100;
+  width: 340px;
+  max-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  border: 1px solid var(--stroke);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.18);
+  font-family: 'General Sans', sans-serif;
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+.rtp-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--stroke);
+}
+
+.rtp-panel-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.rtp-panel-subtitle {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.rtp-close {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: var(--bg-neutral);
+  color: var(--text-secondary);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.rtp-close:hover {
+  background: var(--bg-accent-light);
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+.rtp-panel-body {
+  padding: 14px 18px 18px;
+  overflow-y: auto;
+}
+
+@media (max-width: 640px) {
+  .rtp-fab {
+    left: auto;
+    right: 16px;
+    bottom: 64px;
+  }
+
+  .rtp-panel {
+    left: 16px;
+    right: 16px;
+    width: auto;
+    bottom: 64px;
+  }
+}

@@ -375,7 +375,7 @@
   position: relative;
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1 / 1;
   border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
@@ -527,7 +527,7 @@
 
 .gg-drawer-preview {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 1 / 1;
   border-radius: 12px;
   border: 1px solid var(--stroke);
 }
@@ -784,28 +784,158 @@
   height: 100% !important;
 }
 
-/* Mesh: size selector ------------------------------------------------------- */
-
-.gg-mesh-size-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
+.gg-color-dot-sm {
+  width: 10px;
+  height: 10px;
 }
 
-.gg-mesh-size-field {
+/* Mesh / Blob: export row --------------------------------------------------- */
+
+.gg-mesh-export-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Mesh / Blob: live preview stage ------------------------------------------ */
+
+.gg-canvas-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--stroke);
+  background: var(--bg-accent-light);
+  user-select: none;
+}
+
+.gg-canvas-stage-surface {
+  position: absolute;
+  inset: 0;
+}
+
+.gg-canvas-stage-surface canvas,
+.gg-canvas-stage-surface svg {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.gg-canvas-stage-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.gg-point-handle {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border-radius: 999px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(20, 24, 48, 0.25),
+    0 0 0 1px rgba(20, 24, 48, 0.15);
+  cursor: grab;
+  padding: 0;
+  pointer-events: auto;
+  transition: transform 120ms ease, box-shadow 120ms ease,
+    border-color 120ms ease;
+  touch-action: none;
+}
+
+.gg-point-handle:hover {
+  transform: scale(1.12);
+}
+
+.gg-point-handle:active {
+  cursor: grabbing;
+  transform: scale(1.18);
+}
+
+.gg-point-handle.is-selected {
+  border-color: var(--text-highlight);
+  box-shadow: 0 0 0 2px rgba(12, 92, 255, 0.25),
+    0 2px 6px rgba(20, 24, 48, 0.25);
+  transform: scale(1.18);
+}
+
+/* Mesh drawer: wider variant ------------------------------------------------ */
+
+.gg-drawer-wide {
+  width: min(520px, 100vw);
+}
+
+/* Blob editor shell --------------------------------------------------------- */
+
+.gg-blob-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+  margin-top: 32px;
+  align-items: start;
+}
+
+.gg-blob-stage-wrap {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 16px;
+  min-width: 0;
 }
 
-.gg-mesh-size-field span {
-  font-size: 11px;
-  color: var(--text-secondary);
+.gg-blob-stage {
+  background: var(--bg-neutral);
+  box-shadow: 0 12px 32px rgba(20, 24, 48, 0.08);
 }
 
-.gg-mesh-size-field input {
-  width: 64px;
-  padding: 6px 8px;
+.gg-blob-toolbar {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 16px;
+  background: var(--bg-neutral);
+  border: 1px solid var(--stroke);
+  border-radius: 16px;
+}
+
+.gg-blob-name-input {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.gg-blob-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.gg-blob-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  background: var(--bg-neutral);
+  border: 1px solid var(--stroke);
+  border-radius: 16px;
+  position: sticky;
+  top: 96px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+.gg-blob-starter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gg-blob-starter-select {
+  width: 100%;
+  padding: 8px 12px;
   font-family: inherit;
   font-size: 13px;
   color: var(--text-primary);
@@ -813,92 +943,74 @@
   border: 1px solid var(--stroke);
   border-radius: 8px;
   outline: none;
+  cursor: pointer;
 }
 
-.gg-mesh-size-field input:focus {
+.gg-blob-starter-select:focus {
   border-color: var(--text-highlight);
 }
 
-.gg-mesh-size-x {
-  padding-bottom: 6px;
-  color: var(--text-secondary);
-  font-size: 14px;
+.gg-shape-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.gg-mesh-size-note {
-  padding-bottom: 6px;
-  margin-left: auto;
+.gg-shape-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--bg-accent-light);
+  border: 1px solid var(--stroke);
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.gg-shape-row:hover {
+  background: var(--bg-accent-medium);
+}
+
+.gg-shape-row.is-active {
+  background: var(--bg-accent-medium);
+  border-color: var(--text-highlight);
+}
+
+.gg-shape-row-pip {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+}
+
+.gg-shape-row-name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.gg-shape-row-meta {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 11px;
   color: var(--text-secondary);
 }
 
-/* Mesh: cell editor -------------------------------------------------------- */
-
-.gg-mesh-grid-editor {
-  display: grid;
-  gap: 8px;
-}
-
-.gg-mesh-cell {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 8px;
-  background: var(--bg-accent-light);
-  border: 1px solid var(--stroke);
-  border-radius: 10px;
-}
-
-.gg-mesh-cell-swatch {
-  width: 100%;
-  height: 28px;
-  border-radius: 6px;
-  border: 1px solid var(--stroke);
-}
-
-.gg-mesh-cell-keys {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 4px;
-  width: 100%;
-}
-
-.gg-mesh-cell-key {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
-  background: var(--bg-neutral);
-  border: 1px solid var(--stroke);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 120ms ease, border-color 120ms ease;
-}
-
-.gg-mesh-cell-key:hover {
-  background: var(--bg-accent-light);
-}
-
-.gg-mesh-cell-key.is-active {
-  border-color: var(--text-highlight);
-  background: var(--bg-accent-medium);
-}
-
-.gg-color-dot-sm {
-  width: 10px;
-  height: 10px;
-}
-
-/* Mesh: export row ---------------------------------------------------------- */
-
-.gg-mesh-export-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+@media (max-width: 1024px) {
+  .gg-blob-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .gg-blob-panel {
+    position: static;
+    max-height: none;
+  }
 }
 
 /* Responsive ----------------------------------------------------------------- */

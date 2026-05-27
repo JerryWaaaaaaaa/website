@@ -269,7 +269,8 @@ body {
   position: relative;
   background-image: var(--gradient-accent);
   min-height: clamp(680px, 80vh, 1040px);
-  padding-top: clamp(140px, 24vw, 355px);
+  padding-top: 200px;
+  padding-bottom: 40px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -340,14 +341,10 @@ body {
   overflow: hidden;
 }
 
-.hero-artifact-tilt {
-  transform: rotate(1.1deg);
-}
-
 /* Static curved transcript behind the prompt card */
 .hero-transcript {
   position: absolute;
-  top: max(165px, calc(385px - 18.06vw));
+  top: 80px;
   left: 0;
   width: 100%;
   pointer-events: none;
@@ -359,12 +356,8 @@ body {
   height: auto;
 }
 
-.hero-transcript-text {
-  font-family: 'General Sans', sans-serif;
-  font-style: normal;
-  font-size: 18px;
-  font-weight: 400;
-  fill: var(--text-primary);
+.hero-transcript image {
+  pointer-events: none;
 }
 
 /* Artifact track — infinite marquee scroll */

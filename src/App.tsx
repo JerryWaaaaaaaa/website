@@ -8,6 +8,7 @@ import { ButtonPage } from './routes/styleguide/components/ButtonPage';
 import { ChipPage } from './routes/styleguide/components/ChipPage';
 import { NavBarPage } from './routes/styleguide/components/NavBarPage';
 import { GradientGenerator } from './routes/GradientGenerator';
+import { RibbonTuner } from './routes/RibbonTuner';
 
 export function App() {
   return (
@@ -15,6 +16,7 @@ export function App() {
       <Routes>
         <Route path="/" element={<Marketing />} />
         <Route path="/gradient-generator" element={<GradientGenerator />} />
+        <Route path="/ribbon-tuner" element={<RibbonTuner />} />
         <Route path="/style-guide" element={<StyleGuideLayout />}>
           <Route index element={<StyleGuideIndex />} />
           <Route path="colors" element={<Colors />} />

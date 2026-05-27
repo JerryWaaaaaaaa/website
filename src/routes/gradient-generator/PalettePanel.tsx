@@ -12,7 +12,14 @@ type Props = {
   onModeChange: (mode: GeneratorMode) => void;
   onCopyAllCss?: () => void;
   onCopyAllJson: () => void;
+  onCopyBlobSvg?: () => void;
 };
+
+const MODE_OPTIONS: Array<{ value: GeneratorMode; label: string }> = [
+  { value: 'css', label: 'CSS' },
+  { value: 'mesh', label: 'Mesh' },
+  { value: 'blob', label: 'Blob' },
+];
 
 export function PalettePanel({
   palette,
@@ -22,6 +29,7 @@ export function PalettePanel({
   onModeChange,
   onCopyAllCss,
   onCopyAllJson,
+  onCopyBlobSvg,
 }: Props) {
   const [feedback, setFeedback] = useState<string | null>(null);
 
@@ -36,24 +44,18 @@ export function PalettePanel({
         <div className="gg-panel-eyebrow">Palette</div>
 
         <div className="gg-mode-toggle" role="tablist" aria-label="Generator mode">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === 'css'}
-            className={`gg-mode-btn ${mode === 'css' ? 'is-active' : ''}`}
-            onClick={() => onModeChange('css')}
-          >
-            CSS
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === 'mesh'}
-            className={`gg-mode-btn ${mode === 'mesh' ? 'is-active' : ''}`}
-            onClick={() => onModeChange('mesh')}
-          >
-            Mesh
-          </button>
+          {MODE_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              role="tab"
+              aria-selected={mode === option.value}
+              className={`gg-mode-btn ${mode === option.value ? 'is-active' : ''}`}
+              onClick={() => onModeChange(option.value)}
+            >
+              {option.label}
+            </button>
+          ))}
         </div>
 
         <div className="gg-panel-actions">
@@ -69,6 +71,18 @@ export function PalettePanel({
               Copy all as CSS
             </button>
           )}
+          {mode === 'blob' && onCopyBlobSvg && (
+            <button
+              type="button"
+              className="gg-btn"
+              onClick={() => {
+                onCopyBlobSvg();
+                fireFeedback('SVG copied');
+              }}
+            >
+              Copy as SVG
+            </button>
+          )}
           <button
             type="button"
             className="gg-btn"
@@ -77,7 +91,7 @@ export function PalettePanel({
               fireFeedback('JSON copied');
             }}
           >
-            Copy all as JSON
+            Copy as JSON
           </button>
           <button
             type="button"

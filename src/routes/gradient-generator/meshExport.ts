@@ -3,7 +3,7 @@ import type { Palette } from './presets';
 import { renderMeshToCanvas } from './MeshCanvas';
 
 export const EXPORT_BASE_WIDTH = 1024;
-export const EXPORT_BASE_HEIGHT = 768;
+export const EXPORT_BASE_HEIGHT = 1024;
 
 function slugify(name: string): string {
   return (

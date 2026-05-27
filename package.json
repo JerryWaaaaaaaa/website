@@ -6,7 +6,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "png2webp": "node scripts/png-to-webp.mjs"
+    "png2webp": "node scripts/png-to-webp.mjs",
+    "handoff:install": "bash scripts/install-hooks.sh",
+    "handoff:run": "node scripts/generate-handoff.mjs"
   },
   "dependencies": {
     "motion": "^12.38.0",

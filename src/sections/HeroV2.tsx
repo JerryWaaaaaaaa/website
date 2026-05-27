@@ -2,6 +2,12 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '../components/Button';
 import RotatingText from '../components/RotatingText';
+import {
+  RIBBON_DEFAULTS,
+  type RibbonConfig,
+} from '../components/RibbonControls';
+import { RibbonTunerPanel } from '../components/RibbonTunerPanel';
+import { HeroTranscript } from './HeroTranscript';
 
 const PRODUCTS = [
   { name: 'Slides', color: '#fb327e', icon: '/Icon/product-slides.svg' },
@@ -17,47 +23,14 @@ const ARTIFACTS = [
   '/hero-images/data-table.png',
 ];
 
-const TRANSCRIPT_COPY =
-  "In today's online meeting, I want to welcome everyone and thank you for joining us. It's great to see so many familiar faces and some new ones as well. I hope you're all doing well and staying safe. As we dive into our agenda, please feel free to share your thoughts and ideas.";
-
 export function HeroV2() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [ribbonConfig, setRibbonConfig] = useState<RibbonConfig>(RIBBON_DEFAULTS);
 
   return (
     <section className="hero-v2">
       {/* Curved transcript */}
-      <div className="hero-transcript" aria-hidden="true">
-        <svg viewBox="0 -30 1440 290">
-          <defs>
-            <path
-              id="hero-transcript-curve"
-              d="M -101 89 C 134 227 200 60 380 30 C 540 5 660 90 720 230"
-              fill="none"
-            />
-          </defs>
-          {/* Ribbon background */}
-          <path
-            d="M -101 89 C 134 227 200 60 380 30 C 540 5 660 90 720 230"
-            fill="none"
-            stroke="#d2def2"
-            strokeWidth="56"
-            strokeLinecap="butt"
-          />
-          {/* Animated text on path — pixel offsets for seamless loop */}
-          <text className="hero-transcript-text">
-            <textPath href="#hero-transcript-curve">
-              <animate
-                attributeName="startOffset"
-                from="-2720"
-                to="0"
-                dur="30s"
-                repeatCount="indefinite"
-              />
-              {`${TRANSCRIPT_COPY}  ${TRANSCRIPT_COPY}  ${TRANSCRIPT_COPY}  ${TRANSCRIPT_COPY}`}
-            </textPath>
-          </text>
-        </svg>
-      </div>
+      <HeroTranscript {...ribbonConfig} />
 
       {/* Prompt card */}
       <div className="hero-prompt">
@@ -124,6 +97,13 @@ export function HeroV2() {
           </div>
         </div>
       </div>
+
+      {/* Floating ribbon tuner GUI */}
+      <RibbonTunerPanel
+        config={ribbonConfig}
+        onChange={setRibbonConfig}
+        defaults={RIBBON_DEFAULTS}
+      />
     </section>
   );
 }
