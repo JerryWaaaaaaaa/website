@@ -268,7 +268,6 @@ body {
 .hero-v2 {
   position: relative;
   background-image: var(--gradient-accent);
-  min-height: clamp(680px, 80vh, 1040px);
   padding-top: 200px;
   padding-bottom: 40px;
   overflow: hidden;
@@ -412,7 +411,6 @@ body {
 
 /* Hero V2 — mobile */
 @media (max-width: 639px) {
-  .hero-v2 { min-height: 0; }
   .hero-prompt { padding: 20px; gap: 16px; border-radius: 20px; }
   .hero-prompt-row { flex-direction: column; align-items: stretch; gap: 16px; }
   .hero-prompt-subtitle { max-width: none; }
