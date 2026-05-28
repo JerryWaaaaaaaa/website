@@ -301,19 +301,63 @@ body {
   margin: 0;
 }
 
-/* Rotating product carousel — sized in em so it tracks the .h1 ramp */
+/* Rotating product carousel — pure-CSS word-by-word loop. All four slides
+   live in one grid cell; each owns a 25% window of the shared keyframe. */
 .hero-rotating {
+  --rotation-interval: 2200ms;
+  --word-stagger: 80ms;
+  --rotation-cycle: calc(var(--rotation-interval) * 4);
+
+  display: inline-grid;
+  align-items: center;
+  height: 1em;
+  vertical-align: baseline;
+  isolation: isolate;
+}
+
+.hero-rotating-slide {
+  grid-area: 1 / 1;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 1em;
-  overflow: hidden;
+  white-space: nowrap;
+}
+
+.hero-rotating-icon,
+.hero-rotating-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(60%);
+  will-change: transform, opacity;
+  animation: hero-rotating-roll var(--rotation-cycle) infinite;
+  animation-delay: calc(var(--slide-index) * var(--rotation-interval)
+                        + var(--word-index, 0) * var(--word-stagger));
 }
 
 .hero-rotating-icon {
   width: 0.6em;
   height: 0.6em;
   flex-shrink: 0;
+}
+
+@keyframes hero-rotating-roll {
+  0%   { opacity: 0; transform: translateY(60%); }
+  3%   { opacity: 1; transform: translateY(0); }
+  22%  { opacity: 1; transform: translateY(0); }
+  25%  { opacity: 0; transform: translateY(-60%); }
+  100% { opacity: 0; transform: translateY(-60%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-rotating-icon,
+  .hero-rotating-word {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .hero-rotating-slide:not(:first-child) {
+    visibility: hidden;
+  }
 }
 
 /* Subtitle + CTA row */

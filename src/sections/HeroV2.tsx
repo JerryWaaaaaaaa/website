@@ -1,7 +1,5 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { useState, type CSSProperties } from 'react';
 import { Button } from '../components/Button';
-import RotatingText from '../components/RotatingText';
 import {
   RIBBON_DEFAULTS,
   type RibbonConfig,
@@ -53,7 +51,6 @@ const HERO_TRANSCRIPT_SPEAKERS_2: Speaker[] = [
 ];
 
 export function HeroV2() {
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [ribbonConfig, setRibbonConfig] = useState<RibbonConfig>(RIBBON_DEFAULTS);
 
   return (
@@ -77,38 +74,29 @@ export function HeroV2() {
             </span>
           ))}
 
-          {/* Rotating product carousel */}
-          <motion.span
-            layout
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="hero-rotating"
-          >
-            <AnimatePresence mode="popLayout" initial={false}>
-              <motion.img
-                key={currentIndex}
-                src={PRODUCTS[currentIndex].icon}
-                alt=""
-                className="hero-rotating-icon"
-                initial={{ y: '100%', opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: '-120%', opacity: 0 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              />
-            </AnimatePresence>
-
-            <RotatingText
-              texts={PRODUCTS.map((p) => p.name)}
-              colors={PRODUCTS.map((p) => p.color)}
-              staggerDuration={0.025}
-              staggerFrom="last"
-              rotationInterval={2200}
-              animatePresenceMode="popLayout"
-              animatePresenceInitial={false}
-              onNext={(index) => setCurrentIndex(index)}
-              mainClassName="overflow-hidden"
-              splitLevelClassName="overflow-hidden pb-0.5"
-            />
-          </motion.span>
+          {/* Rotating product carousel — pure CSS, word-by-word */}
+          <span className="hero-rotating">
+            <span className="sr-only">{PRODUCTS[0].name}</span>
+            {PRODUCTS.map((p, i) => (
+              <span
+                key={p.name}
+                className="hero-rotating-slide"
+                style={{ '--slide-index': i, color: p.color } as CSSProperties}
+                aria-hidden="true"
+              >
+                <img src={p.icon} alt="" className="hero-rotating-icon" />
+                {p.name.split(' ').map((word, w) => (
+                  <span
+                    key={w}
+                    className="hero-rotating-word"
+                    style={{ '--word-index': w } as CSSProperties}
+                  >
+                    {word}
+                  </span>
+                ))}
+              </span>
+            ))}
+          </span>
         </h1>
 
         {/* Subtitle + CTA row */}
