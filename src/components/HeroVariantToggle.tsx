@@ -3,13 +3,19 @@ import { useSearchParams } from 'react-router-dom';
 const VARIANTS = [
   { id: 'v1', label: 'V1' },
   { id: 'v2', label: 'V2' },
+  { id: 'v3', label: 'V3' },
 ] as const;
+
+type VariantId = (typeof VARIANTS)[number]['id'];
 
 export function HeroVariantToggle() {
   const [params, setParams] = useSearchParams();
-  const active = params.get('hero') === 'v2' ? 'v2' : 'v1';
+  const param = params.get('hero');
+  const active: VariantId = VARIANTS.some((v) => v.id === param)
+    ? (param as VariantId)
+    : 'v1';
 
-  const select = (id: 'v1' | 'v2') => {
+  const select = (id: VariantId) => {
     const next = new URLSearchParams(params);
     next.set('hero', id);
     setParams(next, { replace: true });

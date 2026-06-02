@@ -468,6 +468,164 @@ body {
 }
 
 /* =============================================================================
+   Hero V3 — split layout (copy left, product window + floating meeting video)
+   Figma node 3188:85551
+   ========================================================================== */
+
+.hero-v3 {
+  position: relative;
+  background-image: var(--gradient-accent);
+  padding: 120px 24px 120px 64px;
+  overflow: hidden;
+}
+
+.hero-v3-inner {
+  position: relative;
+  max-width: 1680px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 120px;
+}
+
+/* Left copy column */
+.hero-v3-copy {
+  position: relative;
+  z-index: 3;
+  flex: 0 1 480px;
+  max-width: 480px;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.hero-v3-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 8px;
+  margin: 0;
+}
+
+.hero-v3-subtitle {
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 421px;
+}
+
+/* Right stage — right-aligns the product; its height is driven by the product */
+.hero-v3-stage {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Large product window — in-flow, scales with width up to 1100px, crossfades */
+.hero-v3-product {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  aspect-ratio: 2400 / 1642;
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(12, 92, 255, 0.14);
+}
+
+.hero-v3-product-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+  transition: opacity 600ms ease;
+  will-change: opacity;
+}
+
+/* Floating meeting window — overlays the product window's left edge */
+.hero-v3-meeting {
+  position: absolute;
+  top: 50%;
+  left: -96px;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 28%;
+  max-width: 60%;
+  border-radius: 10px;
+  box-shadow: 0 18px 48px rgba(2, 6, 31, 0.32);
+}
+
+.hero-v3-meeting video {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-v3-product-img {
+    transition: none;
+  }
+}
+
+/* Hero V3 — tablet */
+@media (max-width: 1199px) {
+  .hero-v3-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 48px;
+  }
+  .hero-v3-copy {
+    flex: none;
+    max-width: 640px;
+    align-items: center;
+    text-align: center;
+  }
+  .hero-v3-heading {
+    justify-content: center;
+  }
+  .hero-v3-subtitle {
+    max-width: 520px;
+  }
+  .hero-v3-stage {
+    width: 100%;
+    justify-content: center;
+  }
+  .hero-v3-product {
+    margin: 0 auto;
+  }
+  .hero-v3-meeting {
+    top: auto;
+    bottom: -6%;
+    left: -4%;
+    transform: none;
+    width: 26%;
+  }
+}
+
+/* Hero V3 — mobile */
+@media (max-width: 639px) {
+  .hero-v3 {
+    padding: 120px 16px 64px;
+  }
+  .hero-v3-copy .btn {
+    width: 100%;
+  }
+  .hero-v3-meeting {
+    top: 12%;
+    left: 4%;
+    width: 34%;
+  }
+}
+
+/* =============================================================================
    Meeting Doc — interactive tabs (Figma nodes 3074:128940 / 3074:128994 / 3076:129054)
    ========================================================================== */
 
