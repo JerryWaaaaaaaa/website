@@ -6,31 +6,100 @@ const PRODUCTS = [
     name: 'Slides',
     color: '#fb327e',
     icon: '/Icon/product-slides.svg',
-    image: '/hero-may-images/slides.png',
+    image: '/hero-browser/slides-UI.png',
+    url: 'slides.zoom.com',
+    layout: 'slides',
   },
   {
     name: 'Sheets',
     color: '#23a52d',
     icon: '/Icon/product-sheet.svg',
-    image: '/hero-may-images/sheets.png',
+    image: '/hero-browser/sheets-ui.png',
+    url: 'sheets.zoom.com',
+    layout: 'sheets',
   },
   {
     name: 'Canvas',
     color: '#0d6bde',
     icon: '/Icon/product-docs.svg',
-    image: '/hero-may-images/canvas.png',
+    image: '/hero-browser/canvas-ui.png',
+    url: 'canvas.zoom.com',
+    layout: 'canvas',
   },
   {
     name: 'Data table',
     color: '#23a52d',
     icon: '/Icon/product-datatable.svg',
-    image: '/hero-may-images/datatable.png',
+    image: '/hero-browser/datatable-ui.png',
+    url: 'datatable.zoom.com',
+    layout: 'datatable',
   },
 ];
 
 // Must match --rotation-interval in .hero-rotating (src/index.css) so the
 // crossfading product image stays in phase with the CSS word-roll tagline.
 const ROTATION_INTERVAL = 2200;
+
+// Placeholder silhouettes that loosely echo each product's real layout, so the
+// skeleton-load feels specific to the content that's about to appear.
+function SkeletonShapes({ layout }: { layout: string }) {
+  switch (layout) {
+    case 'slides':
+      return (
+        <div className="sk-slides">
+          <div className="sk-rail">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="sk-thumb" />
+            ))}
+          </div>
+          <div className="sk-stage">
+            <div className="sk-title" />
+            <div className="sk-row sk-mid" />
+            <div className="sk-row sk-narrow" />
+            <div className="sk-photo" />
+          </div>
+        </div>
+      );
+    case 'sheets':
+      return (
+        <div className="sk-sheets">
+          <div className="sk-toolbar" />
+          <div className="sk-grid">
+            {Array.from({ length: 48 }).map((_, i) => (
+              <div key={i} className="sk-cell" />
+            ))}
+          </div>
+        </div>
+      );
+    case 'canvas':
+      return (
+        <div className="sk-doc">
+          <div className="sk-title" />
+          <div className="sk-row sk-wide" />
+          <div className="sk-row sk-wide" />
+          <div className="sk-row sk-mid" />
+          <div className="sk-gap" />
+          <div className="sk-row sk-wide" />
+          <div className="sk-row sk-wide" />
+          <div className="sk-row sk-narrow" />
+        </div>
+      );
+    case 'datatable':
+      return (
+        <div className="sk-board">
+          {Array.from({ length: 4 }).map((_, c) => (
+            <div key={c} className="sk-col">
+              <div className="sk-col-head" />
+              <div className="sk-card" />
+              <div className="sk-card" />
+            </div>
+          ))}
+        </div>
+      );
+    default:
+      return null;
+  }
+}
 
 export function HeroV3() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -94,19 +163,52 @@ export function HeroV3() {
           <Button variant="primary">Get started for free</Button>
         </div>
 
-        {/* Right product stage + floating meeting window */}
+        {/* Right product stage + persistent browser window */}
         <div className="hero-v3-stage">
-          <div className="hero-v3-product">
-            {PRODUCTS.map((p, i) => (
-              <img
-                key={p.name}
-                src={p.image}
-                alt={`${p.name} preview`}
-                className="hero-v3-product-img"
-                style={{ opacity: activeIndex === i ? 1 : 0 }}
-                aria-hidden={activeIndex !== i}
-              />
-            ))}
+          {/* Persistent browser-window chrome (Figma node 3208:9370). The frame
+              never changes; only the content inside rotates + skeleton-loads. */}
+          <div className="hero-v3-browser">
+            <div className="hero-v3-browser-nav">
+              <div className="hero-v3-traffic" aria-hidden="true">
+                <span className="dot dot-close" />
+                <span className="dot dot-min" />
+                <span className="dot dot-zoom" />
+              </div>
+              <div className="hero-v3-url">
+                <span className="hero-v3-url-text" key={activeIndex}>
+                  {PRODUCTS[activeIndex].url}
+                </span>
+                <img
+                  src="/hero-browser/refresh.svg"
+                  alt=""
+                  className="hero-v3-url-refresh"
+                  aria-hidden="true"
+                />
+              </div>
+            </div>
+
+            <div className="hero-v3-browser-content">
+              {PRODUCTS.map((p, i) => (
+                <img
+                  key={p.name}
+                  src={p.image}
+                  alt={`${p.name} preview`}
+                  className="hero-v3-product-img"
+                  style={{ opacity: activeIndex === i ? 1 : 0 }}
+                  aria-hidden={activeIndex !== i}
+                />
+              ))}
+
+              {/* Skeleton-load overlay — remounts on every rotation so its
+                  one-shot CSS animation replays, faking a content load. */}
+              <div
+                className="hero-v3-skeleton"
+                key={activeIndex}
+                aria-hidden="true"
+              >
+                <SkeletonShapes layout={PRODUCTS[activeIndex].layout} />
+              </div>
+            </div>
 
             <div className="hero-v3-meeting">
               <video
