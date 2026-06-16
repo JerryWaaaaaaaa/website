@@ -4,12 +4,15 @@ import { HeroVariantToggle } from '../components/HeroVariantToggle';
 import { Hero } from '../sections/Hero';
 import { HeroV2 } from '../sections/HeroV2';
 import { HeroV3 } from '../sections/HeroV3';
+import { ProductSuite } from '../sections/ProductSuite';
 import { Flow } from '../sections/Flow';
 import { FromConversation } from '../sections/FromConversation';
 import { MeetingDoc } from '../sections/MeetingDoc';
 import { OneMeetingOneDoc } from '../sections/OneMeetingOneDoc';
 import { ProductTabs } from '../sections/ProductTabs';
 import { WhyChoose } from '../sections/WhyChoose';
+import { BuiltUnique } from '../sections/BuiltUnique';
+import { OpenPlatform } from '../sections/OpenPlatform';
 import { Personas } from '../sections/Personas';
 import { Templates } from '../sections/Templates';
 import { FinalCTA } from '../sections/FinalCTA';
@@ -32,15 +35,18 @@ export function Marketing() {
         ) : (
           <Hero />
         )}
-        <MeetingDoc />
-        <Flow />
-        <FromConversation />
-        <OneMeetingOneDoc />
-        <ProductTabs />
-        <WhyChoose />
-        <Personas />
-        <Templates />
-        <FinalCTA />
+        <ProductSuite />
+        <BuiltUnique />
+        <OpenPlatform />
+        {/* <MeetingDoc /> */}
+        {/* <Flow /> */}
+        {/* <FromConversation /> */}
+        {/* <OneMeetingOneDoc /> */}
+        {/* <ProductTabs /> */}
+        {/* <WhyChoose /> */}
+        {/* <Personas /> */}
+        {/* <Templates /> */}
+        {/* <FinalCTA /> */}
       </main>
       <Footer />
       <HeroVariantToggle />
