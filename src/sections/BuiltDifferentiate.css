@@ -1,0 +1,177 @@
+/* =============================================================================
+   Built to Differentiate (Figma node 3251:91226)
+   A horizontal card slider that auto-advances and snaps one "key point" card
+   into focus at a time. The focused card is full opacity and reveals a media
+   area below its header; non-focused cards stay at 30% opacity and peek in
+   from the right. A segmented pagination bar doubles as the slider control.
+   ========================================================================== */
+
+.bd-section {
+  --bd-card-width: min(800px, 82vw);
+  --bd-card-gap: 64px;
+  background: var(--bg-accent-light);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120px 24px;
+  overflow: hidden;
+}
+
+.bd-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 79px;
+  width: 100%;
+  max-width: 1025px;
+}
+
+.bd-title {
+  margin: 0;
+  max-width: 480px;
+  font-family: 'General Sans', sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+/* --- Slider ------------------------------------------------------------ */
+.bd-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+/* --- Pagination / controls -------------------------------------------- */
+.bd-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.bd-pill {
+  height: 11px;
+  width: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  background: var(--bg-neutral);
+  cursor: pointer;
+  transition: width 300ms ease, background 300ms ease;
+}
+
+.bd-pill.is-active {
+  width: 72px;
+  background: var(--bg-highlight-blue);
+}
+
+.bd-pill:focus-visible {
+  outline: 2px solid var(--bg-highlight-blue);
+  outline-offset: 3px;
+}
+
+/* --- Viewport + track -------------------------------------------------- */
+.bd-viewport {
+  width: 100%;
+  overflow: visible;
+}
+
+.bd-track {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--bd-card-gap);
+  transform: translateX(
+    calc(var(--active-index) * -1 * (var(--bd-card-width) + var(--bd-card-gap)))
+  );
+  transition: transform var(--bd-slide-ms, 400ms)
+    var(--bd-ease, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.bd-card {
+  flex: 0 0 var(--bd-card-width);
+  width: var(--bd-card-width);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  opacity: var(--bd-inactive-opacity, 0.3);
+  filter: blur(var(--bd-inactive-blur, 4px));
+  transition: opacity 400ms ease, filter 400ms ease;
+}
+
+.bd-card.is-active {
+  opacity: 1;
+  filter: none;
+}
+
+.bd-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 560px;
+}
+
+.bd-card-header h3 {
+  margin: 0;
+  font-family: 'General Sans', sans-serif;
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.bd-card-header p {
+  margin: 0;
+  font-family: 'General Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.bd-card-media {
+  aspect-ratio: 1940 / 1080;
+  border-radius: 12px;
+}
+
+/* --- Responsive -------------------------------------------------------- */
+@media (max-width: 900px) {
+  .bd-section {
+    padding: 80px 20px;
+  }
+  .bd-inner {
+    gap: 48px;
+  }
+  .bd-title {
+    font-size: 34px;
+  }
+  .bd-card-header h3 {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 560px) {
+  .bd-section {
+    --bd-card-width: 86vw;
+    --bd-card-gap: 24px;
+    padding: 64px 16px;
+  }
+  .bd-title {
+    font-size: 28px;
+  }
+  .bd-card-header h3 {
+    font-size: 22px;
+  }
+  .bd-card-header p {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bd-track,
+  .bd-card,
+  .bd-pill {
+    transition: none;
+  }
+}

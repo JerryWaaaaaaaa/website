@@ -1,0 +1,196 @@
+/* =============================================================================
+   Hero V4 (Figma node 3249:87135)
+   Centered tagline + CTA, a product tab row that swaps a large screenshot, and
+   the reused v2 curved-transcript ribbon behind the content. Unlike the v1-v3
+   ProductSuite section, tab icons are colored by default and labels stay
+   neutral — only the active/hovered tab picks up its product tint + color.
+   ========================================================================== */
+
+.hero-v4 {
+  position: relative;
+  background-image: var(--gradient-accent);
+  /* Clear the fixed nav (80px) plus breathing room above the heading. */
+  padding: 207px 24px 96px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+}
+
+/* The ribbon is reused from v2 and sits behind the content. */
+.hero-v4 .hero-transcript {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding-top: 80px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-v4 .hero-transcript svg {
+  width: 100%;
+  height: auto;
+}
+
+/* --- Tagline ----------------------------------------------------------- */
+.hero-v4-tagline {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 836px;
+  text-align: center;
+}
+
+.hero-v4-heading {
+  margin: 0;
+  font-family: 'General Sans', sans-serif;
+  font-size: 60px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.hero-v4-subtitle {
+  margin: 0;
+  max-width: 560px;
+  font-family: 'General Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+/* --- Product suite ----------------------------------------------------- */
+.hero-v4-suite {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+  width: 100%;
+}
+
+.hero-v4-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.hero-v4-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  font-family: 'General Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  /* Neutral by default — colored icon, neutral label. */
+  color: var(--text-primary);
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.hero-v4-tab:hover:not([aria-selected='true']) {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.hero-v4-tab[aria-selected='true'] {
+  background: var(--tab-tint);
+  color: var(--tab-color);
+}
+
+.hero-v4-tab-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: block;
+}
+
+.hero-v4-tab-label {
+  white-space: nowrap;
+}
+
+/* --- Product screen ---------------------------------------------------- */
+.hero-v4-screen {
+  position: relative;
+  width: 100%;
+  max-width: 1024px;
+  aspect-ratio: 1176 / 757;
+  background: #fff;
+  border: 1px solid var(--stroke);
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+.hero-v4-screen-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: opacity 400ms ease;
+}
+
+/* --- Responsive -------------------------------------------------------- */
+@media (max-width: 900px) {
+  .hero-v4 {
+    padding: 160px 20px 72px;
+    gap: 36px;
+  }
+  .hero-v4-heading {
+    font-size: 40px;
+  }
+  .hero-v4-suite {
+    gap: 36px;
+  }
+  .hero-v4-tab {
+    font-size: 17px;
+  }
+  .hero-v4-tab-icon {
+    width: 24px;
+    height: 24px;
+  }
+  .hero-v4-screen {
+    border-radius: 20px;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero-v4-heading {
+    font-size: 30px;
+  }
+  .hero-v4-subtitle {
+    font-size: 16px;
+  }
+  .hero-v4-tabs {
+    gap: 8px;
+  }
+  .hero-v4-tab {
+    font-size: 15px;
+    padding: 6px 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-v4-screen-img {
+    transition: none;
+  }
+}

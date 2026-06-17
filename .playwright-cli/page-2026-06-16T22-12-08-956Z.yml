@@ -1,0 +1,288 @@
+- generic [ref=e2]:
+  - banner:
+    - navigation "Main navigation" [ref=e3]:
+      - generic [ref=e4]:
+        - link "Zoom AI Create — home" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img "Zoom AI Create" [ref=e6]
+        - list [ref=e7]:
+          - listitem [ref=e8]:
+            - button "Products" [ref=e9] [cursor=pointer]:
+              - text: Products
+              - img [ref=e10]
+          - listitem [ref=e12]:
+            - button "Features" [ref=e13] [cursor=pointer]:
+              - text: Features
+              - img [ref=e14]
+          - listitem [ref=e16]:
+            - button "Explore" [ref=e17] [cursor=pointer]:
+              - text: Explore
+              - img [ref=e18]
+        - generic [ref=e20]:
+          - button "Sign in" [ref=e21] [cursor=pointer]
+          - button "Get started today" [ref=e22] [cursor=pointer]
+      - region "Products menu":
+        - generic [ref=e23]:
+          - link "AI Docs Automatically transforms your meetings into polished documents" [ref=e24] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e26]:
+              - generic [ref=e27]: AI Docs
+              - generic [ref=e28]: Automatically transforms your meetings into polished documents
+          - link "AI Slides Meeting to deck, voice-ready presentation" [ref=e29] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e31]:
+              - generic [ref=e32]: AI Slides
+              - generic [ref=e33]: Meeting to deck, voice-ready presentation
+          - link "AI Sheets Meetings to data, automates workflows" [ref=e34] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e36]:
+              - generic [ref=e37]: AI Sheets
+              - generic [ref=e38]: Meetings to data, automates workflows
+          - link "AI Data table Organize, analyze, and act on your data with flexible views" [ref=e39] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e41]:
+              - generic [ref=e42]: AI Data table
+              - generic [ref=e43]: Organize, analyze, and act on your data with flexible views
+          - link "AI Classic Docs Precise formatting, Word compatibility, and real-time editing." [ref=e44] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e46]:
+              - generic [ref=e47]: AI Classic Docs
+              - generic [ref=e48]: Precise formatting, Word compatibility, and real-time editing.
+          - link "Hub Manage all your meetings and documents all in one place" [ref=e49] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e51]:
+              - generic [ref=e52]: Hub
+              - generic [ref=e53]: Manage all your meetings and documents all in one place
+      - region "Features menu":
+        - generic [ref=e54]:
+          - link "AI Auto Writing" [ref=e55] [cursor=pointer]:
+            - /url: "#"
+          - link "AI Templates" [ref=e56] [cursor=pointer]:
+            - /url: "#"
+          - link "Knowledge Base" [ref=e57] [cursor=pointer]:
+            - /url: "#"
+          - link "Sites" [ref=e58] [cursor=pointer]:
+            - /url: "#"
+      - region "Explore menu":
+        - generic [ref=e59]:
+          - link "Use Cases" [ref=e60] [cursor=pointer]:
+            - /url: "#"
+          - link "Templates" [ref=e61] [cursor=pointer]:
+            - /url: "#"
+          - link "Help center" [ref=e62] [cursor=pointer]:
+            - /url: "#"
+  - main [ref=e63]:
+    - generic [ref=e64]:
+      - generic:
+        - img:
+          - generic:
+            - generic: “Quick recap — we shipped the new dashboard Monday, and signups are up 14%.” “Nice. Should we promote it on the homepage?” “Yes, let's queue a banner for next sprint.” “I'll draft copy and share by Thursday.” “Perfect, let's review in standup.” “Quick recap — we shipped the new dashboard Monday, and signups are up 14%.” “Nice. Should we promote it on the homepage?” “Yes, let's queue a banner for next sprint.” “I'll draft copy and share by Thursday.” “Perfect, let's review in standup.” “Quick recap — we shipped the new dashboard Monday, and signups are up 14%.” “Nice. Should we promote it on the homepage?” “Yes, let's queue a banner for next sprint.” “I'll draft copy and share by Thursday.” “Perfect, let's review in standup.” “Quick recap — we shipped the new dashboard Monday, and signups are up 14%.” “Nice. Should we promote it on the homepage?” “Yes, let's queue a banner for next sprint.” “I'll draft copy and share by Thursday.” “Perfect, let's review in standup.”
+      - generic [ref=e65]:
+        - heading "Meetings that actually deliver." [level=1] [ref=e66]
+        - paragraph [ref=e67]: Your conversations don't end at goodbye — they become the work.
+        - button "Get started for free" [ref=e68] [cursor=pointer]
+      - generic [ref=e69]:
+        - tablist "Zoom productivity suite" [ref=e70]:
+          - tab "Slides" [selected] [ref=e71] [cursor=pointer]:
+            - generic [ref=e72]: Slides
+          - tab "Sheets" [ref=e73] [cursor=pointer]:
+            - generic [ref=e74]: Sheets
+          - tab "Data table" [ref=e75] [cursor=pointer]:
+            - generic [ref=e76]: Data table
+          - tab "Canvas" [ref=e77] [cursor=pointer]:
+            - generic [ref=e78]: Canvas
+          - tab "Paper" [ref=e79] [cursor=pointer]:
+            - generic [ref=e80]: Paper
+          - tab "Hub" [ref=e81] [cursor=pointer]:
+            - generic [ref=e82]: Hub
+          - tab "Mail" [ref=e83] [cursor=pointer]:
+            - generic [ref=e84]: Mail
+          - tab "Calendar" [ref=e85] [cursor=pointer]:
+            - generic [ref=e86]: Calendar
+        - generic [ref=e87]:
+          - img "Slides preview" [ref=e88]
+          - img [ref=e89]
+          - img [ref=e90]
+          - img [ref=e91]
+          - img [ref=e92]
+          - img [ref=e93]
+          - img [ref=e94]
+          - img [ref=e95]
+    - generic [ref=e96]:
+      - generic [ref=e97]:
+        - heading "Built to differentiate" [level=2] [ref=e98]
+        - generic [ref=e99]:
+          - tablist "Built to differentiate highlights" [ref=e100]:
+            - tab "From meetings to documents, automatically." [selected] [ref=e101] [cursor=pointer]
+            - tab "Fully editable after generation." [ref=e102] [cursor=pointer]
+            - tab "Inline AI, right where you need it." [ref=e103] [cursor=pointer]
+            - tab "Share live, right in your meeting." [ref=e104] [cursor=pointer]
+            - tab "Built for teams." [ref=e105] [cursor=pointer]
+            - tab "Your prompt, saved as a template." [ref=e106] [cursor=pointer]
+          - generic [ref=e108]:
+            - generic [ref=e109]:
+              - generic [ref=e110]:
+                - heading "From meetings to documents, automatically." [level=3] [ref=e111]
+                - paragraph [ref=e112]: Turn every conversation into something you can use — docs, slides, sheets, and more.
+              - generic [ref=e113]: From meetings to documents, automatically.
+            - generic [ref=e115]:
+              - heading [level=3] [ref=e116]: Fully editable after generation.
+              - paragraph [ref=e117]: Every AI output is fully editable — refine, rewrite, or reshape until it's exactly what you need.
+            - generic [ref=e119]:
+              - heading [level=3] [ref=e120]: Inline AI, right where you need it.
+              - paragraph [ref=e121]: Select any text to trigger AI suggestions right where you are — no switching, no extra steps.
+            - generic [ref=e123]:
+              - heading [level=3] [ref=e124]: Share live, right in your meeting.
+              - paragraph [ref=e125]: Share and co-edit documents live, right inside your meeting.
+            - generic [ref=e127]:
+              - heading [level=3] [ref=e128]: Built for teams.
+              - paragraph [ref=e129]: Collaborate securely across teams with flexible, granular permission controls — so the right people always have the right access.
+            - generic [ref=e131]:
+              - heading [level=3] [ref=e132]: Your prompt, saved as a template.
+              - paragraph [ref=e133]: Build custom AI templates with your own prompts — save once, reuse every time.
+      - button "Open slider tuner" [ref=e134] [cursor=pointer]: Tune slider
+    - generic [ref=e136]:
+      - generic [ref=e137]:
+        - heading "Open platform by design" [level=2] [ref=e138]
+        - paragraph [ref=e139]: Work with the tools and workflows your team already uses — whether you're a developer, a power user, or somewhere in between.
+      - generic [ref=e140]:
+        - article [ref=e141]:
+          - generic [ref=e142]:
+            - generic [ref=e143]:
+              - generic [ref=e144]: For engineers
+              - heading "Open API" [level=3] [ref=e145]
+            - paragraph [ref=e146]: Build custom integrations and automate document workflows programmatically.
+          - link "View docs" [ref=e147] [cursor=pointer]:
+            - /url: "#"
+        - article [ref=e148]:
+          - generic [ref=e149]:
+            - generic [ref=e150]:
+              - generic [ref=e151]: For AI natives
+              - heading "MCP" [level=3] [ref=e152]
+            - paragraph [ref=e153]: Let AI assistants like Claude and ChatGPT read, write, and act on your content.
+          - generic [ref=e154]:
+            - img "Claude by Anthropic" [ref=e155]
+            - img "OpenAI ChatGPT" [ref=e156]
+        - article [ref=e157]:
+          - generic [ref=e158]:
+            - generic [ref=e159]:
+              - generic [ref=e160]: For everyone
+              - heading "Zapier" [level=3] [ref=e161]
+            - paragraph [ref=e162]: Connect to 1,500+ apps with no-code workflows — no engineering needed.
+          - link "View integrations" [ref=e163] [cursor=pointer]:
+            - /url: "#"
+    - generic [ref=e165]:
+      - generic [ref=e166]:
+        - tablist "Use cases by role" [ref=e167]:
+          - tab "Sales" [selected] [ref=e168] [cursor=pointer]
+          - tab "Recruiters" [ref=e169] [cursor=pointer]
+          - tab "Consultants" [ref=e170] [cursor=pointer]
+          - tab "Coaches" [ref=e171] [cursor=pointer]
+          - tab "Agencies" [ref=e172] [cursor=pointer]
+          - tab "Product managers" [ref=e173] [cursor=pointer]
+        - generic [ref=e174]:
+          - generic [ref=e175]:
+            - generic [ref=e176]: use cases
+            - heading "Turn every client call into proposals, sheets, and follow-ups — automatically." [level=2] [ref=e177]
+            - button "Learn more" [ref=e178] [cursor=pointer]
+          - img "Sales use case" [ref=e180]
+      - generic [ref=e181]:
+        - generic [ref=e182]:
+          - paragraph [ref=e183]: Find your role's perfect AI template
+          - button "Browse AI templates" [ref=e184] [cursor=pointer]:
+            - img [ref=e185]
+        - generic [ref=e187]:
+          - article [ref=e188]:
+            - generic [ref=e190]:
+              - img [ref=e191]
+              - generic [ref=e194]: Write tldr
+          - article [ref=e195]:
+            - generic [ref=e197]:
+              - img [ref=e198]
+              - generic [ref=e200]: Competitive research
+          - article [ref=e201]:
+            - generic [ref=e203]:
+              - img [ref=e204]
+              - generic [ref=e207]: Competitive research
+          - article [ref=e208]:
+            - generic [ref=e210]:
+              - img [ref=e211]
+              - generic [ref=e214]: Meeting agenda
+          - article [ref=e215]:
+            - generic [ref=e217]:
+              - img [ref=e218]
+              - generic [ref=e220]: Creative solutions
+          - article [ref=e221]:
+            - generic [ref=e223]:
+              - img [ref=e224]
+              - generic [ref=e227]: Project tracker
+  - contentinfo [ref=e228]:
+    - generic [ref=e229]:
+      - generic [ref=e230]:
+        - generic [ref=e231]: zoom
+        - generic [ref=e232]: AI Create
+      - generic [ref=e233]:
+        - heading "Products" [level=4] [ref=e234]
+        - list [ref=e235]:
+          - listitem [ref=e236]:
+            - link "AI Docs" [ref=e237] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e238]:
+            - link "AI Slides" [ref=e239] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e240]:
+            - link "AI Sheets" [ref=e241] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e242]:
+            - link "AI Data table" [ref=e243] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e244]:
+            - link "Hub" [ref=e245] [cursor=pointer]:
+              - /url: "#"
+      - generic [ref=e246]:
+        - heading "Resources" [level=4] [ref=e247]
+        - list [ref=e248]:
+          - listitem [ref=e249]:
+            - link "Use cases" [ref=e250] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e251]:
+            - link "Blog" [ref=e252] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e253]:
+            - link "Help center" [ref=e254] [cursor=pointer]:
+              - /url: "#"
+      - generic [ref=e255]:
+        - heading "Company" [level=4] [ref=e256]
+        - list [ref=e257]:
+          - listitem [ref=e258]:
+            - link "Company" [ref=e259] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e260]:
+            - link "About" [ref=e261] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e262]:
+            - link "Team" [ref=e263] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e264]:
+            - link "Careers" [ref=e265] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e266]:
+            - link "Platform" [ref=e267] [cursor=pointer]:
+              - /url: "#"
+    - generic [ref=e268]:
+      - generic [ref=e269]: ©2026 Zoom Communications Inc. All rights reserved.
+      - generic [ref=e270]:
+        - link "Legal & Compliance" [ref=e271] [cursor=pointer]:
+          - /url: "#"
+        - link "Trust Center" [ref=e272] [cursor=pointer]:
+          - /url: "#"
+        - link "Privacy" [ref=e273] [cursor=pointer]:
+          - /url: "#"
+        - link "Terms" [ref=e274] [cursor=pointer]:
+          - /url: "#"
+  - group "Page variant" [ref=e275]:
+    - generic [ref=e276]: Page
+    - button "V1" [ref=e277] [cursor=pointer]
+    - button "V2" [ref=e278] [cursor=pointer]
+    - button "V3" [ref=e279] [cursor=pointer]
+    - button "V4" [pressed] [ref=e280] [cursor=pointer]
