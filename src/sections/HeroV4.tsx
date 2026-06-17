@@ -1,4 +1,10 @@
-import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from 'react';
 import { Button } from '../components/Button';
 import { RIBBON_DEFAULTS } from '../components/RibbonControls';
 import { HeroTranscript } from './HeroTranscript';
@@ -95,6 +101,17 @@ const HERO_V4_RIBBON_CURVE_FALLBACK = 'M -220 742 C -40 742 120 742 240 742';
 export function HeroV4() {
   const [active, setActive] = useState('slides');
   const sectionRef = useRef<HTMLElement>(null);
+
+  // Auto-advance through the product tabs so all surfaces are showcased.
+  useEffect(() => {
+    const id = setInterval(() => {
+      setActive((prev) => {
+        const i = TABS.findIndex((t) => t.key === prev);
+        return TABS[(i + 1) % TABS.length].key;
+      });
+    }, 1500);
+    return () => clearInterval(id);
+  }, []);
   const [curveD, setCurveD] = useState(HERO_V4_RIBBON_CURVE_FALLBACK);
 
   // Anchor the ribbon to the product screen's left-edge center regardless of
