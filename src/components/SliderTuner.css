@@ -1,0 +1,384 @@
+/* =============================================================================
+   Slider Tuner — dev-facing dial kit for the "Built to differentiate" slider.
+   Mirrors the Ribbon Tuner styling (.rtp-* / .rc-*) but is positioned at the
+   bottom-right so it does not collide with the bottom-left page variant toggle.
+   ========================================================================== */
+
+.st-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  font-family: 'General Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+
+.st-fab:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+  border-color: var(--text-secondary);
+}
+
+.st-fab:active {
+  transform: translateY(0);
+}
+
+.st-fab-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #0d6bde, #019f5c);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+}
+
+.st-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+  width: 340px;
+  max-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  border: 1px solid var(--stroke);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.18);
+  font-family: 'General Sans', sans-serif;
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+.st-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--stroke);
+}
+
+.st-panel-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.st-panel-subtitle {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.st-close {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: var(--bg-neutral);
+  color: var(--text-secondary);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.st-close:hover {
+  background: var(--bg-accent-light);
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+.st-panel-body {
+  padding: 14px 18px 18px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.st-heading {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 4px 0 -2px;
+}
+
+.st-heading:first-child {
+  margin-top: 0;
+}
+
+.st-control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.st-control-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.st-control-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.st-control-value {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.st-range {
+  width: 100%;
+  accent-color: var(--text-primary);
+}
+
+.st-number {
+  width: 72px;
+  font: inherit;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--stroke);
+  background: var(--bg-accent-light);
+  color: var(--text-primary);
+  text-align: right;
+}
+
+/* --- Bezier easing editor ---------------------------------------------- */
+.be-root {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.be-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.be-chip {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: var(--bg-accent-light);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.be-chip:hover {
+  border-color: var(--text-secondary);
+}
+
+.be-chip.is-active {
+  background: var(--bg-contrast);
+  color: var(--text-contrast);
+  border-color: var(--bg-contrast);
+}
+
+.be-canvas {
+  width: 100%;
+  max-width: 220px;
+  align-self: center;
+  touch-action: none;
+}
+
+.be-plot {
+  fill: var(--bg-accent-light);
+  stroke: var(--stroke);
+  stroke-width: 1;
+}
+
+.be-diagonal {
+  stroke: var(--stroke);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.be-leash {
+  stroke: var(--text-secondary);
+  stroke-width: 1.5;
+  opacity: 0.5;
+}
+
+.be-curve {
+  stroke: var(--bg-highlight-blue);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.be-handle {
+  fill: var(--bg-neutral);
+  stroke: var(--bg-highlight-blue);
+  stroke-width: 2.5;
+  cursor: grab;
+}
+
+.be-handle:active {
+  cursor: grabbing;
+}
+
+.be-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  text-align: center;
+  word-break: break-word;
+}
+
+.st-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.st-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--text-primary);
+  cursor: pointer;
+}
+
+.st-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.st-reset,
+.st-save {
+  flex: 1;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+}
+
+.st-reset {
+  color: var(--text-primary);
+  background: var(--bg-accent-light);
+  border: 1px solid var(--stroke);
+}
+
+.st-reset:hover {
+  background: var(--bg-neutral);
+  border-color: var(--text-secondary);
+}
+
+.st-save {
+  color: var(--text-contrast);
+  background: var(--bg-contrast);
+  border: 1px solid var(--bg-contrast);
+}
+
+.st-save:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.st-save:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.st-snippet {
+  background: var(--bg-accent-light);
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.st-snippet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.st-snippet-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.st-snippet-copy {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--bg-neutral);
+  border: 1px solid var(--stroke);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.st-snippet-copy:hover {
+  border-color: var(--text-secondary);
+}
+
+.st-snippet pre {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 640px) {
+  .st-fab,
+  .st-panel {
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .st-panel {
+    left: 16px;
+    width: auto;
+  }
+}

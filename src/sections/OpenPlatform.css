@@ -1,0 +1,147 @@
+/* =============================================================================
+   Open platform section (Figma node 3237:85946)
+   Centered heading + lede over three equal-width integration cards
+   (Open API, MCP, Zapier) on a light accent surface.
+   ========================================================================== */
+
+.openplat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 56px;
+  padding: 120px 24px;
+}
+
+.openplat-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 485px;
+  text-align: center;
+}
+
+.openplat-title {
+  margin: 0;
+  font-family: 'General Sans', sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.openplat-lede {
+  margin: 0;
+  font-family: 'General Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+/* --- Card grid -------------------------------------------------------- */
+.openplat-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  width: 100%;
+  max-width: 1024px;
+}
+
+.openplat-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+  min-height: 361px;
+  padding: 32px;
+  background: var(--bg-accent-light);
+  border-radius: 24px;
+}
+
+.openplat-card-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.openplat-card-head {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.openplat-overline {
+  font-family: 'General Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--text-highlight);
+}
+
+.openplat-card-title {
+  margin: 0;
+  font-family: 'General Sans', sans-serif;
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.openplat-card-body {
+  margin: 0;
+  font-family: 'General Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.openplat-card-cta {
+  align-self: flex-start;
+}
+
+.openplat-logos {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.openplat-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+/* --- Responsive ------------------------------------------------------- */
+@media (max-width: 1199px) {
+  .openplat {
+    padding: 96px 32px;
+  }
+  .openplat-title {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 899px) {
+  .openplat-cards {
+    grid-template-columns: 1fr;
+    max-width: 485px;
+  }
+  .openplat-card {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 639px) {
+  .openplat {
+    padding: 72px 20px;
+  }
+  .openplat-title {
+    font-size: 28px;
+  }
+}

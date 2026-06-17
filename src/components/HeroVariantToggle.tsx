@@ -1,34 +1,31 @@
 import { useSearchParams } from 'react-router-dom';
-
-const VARIANTS = [
-  { id: 'v1', label: 'V1' },
-  { id: 'v2', label: 'V2' },
-  { id: 'v3', label: 'V3' },
-] as const;
-
-type VariantId = (typeof VARIANTS)[number]['id'];
+import {
+  PAGE_VERSIONS,
+  DEFAULT_VERSION,
+  type VersionId,
+} from '../pageVersions';
 
 export function HeroVariantToggle() {
   const [params, setParams] = useSearchParams();
-  const param = params.get('hero');
-  const active: VariantId = VARIANTS.some((v) => v.id === param)
-    ? (param as VariantId)
-    : 'v1';
+  const param = params.get('version');
+  const active: VersionId = PAGE_VERSIONS.some((v) => v.id === param)
+    ? (param as VersionId)
+    : DEFAULT_VERSION;
 
-  const select = (id: VariantId) => {
+  const select = (id: VersionId) => {
     const next = new URLSearchParams(params);
-    next.set('hero', id);
+    next.set('version', id);
     setParams(next, { replace: true });
   };
 
   return (
     <div
       role="group"
-      aria-label="Hero variant"
+      aria-label="Page variant"
       style={{
         position: 'fixed',
         bottom: 20,
-        right: 20,
+        left: 20,
         zIndex: 1000,
         display: 'inline-flex',
         alignItems: 'center',
@@ -53,9 +50,9 @@ export function HeroVariantToggle() {
           color: 'var(--text-secondary)',
         }}
       >
-        Hero
+        Page
       </span>
-      {VARIANTS.map((v) => {
+      {PAGE_VERSIONS.map((v) => {
         const isActive = active === v.id;
         return (
           <button

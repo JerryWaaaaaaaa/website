@@ -1,105 +1,40 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '../components/Button';
 
 const PRODUCTS = [
   {
-    name: 'Slides',
-    color: '#fb327e',
-    icon: '/Icon/product-slides.svg',
-    image: '/hero-browser/slides-UI.png',
-    url: 'slides.zoom.com',
-    layout: 'slides',
-  },
-  {
     name: 'Sheets',
-    color: '#23a52d',
+    color: '#019F5C',
     icon: '/Icon/product-sheet.svg',
     image: '/hero-browser/sheets-ui.png',
     url: 'sheets.zoom.com',
-    layout: 'sheets',
   },
   {
     name: 'Canvas',
-    color: '#0d6bde',
+    color: '#3579FD',
     icon: '/Icon/product-docs.svg',
     image: '/hero-browser/canvas-ui.png',
     url: 'canvas.zoom.com',
-    layout: 'canvas',
   },
   {
-    name: 'Data table',
-    color: '#23a52d',
-    icon: '/Icon/product-datatable.svg',
-    image: '/hero-browser/datatable-ui.png',
-    url: 'datatable.zoom.com',
-    layout: 'datatable',
+    name: 'Slides',
+    color: '#FB327E',
+    icon: '/Icon/product-slides.svg',
+    image: '/hero-browser/slides-UI.png',
+    url: 'slides.zoom.com',
+  },
+  {
+    name: 'Paper',
+    color: '#3579FD',
+    icon: '/Icon/product-classic-doc.svg',
+    image: '/hero-browser/paper-ui.png',
+    url: 'paper.zoom.com',
   },
 ];
 
-// Must match --rotation-interval in .hero-rotating (src/index.css) so the
-// crossfading product image stays in phase with the CSS word-roll tagline.
+// Single rotation clock for the whole hero: the tagline word, browser URL, and
+// product image are all driven off `activeIndex`, so they advance together.
 const ROTATION_INTERVAL = 2200;
-
-// Placeholder silhouettes that loosely echo each product's real layout, so the
-// skeleton-load feels specific to the content that's about to appear.
-function SkeletonShapes({ layout }: { layout: string }) {
-  switch (layout) {
-    case 'slides':
-      return (
-        <div className="sk-slides">
-          <div className="sk-rail">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="sk-thumb" />
-            ))}
-          </div>
-          <div className="sk-stage">
-            <div className="sk-title" />
-            <div className="sk-row sk-mid" />
-            <div className="sk-row sk-narrow" />
-            <div className="sk-photo" />
-          </div>
-        </div>
-      );
-    case 'sheets':
-      return (
-        <div className="sk-sheets">
-          <div className="sk-toolbar" />
-          <div className="sk-grid">
-            {Array.from({ length: 48 }).map((_, i) => (
-              <div key={i} className="sk-cell" />
-            ))}
-          </div>
-        </div>
-      );
-    case 'canvas':
-      return (
-        <div className="sk-doc">
-          <div className="sk-title" />
-          <div className="sk-row sk-wide" />
-          <div className="sk-row sk-wide" />
-          <div className="sk-row sk-mid" />
-          <div className="sk-gap" />
-          <div className="sk-row sk-wide" />
-          <div className="sk-row sk-wide" />
-          <div className="sk-row sk-narrow" />
-        </div>
-      );
-    case 'datatable':
-      return (
-        <div className="sk-board">
-          {Array.from({ length: 4 }).map((_, c) => (
-            <div key={c} className="sk-col">
-              <div className="sk-col-head" />
-              <div className="sk-card" />
-              <div className="sk-card" />
-            </div>
-          ))}
-        </div>
-      );
-    default:
-      return null;
-  }
-}
 
 export function HeroV3() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -122,7 +57,7 @@ export function HeroV3() {
         {/* Left copy column */}
         <div className="hero-v3-copy">
           <h1 className="h1 hero-v3-heading">
-            {'You just talk, Let AI turns your meeting into'
+            {'You just talk. AI builds your'
               .split(' ')
               .map((word, i) => (
                 <span key={i} style={{ whiteSpace: 'nowrap' }}>
@@ -130,34 +65,32 @@ export function HeroV3() {
                 </span>
               ))}
 
-            {/* Rotating product carousel — pure CSS, word-by-word (matches V2) */}
-            <span className="hero-rotating">
-              <span className="sr-only">{PRODUCTS[0].name}</span>
-              {PRODUCTS.map((p, i) => (
-                <span
-                  key={p.name}
-                  className="hero-rotating-slide"
-                  style={{ '--slide-index': i, color: p.color } as CSSProperties}
-                  aria-hidden="true"
-                >
-                  <img src={p.icon} alt="" className="hero-rotating-icon" />
-                  {p.name.split(' ').map((word, w) => (
-                    <span
-                      key={w}
-                      className="hero-rotating-word"
-                      style={{ '--word-index': w } as CSSProperties}
-                    >
-                      {word}
-                    </span>
-                  ))}
+            {/* Rotating product — bound to activeIndex so the word stays in
+                lockstep with the browser URL + product image. Remounting via
+                key replays the one-shot roll-in on each rotation. */}
+            <span className="hero-v3-rotating">
+              <span className="sr-only">{PRODUCTS[activeIndex].name}</span>
+              <span
+                className="hero-v3-rotating-slide"
+                key={activeIndex}
+                style={{ color: PRODUCTS[activeIndex].color }}
+                aria-hidden="true"
+              >
+                <img
+                  src={PRODUCTS[activeIndex].icon}
+                  alt=""
+                  className="hero-v3-rotating-icon"
+                />
+                <span className="hero-v3-rotating-word">
+                  {PRODUCTS[activeIndex].name}
                 </span>
-              ))}
+              </span>
             </span>
           </h1>
 
           <p className="hero-v3-subtitle">
-            AI meeting flow handles all the meeting grunt work, so you can focus
-            on what really matters
+            Zoom AI Productivity Suite captures every conversation and turns it
+            into a deliverable — so your work is ready when the meeting ends.
           </p>
 
           <Button variant="primary">Get started for free</Button>
@@ -198,16 +131,6 @@ export function HeroV3() {
                   aria-hidden={activeIndex !== i}
                 />
               ))}
-
-              {/* Skeleton-load overlay — remounts on every rotation so its
-                  one-shot CSS animation replays, faking a content load. */}
-              <div
-                className="hero-v3-skeleton"
-                key={activeIndex}
-                aria-hidden="true"
-              >
-                <SkeletonShapes layout={PRODUCTS[activeIndex].layout} />
-              </div>
             </div>
 
             <div className="hero-v3-meeting">

@@ -14,6 +14,7 @@
   --color-black: #000000;
   --color-gray: #4c4c4c;
   --color-gray-light: #999999;
+  --color-blue-inactive: #a3b9dd;
 
   /* Semantic: Backgrounds */
   --bg-neutral: var(--color-white);
@@ -30,6 +31,7 @@
   --text-highlight: var(--color-blue);
   --text-contrast: var(--color-white);
   --text-contrast-secondary: var(--color-gray-light);
+  --text-inactive: var(--color-blue-inactive);
 
   /* Semantic: Stroke */
   --stroke: var(--color-shade-medium);
@@ -70,6 +72,7 @@
   --color-text-highlight: var(--text-highlight);
   --color-text-contrast: var(--text-contrast);
   --color-text-contrast-secondary: var(--text-contrast-secondary);
+  --color-text-inactive: var(--text-inactive);
 
   --color-stroke: var(--stroke);
 
@@ -509,6 +512,55 @@ body {
   margin: 0;
 }
 
+/* Rotating product word — bound to activeIndex (JS), remounted on each tick so
+   the one-shot roll-in replays. Single clock keeps it in step with the browser
+   URL + product image. Scoped to V3 so the shared .hero-rotating* (V2) is
+   untouched. */
+.hero-v3-rotating {
+  display: inline-grid;
+  align-items: center;
+  height: 1em;
+  vertical-align: baseline;
+}
+
+.hero-v3-rotating-slide {
+  grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.hero-v3-rotating-icon {
+  width: 0.6em;
+  height: 0.6em;
+  flex-shrink: 0;
+}
+
+.hero-v3-rotating-icon,
+.hero-v3-rotating-word {
+  display: inline-block;
+  animation: hero-v3-roll-in 500ms ease both;
+}
+
+@keyframes hero-v3-roll-in {
+  from {
+    opacity: 0;
+    transform: translateY(60%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-v3-rotating-icon,
+  .hero-v3-rotating-word {
+    animation: none;
+  }
+}
+
 .hero-v3-subtitle {
   font-size: 18px;
   line-height: 1.4;
@@ -658,167 +710,6 @@ body {
   will-change: opacity;
 }
 
-/* Skeleton-load overlay — sits above the product images, below the meeting
-   window. One-shot animation holds the shimmer then dissolves to reveal the
-   real image. Remounted via React key on each rotation to replay. */
-.hero-v3-skeleton {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: #f3f5f9;
-  animation: sk-reveal 700ms ease forwards;
-}
-
-/* Layout roots each fill the overlay; per-product padding/structure below. */
-.hero-v3-skeleton .sk-slides,
-.hero-v3-skeleton .sk-sheets,
-.hero-v3-skeleton .sk-doc,
-.hero-v3-skeleton .sk-board {
-  position: absolute;
-  inset: 0;
-  display: flex;
-}
-
-/* Shared shimmer for every placeholder shape. */
-.hero-v3-skeleton .sk-row,
-.hero-v3-skeleton .sk-block,
-.hero-v3-skeleton .sk-title,
-.hero-v3-skeleton .sk-photo,
-.hero-v3-skeleton .sk-thumb,
-.hero-v3-skeleton .sk-toolbar,
-.hero-v3-skeleton .sk-cell,
-.hero-v3-skeleton .sk-col-head,
-.hero-v3-skeleton .sk-card {
-  border-radius: 8px;
-  background: linear-gradient(100deg, #e7ebf2 30%, #f6f8fb 50%, #e7ebf2 70%);
-  background-size: 200% 100%;
-  animation: sk-shimmer 1.1s linear infinite;
-}
-
-/* Generic text rows (shared by canvas + slides). */
-.hero-v3-skeleton .sk-row {
-  height: 14px;
-}
-.hero-v3-skeleton .sk-wide {
-  width: 80%;
-}
-.hero-v3-skeleton .sk-mid {
-  width: 55%;
-}
-.hero-v3-skeleton .sk-narrow {
-  width: 40%;
-}
-.hero-v3-skeleton .sk-title {
-  height: 28px;
-  width: 60%;
-  border-radius: 10px;
-}
-
-/* Slides: thumbnail rail + big stage with title and a photo block. */
-.hero-v3-skeleton .sk-slides {
-  padding: 5%;
-  gap: 4%;
-}
-.hero-v3-skeleton .sk-rail {
-  display: flex;
-  flex-direction: column;
-  gap: 10%;
-  width: 14%;
-  min-width: 0;
-}
-.hero-v3-skeleton .sk-thumb {
-  flex: 1;
-  border-radius: 6px;
-}
-.hero-v3-skeleton .sk-stage {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 3%;
-  min-width: 0;
-}
-.hero-v3-skeleton .sk-photo {
-  flex: 1;
-  border-radius: 10px;
-  margin-top: auto;
-}
-
-/* Sheets: toolbar + dense cell grid. */
-.hero-v3-skeleton .sk-sheets {
-  flex-direction: column;
-  padding: 4%;
-  gap: 3%;
-}
-.hero-v3-skeleton .sk-toolbar {
-  height: 18px;
-  width: 100%;
-  border-radius: 6px;
-}
-.hero-v3-skeleton .sk-grid {
-  flex: 1;
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-auto-rows: 1fr;
-  gap: 6px;
-}
-.hero-v3-skeleton .sk-cell {
-  border-radius: 4px;
-}
-
-/* Canvas: centered document column of text lines. */
-.hero-v3-skeleton .sk-doc {
-  flex-direction: column;
-  gap: 14px;
-  padding: 7% 18%;
-  justify-content: center;
-}
-.hero-v3-skeleton .sk-doc .sk-title {
-  margin-bottom: 6px;
-}
-.hero-v3-skeleton .sk-gap {
-  height: 16px;
-}
-
-/* Data table: kanban board of columns with stacked cards. */
-.hero-v3-skeleton .sk-board {
-  padding: 5%;
-  gap: 4%;
-  align-items: stretch;
-}
-.hero-v3-skeleton .sk-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8%;
-  min-width: 0;
-}
-.hero-v3-skeleton .sk-col-head {
-  height: 16px;
-  width: 70%;
-  border-radius: 6px;
-}
-.hero-v3-skeleton .sk-card {
-  flex: 1;
-  border-radius: 8px;
-}
-
-@keyframes sk-shimmer {
-  to {
-    background-position: -200% 0;
-  }
-}
-
-@keyframes sk-reveal {
-  0%,
-  60% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
-
 /* Floating meeting window — overlays the product window's left edge */
 .hero-v3-meeting {
   position: absolute;
@@ -843,9 +734,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .hero-v3-product-img {
     transition: none;
-  }
-  .hero-v3-skeleton {
-    display: none;
   }
 }
 
@@ -911,7 +799,7 @@ body {
 
 .meeting-doc-content {
   width: 100%;
-  max-width: 1100px;
+  max-width: 1024px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -1245,3 +1133,372 @@ body {
   .meeting-doc-feature-title { font-size: 22px; }
   .meeting-doc-feature-body { font-size: 16px; padding-top: 12px; }
 }
+
+/* =============================================================================
+   Positioning Matrix — 2x2 quadrant diagram (Asset Depth vs. Init Efficiency)
+   ========================================================================== */
+
+.pm-section {
+  background: var(--bg-neutral);
+}
+
+/* Stage — fixed aspect ratio so the absolute overlay tracks the SVG axes */
+.pm-stage {
+  position: relative;
+  width: 100%;
+  max-width: 1024px;
+  margin: 0 auto;
+  aspect-ratio: 1024 / 630;
+  font-family: 'General Sans', sans-serif;
+  container-type: inline-size;
+}
+
+.pm-axes {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* Big blue axis titles */
+.pm-axis-title {
+  position: absolute;
+  z-index: 1;
+  font-size: 2.93cqw;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-highlight);
+  white-space: nowrap;
+}
+
+.pm-axis-title--y {
+  top: 6%;
+  left: 51.5%;
+  transform: translateX(-50%);
+}
+
+.pm-axis-title--x {
+  top: 52.4%;
+  left: 0.5%;
+  max-width: 17.6cqw;
+  white-space: normal;
+  line-height: 1.02;
+  transform: translateY(-50%);
+}
+
+/* Small axis end-point labels */
+.pm-axis-end {
+  position: absolute;
+  z-index: 1;
+  font-size: 1.37cqw;
+  font-weight: 500;
+  color: var(--text-highlight);
+  white-space: nowrap;
+}
+
+.pm-end-top {
+  top: 16%;
+  left: 53%;
+}
+
+.pm-end-bottom {
+  top: 93%;
+  left: 50.8%;
+  transform: translateX(-50%);
+}
+
+.pm-end-left {
+  top: 49%;
+  left: 22.8%;
+}
+
+.pm-end-right {
+  top: 49%;
+  left: 88.5%;
+}
+
+/* Quadrant groups — anchored by center */
+.pm-group {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.98cqw;
+  transform: translate(-50%, -50%);
+}
+
+.pm-group--office {
+  left: 34.5%;
+  top: 22%;
+}
+
+.pm-group--zoom {
+  left: 66%;
+  top: 31%;
+}
+
+.pm-group--ai {
+  left: 74%;
+  top: 63%;
+}
+
+.pm-group--plugins {
+  left: 70%;
+  top: 81%;
+}
+
+.pm-group-heading {
+  font-size: 1.76cqw;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+/* Cards holding the wordmarks */
+.pm-card {
+  display: flex;
+  align-items: center;
+  gap: 1.56cqw;
+  padding: 1.17cqw 1.76cqw;
+  background: var(--bg-neutral);
+  border: 1px solid var(--stroke);
+  border-radius: 1.56cqw;
+  box-shadow: 0 8px 24px rgba(12, 92, 255, 0.06);
+}
+
+.pm-card--stacked {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.39cqw;
+}
+
+.pm-card--accent {
+  border-color: var(--color-blue);
+  box-shadow: 0 10px 28px rgba(12, 92, 255, 0.18);
+}
+
+.pm-card-sub {
+  font-size: 1.07cqw;
+  font-weight: 400;
+  color: var(--text-contrast-secondary);
+  white-space: nowrap;
+}
+
+.pm-zoom-logo {
+  height: 2.93cqw;
+  width: auto;
+  display: block;
+}
+
+/* Wordmarks — neutral styled text with a small monogram tile */
+.pm-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.59cqw;
+  font-size: 1.56cqw;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.pm-wordmark-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.95cqw;
+  height: 1.95cqw;
+  border-radius: 0.49cqw;
+  background: var(--color-gray);
+  color: var(--color-white);
+  font-size: 1.17cqw;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Positioning Matrix — tablet */
+@media (max-width: 1199px) {
+  .pm-axis-title { font-size: 24px; }
+  .pm-group-heading { font-size: 16px; }
+  .pm-wordmark { font-size: 14px; }
+  .pm-card { gap: 12px; padding: 10px 14px; }
+  .pm-zoom-logo { height: 26px; }
+  .pm-axis-end { font-size: 12px; }
+  .pm-curve-label { font-size: 11px; }
+}
+
+/* Positioning Matrix — mobile (stack to a legend; the dense overlay does not
+   fit, so we drop to a simple labeled list while keeping the axes visible) */
+@media (max-width: 639px) {
+  .pm-stage {
+    aspect-ratio: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .pm-axes {
+    display: none;
+  }
+  .pm-axis-title,
+  .pm-axis-end {
+    position: static;
+    transform: none;
+  }
+  .pm-axis-title--y { order: -2; }
+  .pm-axis-title--x { order: -1; }
+  .pm-group {
+    position: static;
+    transform: none;
+    align-items: flex-start;
+  }
+}
+
+/* =============================================================================
+   Built Unique — sticky title + scrolling key points + floating diagram
+   Figma node 3240:86545
+   ========================================================================== */
+
+.bu-section {
+  position: relative;
+  width: 100%;
+  padding: 120px 40px;
+  background: var(--bg-accent-light);
+}
+
+.bu-inner {
+  width: 100%;
+  max-width: 1024px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 64px;
+}
+
+/* Left column — sticky title */
+.bu-title {
+  position: sticky;
+  top: 100px;
+  flex: 0 0 427px;
+  width: 427px;
+}
+
+.bu-title h2 {
+  font-family: 'General Sans', sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Right column — scrolling key points */
+.bu-content {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+
+.bu-point {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 560px;
+  opacity: 0.3;
+  transition: opacity 300ms ease;
+}
+
+.bu-point.is-active {
+  opacity: 1;
+}
+
+.bu-point-header {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.bu-point-header h3 {
+  font-family: 'General Sans', sans-serif;
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.bu-point-header p {
+  font-family: 'General Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.bu-point-img {
+  width: 100%;
+  aspect-ratio: 1940 / 1080;
+  border-radius: 12px;
+  background: var(--bg-accent-medium);
+  border: 1px solid var(--stroke);
+}
+
+/* Floating positioning-matrix diagram — shown only while section in view */
+.bu-float {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 20;
+  width: min(620px, 46vw);
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 350ms ease, transform 350ms ease;
+  pointer-events: none;
+}
+
+.bu-float.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.bu-float-card {
+  width: 100%;
+  padding: 10px;
+  background: var(--color-white);
+  border-radius: 20px;
+  box-shadow: 0 24px 64px rgba(12, 92, 255, 0.14);
+}
+
+/* Built Unique — tablet (hide the overlapping floating diagram) */
+@media (max-width: 1199px) {
+  .bu-section { padding: 72px 32px; }
+  .bu-inner { gap: 40px; }
+  .bu-title { flex-basis: 320px; width: 320px; }
+  .bu-title h2 { font-size: 36px; }
+  .bu-content { gap: 48px; }
+  .bu-point-header h3 { font-size: 26px; }
+  .bu-float { display: none; }
+}
+
+/* Built Unique — mobile (stack columns, title no longer sticky) */
+@media (max-width: 639px) {
+  .bu-section { padding: 56px 20px; }
+  .bu-inner { flex-direction: column; gap: 32px; }
+  .bu-title {
+    position: static;
+    top: auto;
+    flex-basis: auto;
+    width: 100%;
+  }
+  .bu-title h2 { font-size: 28px; }
+  .bu-content { gap: 40px; }
+  .bu-point-header h3 { font-size: 22px; }
+}
+
