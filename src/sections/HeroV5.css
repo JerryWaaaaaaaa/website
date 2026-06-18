@@ -1,0 +1,380 @@
+/* =============================================================================
+   Hero V5 (Figma node 3267:6258)
+   Reuses the V3 hero (rotating product word + persistent browser window with a
+   floating meeting tile) and stacks a "whole Zoom products" suite badge row
+   beneath it, all on one continuous accent-gradient background. Styles are a
+   V5-prefixed copy of the V3 hero rules so v3 stays untouched.
+   ========================================================================== */
+
+.hero-v5 {
+  position: relative;
+  background-image: var(--gradient-accent);
+  /* Clear the fixed nav, then stack the hero row + suite row centered. */
+  padding: 120px 64px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 64px;
+}
+
+/* --- Hero row (ported from .hero-v3) ----------------------------------- */
+.hero-v5-inner {
+  position: relative;
+  width: 100%;
+  max-width: 1680px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 120px;
+}
+
+/* Left copy column */
+.hero-v5-copy {
+  position: relative;
+  z-index: 3;
+  /* Wide enough that the 60px headline always wraps to two rows
+     ("You just talk. AI" / "builds your <product>") instead of three. */
+  flex: 0 1 560px;
+  max-width: 560px;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.hero-v5-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 8px;
+  margin: 0;
+}
+
+/* Rotating product word — bound to activeIndex (JS), remounted on each tick so
+   the one-shot roll-in replays. Single clock keeps it in step with the browser
+   URL + product image. */
+.hero-v5-rotating {
+  display: inline-grid;
+  align-items: center;
+  height: 1em;
+  vertical-align: baseline;
+}
+
+.hero-v5-rotating-slide {
+  grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.hero-v5-rotating-word {
+  display: inline-block;
+  animation: hero-v5-roll-in 500ms ease both;
+}
+
+@keyframes hero-v5-roll-in {
+  from {
+    opacity: 0;
+    transform: translateY(60%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-v5-rotating-word {
+    animation: none;
+  }
+}
+
+.hero-v5-subtitle {
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 421px;
+}
+
+/* Right stage — right-aligns the product; its height is driven by the product */
+.hero-v5-stage {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Persistent browser window (Figma node 3208:9370) — in-flow, scales with
+   width up to 1100px. Frame stays static; only its content rotates. Keep
+   overflow visible so the floating meeting window can overhang the left edge. */
+.hero-v5-browser {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1100px;
+  background: #ffffff;
+  border: 1px solid rgba(2, 6, 31, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 24px 64px rgba(12, 92, 255, 0.14);
+}
+
+/* Subtle paper texture from the Figma frame (89% opacity in design). */
+.hero-v5-browser::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  background-image: url('/hero-browser/texture-overlay.png');
+  background-size: cover;
+  opacity: 0.89;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Navigation bar — traffic lights, centered URL pill */
+.hero-v5-browser-nav {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.hero-v5-traffic {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-v5-traffic .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+.hero-v5-traffic .dot-close {
+  background: #ed6a5e;
+}
+.hero-v5-traffic .dot-min {
+  background: #f4bd50;
+}
+.hero-v5-traffic .dot-zoom {
+  background: #61c454;
+}
+
+/* Centered URL pill */
+.hero-v5-url {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  min-width: 280px;
+  max-width: 46%;
+  padding: 0 12px;
+  background: #f3f5f9;
+  border: 1px solid rgba(2, 6, 31, 0.06);
+  border-radius: 999px;
+}
+
+.hero-v5-url-text {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+  line-height: 16.8px;
+  font-weight: 500;
+  color: #4c4c4c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: hero-v5-url-fade 600ms ease;
+}
+
+.hero-v5-url-refresh {
+  flex: none;
+  width: 13px;
+  height: 14px;
+  opacity: 0.6;
+}
+
+@keyframes hero-v5-url-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Content area — 12px padding, rounded clip that holds the rotating images */
+.hero-v5-browser-content {
+  position: relative;
+  z-index: 1;
+  aspect-ratio: 2352 / 1514;
+  margin: 0 12px 12px;
+  background: #ffffff;
+  border: 1px solid #e3edfc;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.hero-v5-product-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  transition: opacity 600ms ease;
+  will-change: opacity;
+}
+
+/* Floating meeting window — overlays the product window's left edge */
+.hero-v5-meeting {
+  position: absolute;
+  top: 50%;
+  left: -96px;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 28%;
+  max-width: 60%;
+  border-radius: 10px;
+  box-shadow: 0 18px 48px rgba(2, 6, 31, 0.32);
+}
+
+.hero-v5-meeting video {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-v5-product-img {
+    transition: none;
+  }
+}
+
+/* --- Suite row (Figma node 3267:6293) ---------------------------------- */
+.hero-v5-suite {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.hero-v5-suite-caption {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.hero-v5-suite-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 16px;
+}
+
+.hero-v5-suite-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 12px;
+}
+
+.hero-v5-suite-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  display: block;
+}
+
+.hero-v5-suite-label {
+  font-size: 14px;
+  line-height: 16px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* --- Responsive (ported from .hero-v3) --------------------------------- */
+@media (max-width: 1199px) {
+  .hero-v5-inner {
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+  }
+  .hero-v5-copy {
+    flex: none;
+    max-width: 640px;
+    align-items: center;
+    text-align: center;
+  }
+  .hero-v5-heading {
+    justify-content: center;
+  }
+  .hero-v5-subtitle {
+    max-width: 520px;
+  }
+  .hero-v5-stage {
+    width: 100%;
+    justify-content: center;
+  }
+  .hero-v5-browser {
+    margin: 0 auto;
+  }
+  .hero-v5-meeting {
+    top: auto;
+    bottom: -6%;
+    left: -4%;
+    transform: none;
+    width: 26%;
+  }
+}
+
+@media (max-width: 639px) {
+  .hero-v5 {
+    padding: 120px 16px 64px;
+    gap: 48px;
+  }
+  .hero-v5-copy .btn {
+    width: 100%;
+  }
+  .hero-v5-meeting {
+    top: 12%;
+    left: 4%;
+    width: 34%;
+  }
+  .hero-v5-suite-row {
+    gap: 8px;
+  }
+  .hero-v5-suite-badge {
+    padding: 8px;
+  }
+  .hero-v5-suite-icon {
+    width: 40px;
+    height: 40px;
+  }
+}
