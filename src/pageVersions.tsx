@@ -3,7 +3,12 @@ import { Hero } from './sections/Hero';
 import { HeroV2 } from './sections/HeroV2';
 import { HeroV3 } from './sections/HeroV3';
 import { HeroV4 } from './sections/HeroV4';
+import { HeroV5 } from './sections/HeroV5';
 import { BuiltDifferentiate } from './sections/BuiltDifferentiate';
+import { BuiltDifferentiateV5 } from './sections/BuiltDifferentiateV5';
+import { OpenPlatformV5 } from './sections/OpenPlatformV5';
+import { UseCaseV5 } from './sections/UseCaseV5';
+import { ProductSuiteV5 } from './sections/ProductSuiteV5';
 import { ProductSuite } from './sections/ProductSuite';
 import { BuiltUnique } from './sections/BuiltUnique';
 import { OpenPlatform } from './sections/OpenPlatform';
@@ -18,7 +23,7 @@ import { UseCase } from './sections/UseCase';
 // import { Templates } from './sections/Templates';
 // import { FinalCTA } from './sections/FinalCTA';
 
-export type VersionId = 'v1' | 'v2' | 'v3' | 'v4';
+export type VersionId = 'v1' | 'v2' | 'v3' | 'v4' | 'v5';
 
 export interface PageVersion {
   id: VersionId;
@@ -85,6 +90,20 @@ export const PAGE_VERSIONS: PageVersion[] = [
         <BuiltDifferentiate />
         <OpenPlatform />
         <UseCase />
+      </>
+    ),
+  },
+  {
+    id: 'v5',
+    label: 'V5',
+    // v5 is a full independent duplicate of v4 with its own section copies.
+    render: () => (
+      <>
+        <HeroV5 />
+        <ProductSuiteV5 />
+        <BuiltDifferentiateV5 />
+        <OpenPlatformV5 />
+        <UseCaseV5 />
       </>
     ),
   },

@@ -1,0 +1,167 @@
+/* =============================================================================
+   Product Suite V5 — fanned arc carousel (Figma node 3268:6523)
+   Centered heading, a fanned arc of product icons over a soft radial glow with
+   the active product pulled upright to the highlighted centre slot, and a large
+   product screenshot below that cross-fades on selection.
+   ========================================================================== */
+
+.psuite-v5 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 64px;
+  padding: 120px 24px;
+  background: var(--bg-accent-light);
+}
+
+.psuite-v5-heading {
+  max-width: 550px;
+  margin: 0;
+  font-family: 'General Sans', sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.psuite-v5-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1024px;
+}
+
+/* --- Arc stage --------------------------------------------------------- */
+.psuite-v5-stage {
+  position: relative;
+  width: 100%;
+  max-width: 1051px;
+  height: 252px;
+  overflow: hidden;
+}
+
+/* Large soft white radial whose bright core sits far below the arc. Painted on
+   top of the pill (but under the icons), its upper fringe washes white over the
+   card's lower half so the highlighted card looks like it grows out of the
+   glow, then dies out by the icon row (no halo above the tabs). */
+.psuite-v5-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1305px;
+  height: 1305px;
+  transform: translate(-50%, calc(-50% + 566px));
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.9) 59%,
+    rgba(255, 255, 255, 0) 72%
+  );
+  pointer-events: none;
+}
+
+/* Highlight pill behind the centred (active) icon. */
+.psuite-v5-pill {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 134px;
+  height: 198px;
+  transform: translateX(-50%);
+  background: var(--bg-accent-medium);
+  border-radius: 24px;
+  pointer-events: none;
+}
+
+/* --- Arc icons --------------------------------------------------------- */
+.psuite-v5-icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  /* Transform is set inline per slot; the carousel motion is driven by the
+     Web Animations API (see ProductSuiteV5.tsx). */
+  will-change: transform, opacity;
+}
+
+.psuite-v5-icon-img {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  display: block;
+}
+
+.psuite-v5-icon-label {
+  font-family: 'General Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* --- Product screen ---------------------------------------------------- */
+.psuite-v5-screen {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1176 / 757;
+  background: #fff;
+  border: 1px solid var(--stroke);
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+.psuite-v5-screen-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: opacity 400ms ease;
+}
+
+/* --- Responsive -------------------------------------------------------- */
+@media (max-width: 900px) {
+  .psuite-v5 {
+    gap: 48px;
+    padding: 72px 20px;
+  }
+  .psuite-v5-heading {
+    font-size: 34px;
+  }
+  .psuite-v5-stage {
+    height: 220px;
+    transform: scale(0.82);
+  }
+  .psuite-v5-screen {
+    border-radius: 20px;
+  }
+}
+
+@media (max-width: 560px) {
+  .psuite-v5-heading {
+    font-size: 28px;
+  }
+  .psuite-v5-stage {
+    transform: scale(0.62);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .psuite-v5-icon,
+  .psuite-v5-screen-img {
+    transition: none;
+  }
+}
