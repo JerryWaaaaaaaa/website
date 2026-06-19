@@ -1,0 +1,318 @@
+- generic [ref=e2]:
+  - banner:
+    - navigation "Main navigation" [ref=e3]:
+      - generic [ref=e4]:
+        - link "Zoom AI Create — home" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img "Zoom AI Create" [ref=e6]
+        - list [ref=e7]:
+          - listitem [ref=e8]:
+            - button "Products" [ref=e9] [cursor=pointer]:
+              - text: Products
+              - img [ref=e10]
+          - listitem [ref=e12]:
+            - button "Features" [ref=e13] [cursor=pointer]:
+              - text: Features
+              - img [ref=e14]
+          - listitem [ref=e16]:
+            - button "Explore" [ref=e17] [cursor=pointer]:
+              - text: Explore
+              - img [ref=e18]
+        - generic [ref=e20]:
+          - button "Sign in" [ref=e21] [cursor=pointer]
+          - button "Get started today" [ref=e22] [cursor=pointer]
+      - region "Products menu":
+        - generic [ref=e23]:
+          - link "AI Docs Automatically transforms your meetings into polished documents" [ref=e24] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e26]:
+              - generic [ref=e27]: AI Docs
+              - generic [ref=e28]: Automatically transforms your meetings into polished documents
+          - link "AI Slides Meeting to deck, voice-ready presentation" [ref=e29] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e31]:
+              - generic [ref=e32]: AI Slides
+              - generic [ref=e33]: Meeting to deck, voice-ready presentation
+          - link "AI Sheets Meetings to data, automates workflows" [ref=e34] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e36]:
+              - generic [ref=e37]: AI Sheets
+              - generic [ref=e38]: Meetings to data, automates workflows
+          - link "AI Data table Organize, analyze, and act on your data with flexible views" [ref=e39] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e41]:
+              - generic [ref=e42]: AI Data table
+              - generic [ref=e43]: Organize, analyze, and act on your data with flexible views
+          - link "AI Classic Docs Precise formatting, Word compatibility, and real-time editing." [ref=e44] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e46]:
+              - generic [ref=e47]: AI Classic Docs
+              - generic [ref=e48]: Precise formatting, Word compatibility, and real-time editing.
+          - link "Hub Manage all your meetings and documents all in one place" [ref=e49] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e51]:
+              - generic [ref=e52]: Hub
+              - generic [ref=e53]: Manage all your meetings and documents all in one place
+      - region "Features menu":
+        - generic [ref=e54]:
+          - link "AI Auto Writing" [ref=e55] [cursor=pointer]:
+            - /url: "#"
+          - link "AI Templates" [ref=e56] [cursor=pointer]:
+            - /url: "#"
+          - link "Knowledge Base" [ref=e57] [cursor=pointer]:
+            - /url: "#"
+          - link "Sites" [ref=e58] [cursor=pointer]:
+            - /url: "#"
+      - region "Explore menu":
+        - generic [ref=e59]:
+          - link "Use Cases" [ref=e60] [cursor=pointer]:
+            - /url: "#"
+          - link "Templates" [ref=e61] [cursor=pointer]:
+            - /url: "#"
+          - link "Help center" [ref=e62] [cursor=pointer]:
+            - /url: "#"
+  - main [ref=e63]:
+    - generic [ref=e64]:
+      - generic [ref=e65]:
+        - generic [ref=e66]:
+          - heading "You just talk. AI builds your Sheets" [level=1] [ref=e67]:
+            - generic [ref=e68]: You
+            - generic [ref=e69]: just
+            - generic [ref=e70]: talk.
+            - generic [ref=e71]: AI
+            - generic [ref=e72]: builds
+            - generic [ref=e73]: your
+            - generic [ref=e74]:
+              - generic [ref=e75]: Sheets
+              - generic [ref=e77]: Sheets
+          - paragraph [ref=e78]: Zoom AI Productivity Suite captures every conversation and turns it into a deliverable — so your work is ready when the meeting ends.
+          - button "Get started for free" [ref=e79] [cursor=pointer]
+        - generic [ref=e81]:
+          - generic [ref=e87]:
+            - generic [ref=e88]: sheets.zoom.com
+            - img [ref=e89]
+          - generic [ref=e90]:
+            - img "Sheets preview" [ref=e91]
+            - img [ref=e92]
+            - img [ref=e93]
+            - img [ref=e94]
+      - generic [ref=e97]:
+        - paragraph [ref=e98]: Get maximum productivity with the whole Zoom products
+        - generic [ref=e99]:
+          - generic [ref=e101]: Canvas
+          - generic [ref=e103]: Slides
+          - generic [ref=e105]: Sheets
+          - generic [ref=e107]: Paper
+          - generic [ref=e109]: Data table
+          - generic [ref=e111]: Hub
+          - generic [ref=e113]: Mail
+          - generic [ref=e115]: Calendar
+          - generic [ref=e117]: Meeting
+    - generic [ref=e118]:
+      - heading "The only productivity tool for every task you need" [level=2] [ref=e119]
+      - generic [ref=e120]:
+        - tablist "Zoom productivity suite" [ref=e121]:
+          - tab "Canvas" [ref=e122] [cursor=pointer]:
+            - generic [ref=e123]: Canvas
+          - tab "Slides" [selected] [ref=e124] [cursor=pointer]:
+            - generic [ref=e125]: Slides
+          - tab "Sheets" [ref=e126] [cursor=pointer]:
+            - generic [ref=e127]: Sheets
+          - tab "Paper" [ref=e128] [cursor=pointer]:
+            - generic [ref=e129]: Paper
+          - tab "Data table" [ref=e130] [cursor=pointer]:
+            - generic [ref=e131]: Data table
+        - generic [ref=e132]:
+          - img [ref=e135]
+          - img [ref=e136]
+          - img [ref=e137]
+    - generic [ref=e139]:
+      - generic [ref=e140]:
+        - generic [ref=e141]: Built to differentiate
+        - heading "Every meeting, a deliverable." [level=2] [ref=e142]:
+          - text: Every meeting, a
+          - emphasis [ref=e143]: deliverable.
+      - generic [ref=e145]:
+        - generic [ref=e146]:
+          - generic [ref=e147]:
+            - text: "01"
+            - generic [ref=e148]: / 06
+          - heading "From meetings to documents, automatically." [level=3] [ref=e149]
+          - paragraph [ref=e150]: Turn every conversation into something you can use — docs, slides, sheets, and more.
+        - generic [ref=e151]:
+          - generic [ref=e152]:
+            - text: "02"
+            - generic [ref=e153]: / 06
+          - heading "Fully editable after generation." [level=3] [ref=e154]
+          - paragraph [ref=e155]: Every AI output is fully editable — refine, rewrite, or reshape until it's exactly what you need.
+        - generic [ref=e156]:
+          - generic [ref=e157]:
+            - text: "03"
+            - generic [ref=e158]: / 06
+          - heading "Inline AI, right where you need it." [level=3] [ref=e159]
+          - paragraph [ref=e160]: Select any text to trigger AI suggestions right where you are — no switching, no extra steps.
+        - generic [ref=e161]:
+          - generic [ref=e162]:
+            - text: "04"
+            - generic [ref=e163]: / 06
+          - heading "Share live, right in your meeting." [level=3] [ref=e164]
+          - paragraph [ref=e165]: Share and co-edit documents live, right inside your meeting.
+        - generic [ref=e166]:
+          - generic [ref=e167]:
+            - text: "05"
+            - generic [ref=e168]: / 06
+          - heading "Built for teams." [level=3] [ref=e169]
+          - paragraph [ref=e170]: Collaborate securely across teams with flexible, granular permission controls — so the right people always have the right access.
+        - generic [ref=e171]:
+          - generic [ref=e172]:
+            - text: "06"
+            - generic [ref=e173]: / 06
+          - heading "Your prompt, saved as a template." [level=3] [ref=e174]
+          - paragraph [ref=e175]: Build custom AI templates with your own prompts — save once, reuse every time.
+    - generic [ref=e190]:
+      - generic [ref=e191]:
+        - heading "Open platform by design" [level=2] [ref=e192]
+        - paragraph [ref=e193]: Work with the tools and workflows your team already uses — whether you're a developer, a power user, or somewhere in between.
+      - generic [ref=e194]:
+        - article [ref=e195]:
+          - generic [ref=e196]:
+            - generic [ref=e197]:
+              - generic [ref=e198]: For engineers
+              - heading "Open API" [level=3] [ref=e199]
+            - paragraph [ref=e200]: Build custom integrations and automate document workflows programmatically.
+          - link "View docs" [ref=e201] [cursor=pointer]:
+            - /url: "#"
+        - article [ref=e202]:
+          - generic [ref=e203]:
+            - generic [ref=e204]:
+              - generic [ref=e205]: For AI natives
+              - heading "MCP" [level=3] [ref=e206]
+            - paragraph [ref=e207]: Let AI assistants like Claude and ChatGPT read, write, and act on your content.
+          - generic [ref=e208]:
+            - img "Claude by Anthropic" [ref=e209]
+            - img "OpenAI ChatGPT" [ref=e210]
+        - article [ref=e211]:
+          - generic [ref=e212]:
+            - generic [ref=e213]:
+              - generic [ref=e214]: For everyone
+              - heading "Zapier" [level=3] [ref=e215]
+            - paragraph [ref=e216]: Connect to 1,500+ apps with no-code workflows — no engineering needed.
+          - link "View integrations" [ref=e217] [cursor=pointer]:
+            - /url: "#"
+    - generic [ref=e219]:
+      - generic [ref=e220]:
+        - tablist "Use cases by role" [ref=e221]:
+          - tab "Sales" [selected] [ref=e222] [cursor=pointer]
+          - tab "Recruiters" [ref=e223] [cursor=pointer]
+          - tab "Consultants" [ref=e224] [cursor=pointer]
+          - tab "Coaches" [ref=e225] [cursor=pointer]
+          - tab "Agencies" [ref=e226] [cursor=pointer]
+          - tab "Product managers" [ref=e227] [cursor=pointer]
+        - generic [ref=e228]:
+          - generic [ref=e229]:
+            - generic [ref=e230]: use cases
+            - heading "Turn every client call into proposals, sheets, and follow-ups — automatically." [level=2] [ref=e231]
+            - button "Learn more" [ref=e232] [cursor=pointer]
+          - img "Sales use case" [ref=e234]
+      - generic [ref=e235]:
+        - generic [ref=e236]:
+          - paragraph [ref=e237]: Find your role's perfect AI template
+          - button "Browse AI templates" [ref=e238] [cursor=pointer]:
+            - img [ref=e239]
+        - generic [ref=e241]:
+          - article [ref=e242]:
+            - generic [ref=e244]:
+              - img [ref=e245]
+              - generic [ref=e248]: Write tldr
+          - article [ref=e249]:
+            - generic [ref=e251]:
+              - img [ref=e252]
+              - generic [ref=e254]: Competitive research
+          - article [ref=e255]:
+            - generic [ref=e257]:
+              - img [ref=e258]
+              - generic [ref=e261]: Competitive research
+          - article [ref=e262]:
+            - generic [ref=e264]:
+              - img [ref=e265]
+              - generic [ref=e268]: Meeting agenda
+          - article [ref=e269]:
+            - generic [ref=e271]:
+              - img [ref=e272]
+              - generic [ref=e274]: Creative solutions
+          - article [ref=e275]:
+            - generic [ref=e277]:
+              - img [ref=e278]
+              - generic [ref=e281]: Project tracker
+  - contentinfo [ref=e282]:
+    - generic [ref=e283]:
+      - generic [ref=e284]:
+        - generic [ref=e285]: zoom
+        - generic [ref=e286]: AI Create
+      - generic [ref=e287]:
+        - heading "Products" [level=4] [ref=e288]
+        - list [ref=e289]:
+          - listitem [ref=e290]:
+            - link "AI Docs" [ref=e291] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e292]:
+            - link "AI Slides" [ref=e293] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e294]:
+            - link "AI Sheets" [ref=e295] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e296]:
+            - link "AI Data table" [ref=e297] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e298]:
+            - link "Hub" [ref=e299] [cursor=pointer]:
+              - /url: "#"
+      - generic [ref=e300]:
+        - heading "Resources" [level=4] [ref=e301]
+        - list [ref=e302]:
+          - listitem [ref=e303]:
+            - link "Use cases" [ref=e304] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e305]:
+            - link "Blog" [ref=e306] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e307]:
+            - link "Help center" [ref=e308] [cursor=pointer]:
+              - /url: "#"
+      - generic [ref=e309]:
+        - heading "Company" [level=4] [ref=e310]
+        - list [ref=e311]:
+          - listitem [ref=e312]:
+            - link "Company" [ref=e313] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e314]:
+            - link "About" [ref=e315] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e316]:
+            - link "Team" [ref=e317] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e318]:
+            - link "Careers" [ref=e319] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e320]:
+            - link "Platform" [ref=e321] [cursor=pointer]:
+              - /url: "#"
+    - generic [ref=e322]:
+      - generic [ref=e323]: ©2026 Zoom Communications Inc. All rights reserved.
+      - generic [ref=e324]:
+        - link "Legal & Compliance" [ref=e325] [cursor=pointer]:
+          - /url: "#"
+        - link "Trust Center" [ref=e326] [cursor=pointer]:
+          - /url: "#"
+        - link "Privacy" [ref=e327] [cursor=pointer]:
+          - /url: "#"
+        - link "Terms" [ref=e328] [cursor=pointer]:
+          - /url: "#"
+  - group "Page variant" [ref=e329]:
+    - generic [ref=e330]: Page
+    - button "V1" [ref=e331] [cursor=pointer]
+    - button "V2" [ref=e332] [cursor=pointer]
+    - button "V3" [ref=e333] [cursor=pointer]
+    - button "V4" [ref=e334] [cursor=pointer]
+    - button "V5" [pressed] [ref=e335] [cursor=pointer]
+  - button "Open section variants" [ref=e336] [cursor=pointer]: Variants

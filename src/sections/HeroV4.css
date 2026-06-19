@@ -131,7 +131,7 @@
 .hero-v4-screen {
   position: relative;
   width: 100%;
-  max-width: 1024px;
+  max-width: var(--page-max-width);
   aspect-ratio: 1176 / 757;
   background: #fff;
   border: 1px solid var(--stroke);

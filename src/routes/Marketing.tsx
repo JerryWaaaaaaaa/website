@@ -1,6 +1,7 @@
 import { useSearchParams } from 'react-router-dom';
 import { Nav } from '../components/Nav';
 import { HeroVariantToggle } from '../components/HeroVariantToggle';
+import { SectionVariantDial } from '../components/SectionVariantDial';
 import { Footer } from '../sections/Footer';
 import { PAGE_VERSIONS, DEFAULT_VERSION } from '../pageVersions';
 
@@ -17,6 +18,7 @@ export function Marketing() {
       <main>{version.render()}</main>
       <Footer />
       <HeroVariantToggle />
+      <SectionVariantDial />
     </>
   );
 }

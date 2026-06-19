@@ -18,7 +18,7 @@
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 1024px;
+  max-width: var(--page-max-width);
   display: flex;
   flex-direction: column;
   gap: 64px;
@@ -78,8 +78,10 @@
   text-align: left;
 }
 
-.uc5-tab:not(.is-active):hover {
-  color: var(--text-highlight);
+@media (hover: hover) and (pointer: fine) {
+  .uc5-tab:not(.is-active):hover {
+    color: var(--text-highlight);
+  }
 }
 
 .uc5-tab.is-active {
@@ -117,6 +119,9 @@
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.02em;
+  /* Replayed on tab change via keyed remount (see UseCaseV5.tsx) so the
+     copy + image swap bridges instead of hard-cutting. */
+  animation: uc5-panel-fade 220ms ease-out both;
 }
 
 .uc5-headline-lead {
@@ -140,6 +145,18 @@
   max-height: 400px;
   object-fit: cover;
   border-radius: 24px;
+  animation: uc5-panel-fade 220ms ease-out both;
+}
+
+@keyframes uc5-panel-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* --- Templates row ------------------------------------------------------ */
@@ -189,8 +206,10 @@
   transition: opacity 150ms ease;
 }
 
-.uc5-prompt-arrow:hover {
-  opacity: 0.85;
+@media (hover: hover) and (pointer: fine) {
+  .uc5-prompt-arrow:hover {
+    opacity: 0.85;
+  }
 }
 
 .uc5-prompt-arrow svg {
@@ -365,5 +384,12 @@
   .uc5-tab {
     font-size: 16px;
     padding: 12px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .uc5-headline,
+  .uc5-panel-media img {
+    animation: none;
   }
 }

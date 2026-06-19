@@ -136,14 +136,18 @@ export function UseCaseV5() {
           <div className="uc5-panel">
             <div className="uc5-panel-copy">
               <span className="chip uc5-chip">use cases</span>
-              <h2 className="uc5-headline">
+              <h2 className="uc5-headline" key={current.key}>
                 <span className="uc5-headline-lead">{current.headlineLead}</span>
                 <span className="uc5-headline-rest">{current.headlineRest}</span>
               </h2>
               <Button variant="primary">Learn more</Button>
             </div>
             <div className="uc5-panel-media">
-              <img src={current.image} alt={`${current.label} use case`} />
+              <img
+                src={current.image}
+                alt={`${current.label} use case`}
+                key={current.key}
+              />
             </div>
           </div>
         </div>

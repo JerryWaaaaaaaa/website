@@ -53,6 +53,9 @@
   --glass-bg: rgba(252, 253, 255, 0.8);
   --glass-blur: 16px;
   --glass-border: 1px solid var(--border-subtle);
+
+  /* Layout — controlled live by the Section Variant Dial */
+  --page-max-width: 1200px;
 }
 
 /* Tailwind v4 theme bridge — makes tokens available as utility classes
@@ -93,6 +96,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-snap-type: y proximity;
 }
 
 body {
@@ -125,23 +129,40 @@ body {
   cursor: pointer;
   white-space: nowrap;
   text-decoration: none;
-  transition: opacity 150ms ease, background 150ms ease;
+  transition: opacity 150ms ease, background 150ms ease,
+    transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Press feedback — the button should feel like it heard the click. */
+.btn:active {
+  transform: scale(0.97);
 }
 
 .btn-primary {
   background: var(--bg-contrast);
   color: var(--text-contrast);
 }
-.btn-primary:hover {
-  opacity: 0.85;
-}
 
 .btn-secondary {
   background: var(--bg-accent-light);
   color: var(--text-secondary);
 }
-.btn-secondary:hover {
-  background: var(--bg-accent-medium);
+
+/* Hover gated so touch taps don't leave a stuck hover state. */
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover {
+    opacity: 0.85;
+  }
+  .btn-secondary:hover {
+    background: var(--bg-accent-medium);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .btn:active {
+    transform: none;
+  }
 }
 
 /* =============================================================================
@@ -170,7 +191,7 @@ body {
 
 .section {
   width: 100%;
-  max-width: 1024px;
+  max-width: var(--page-max-width);
   margin: 0 auto;
   padding: 96px 40px;
 }
@@ -799,7 +820,7 @@ body {
 
 .meeting-doc-content {
   width: 100%;
-  max-width: 1024px;
+  max-width: var(--page-max-width);
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -1146,7 +1167,7 @@ body {
 .pm-stage {
   position: relative;
   width: 100%;
-  max-width: 1024px;
+  max-width: var(--page-max-width);
   margin: 0 auto;
   aspect-ratio: 1024 / 630;
   font-family: 'General Sans', sans-serif;
@@ -1370,7 +1391,7 @@ body {
 
 .bu-inner {
   width: 100%;
-  max-width: 1024px;
+  max-width: var(--page-max-width);
   margin: 0 auto;
   display: flex;
   align-items: flex-start;

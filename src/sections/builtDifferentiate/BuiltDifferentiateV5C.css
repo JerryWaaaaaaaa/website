@@ -1,0 +1,119 @@
+/* =============================================================================
+   Built to Differentiate V5 — C: Zigzag
+   No sticky / scroll-spy. Each point is a full-width row with a large
+   screenshot that alternates left / right, so every image gets to be big and
+   the section stays dense with no tall empty bands.
+   ========================================================================== */
+
+.bd5z-section {
+  background: var(--bg-accent-light);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120px 24px;
+}
+
+.bd5z-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 96px;
+  width: 100%;
+  max-width: var(--page-max-width);
+}
+
+/* --- Rows -------------------------------------------------------------- */
+.bd5z-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 120px;
+}
+
+.bd5z-row {
+  display: grid;
+  grid-template-columns: 40fr 60fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.bd5z-row.is-reversed {
+  grid-template-columns: 60fr 40fr;
+}
+
+.bd5z-row.is-reversed .bd5z-copy {
+  order: 2;
+}
+
+.bd5z-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 460px;
+}
+
+.bd5z-title {
+  margin: 0;
+  font-family: 'General Sans', sans-serif;
+  font-size: 42px;
+  font-weight: 500;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.bd5z-body {
+  margin: 0;
+  font-family: 'General Sans', sans-serif;
+  font-size: 18px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.bd5z-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* --- Responsive -------------------------------------------------------- */
+@media (max-width: 900px) {
+  .bd5z-section {
+    padding: 80px 20px;
+  }
+  .bd5z-inner {
+    gap: 64px;
+  }
+  .bd5z-rows {
+    gap: 72px;
+  }
+  .bd5z-row {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .bd5z-row.is-reversed {
+    grid-template-columns: 1fr;
+  }
+  /* Keep copy above the image on every row when stacked. */
+  .bd5z-row.is-reversed .bd5z-copy {
+    order: 0;
+  }
+  .bd5z-copy {
+    max-width: none;
+  }
+  .bd5z-title {
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 560px) {
+  .bd5z-section {
+    padding: 64px 16px;
+  }
+  .bd5z-title {
+    font-size: 26px;
+  }
+  .bd5z-body {
+    font-size: 16px;
+  }
+}

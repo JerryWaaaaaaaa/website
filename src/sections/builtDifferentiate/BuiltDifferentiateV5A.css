@@ -1,0 +1,152 @@
+/* =============================================================================
+   Built to Differentiate V5 — A: Scroll (baseline)
+   Scroll-driven layout: the copy steps stack in a left column that scrolls,
+   while a square media block on the right stays sticky and crossfades to the
+   placeholder of whichever step is centered in the viewport. 40/60 split.
+   ========================================================================== */
+
+.bd5-section {
+  background: var(--bg-accent-light);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120px 24px;
+}
+
+.bd5-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+  width: 100%;
+  max-width: var(--page-max-width);
+}
+
+.bd5-scroll {
+  display: grid;
+  grid-template-columns: 40fr 60fr;
+  gap: 64px;
+  align-items: start;
+  width: 100%;
+}
+
+.bd5-steps {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.bd5-step {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  max-width: 560px;
+  opacity: 0.4;
+  transition: opacity 300ms ease;
+}
+
+.bd5-step.is-active {
+  opacity: 1;
+}
+
+.bd5-step-title {
+  margin: 0;
+  font-family: 'General Sans', sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.bd5-step-body {
+  margin: 0;
+  font-family: 'General Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.bd5-step-media {
+  display: none;
+}
+
+.bd5-media-col {
+  min-width: 0;
+  position: sticky;
+  top: 120px;
+  height: calc(100vh - 240px);
+  display: flex;
+  align-items: center;
+}
+
+.bd5-media-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Each step's media is stacked absolutely and crossfaded by opacity. */
+.bd5-media-slot {
+  position: absolute;
+  inset: 0;
+  transition: opacity 400ms ease;
+}
+
+@media (max-width: 900px) {
+  .bd5-section {
+    padding: 80px 20px;
+  }
+  .bd5-inner {
+    gap: 48px;
+  }
+  .bd5-scroll {
+    flex-direction: column;
+    gap: 0;
+  }
+  .bd5-media-col {
+    display: none;
+  }
+  .bd5-steps {
+    gap: 48px;
+  }
+  .bd5-step {
+    min-height: 0;
+    max-width: none;
+    opacity: 1;
+  }
+  .bd5-step-title {
+    font-size: 34px;
+  }
+  .bd5-step-media {
+    display: block;
+    position: relative;
+    aspect-ratio: 5 / 4;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 24px;
+  }
+}
+
+@media (max-width: 560px) {
+  .bd5-section {
+    padding: 64px 16px;
+  }
+  .bd5-step-title {
+    font-size: 28px;
+  }
+  .bd5-step-body {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bd5-step,
+  .bd5-media-slot {
+    transition: none;
+  }
+}
