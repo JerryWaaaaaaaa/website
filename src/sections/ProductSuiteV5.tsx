@@ -6,34 +6,37 @@ type Product = {
   label: string;
   icon: string;
   screen: string;
+  video?: string;
 };
 
 // Order matters: products fan left-to-right across the arc, with the active
 // one pulled to the centre slot.
 const PRODUCTS: Product[] = [
   {
-    key: 'paper',
-    label: 'Paper',
-    icon: '/Icon/product-classic-doc.svg',
-    screen: '/hero-browser/paper-ui.png',
-  },
-  {
     key: 'canvas',
     label: 'Canvas',
     icon: '/Icon/product-docs.svg',
     screen: '/hero-browser/canvas-ui.png',
+    video: '/product-videos/canvas-website.mp4',
   },
   {
     key: 'slides',
     label: 'Slides',
     icon: '/Icon/product-slides.svg',
     screen: '/hero-browser/slides-UI.png',
+    video: '/product-videos/slides-website.mp4',
   },
   {
     key: 'sheets',
     label: 'Sheets',
     icon: '/Icon/product-sheet.svg',
     screen: '/hero-browser/sheets-ui.png',
+  },
+  {
+    key: 'paper',
+    label: 'Paper',
+    icon: '/Icon/product-classic-doc.svg',
+    screen: '/hero-browser/paper-ui.png',
   },
   {
     key: 'datatable',
@@ -119,31 +122,42 @@ export function ProductSuiteV5() {
 
         const wraps = rawNext > HALF || rawNext < -HALF;
 
-        if (!wraps) {
-          el.animate(
-            [
-              { transform: slotTransform(prev) },
-              { transform: slotTransform(final) },
-            ],
-            { duration: DURATION, easing: EASING },
-          );
-          return;
-        }
+        // Promote to its own GPU layer only for the duration of the spin so
+        // idle icons don't permanently hold a layer.
+        el.style.willChange = 'transform, opacity';
+        const clearWillChange = () => {
+          el.style.willChange = '';
+        };
 
-        // Exited one edge -> teleport (invisibly) to just past the opposite
-        // edge, then slide into the final slot. Exit right (rawNext > HALF)
-        // re-enters from the left, and vice versa.
-        const entryBuffer = rawNext > HALF ? -(HALF + 1) : HALF + 1;
+        const anim = !wraps
+          ? el.animate(
+              [
+                { transform: slotTransform(prev) },
+                { transform: slotTransform(final) },
+              ],
+              { duration: DURATION, easing: EASING },
+            )
+          : // Exited one edge -> teleport (invisibly) to just past the
+            // opposite edge, then slide into the final slot. Exit right
+            // (rawNext > HALF) re-enters from the left, and vice versa.
+            el.animate(
+              [
+                { transform: slotTransform(prev), opacity: 1, offset: 0 },
+                { transform: slotTransform(rawNext), opacity: 0, offset: 0.46 },
+                {
+                  transform: slotTransform(
+                    rawNext > HALF ? -(HALF + 1) : HALF + 1,
+                  ),
+                  opacity: 0,
+                  offset: 0.54,
+                },
+                { transform: slotTransform(final), opacity: 1, offset: 1 },
+              ],
+              { duration: DURATION, easing: EASING },
+            );
 
-        el.animate(
-          [
-            { transform: slotTransform(prev), opacity: 1, offset: 0 },
-            { transform: slotTransform(rawNext), opacity: 0, offset: 0.46 },
-            { transform: slotTransform(entryBuffer), opacity: 0, offset: 0.54 },
-            { transform: slotTransform(final), opacity: 1, offset: 1 },
-          ],
-          { duration: DURATION, easing: EASING },
-        );
+        anim.onfinish = clearWillChange;
+        anim.oncancel = clearWillChange;
       });
     }
 
@@ -192,16 +206,31 @@ export function ProductSuiteV5() {
         </div>
 
         <div className="psuite-v5-screen">
-          {PRODUCTS.map((product) => (
-            <img
-              key={product.key}
-              src={product.screen}
-              alt={`${product.label} preview`}
-              className="psuite-v5-screen-img"
-              style={{ opacity: product.key === active ? 1 : 0 }}
-              aria-hidden={product.key !== active}
-            />
-          ))}
+          {PRODUCTS.map((product) =>
+            product.video ? (
+              <video
+                key={product.key}
+                src={product.video}
+                poster={product.screen}
+                className="psuite-v5-screen-img"
+                style={{ opacity: product.key === active ? 1 : 0 }}
+                aria-hidden={product.key !== active}
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
+            ) : (
+              <img
+                key={product.key}
+                src={product.screen}
+                alt={`${product.label} preview`}
+                className="psuite-v5-screen-img"
+                style={{ opacity: product.key === active ? 1 : 0 }}
+                aria-hidden={product.key !== active}
+              />
+            ),
+          )}
         </div>
       </div>
     </section>

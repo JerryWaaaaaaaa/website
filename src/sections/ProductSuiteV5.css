@@ -31,7 +31,7 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 1024px;
+  max-width: var(--page-max-width);
 }
 
 /* --- Arc stage --------------------------------------------------------- */
@@ -90,8 +90,9 @@
   background: transparent;
   cursor: pointer;
   /* Transform is set inline per slot; the carousel motion is driven by the
-     Web Animations API (see ProductSuiteV5.tsx). */
-  will-change: transform, opacity;
+     Web Animations API (see ProductSuiteV5.tsx), which also toggles
+     will-change for the duration of each spin so idle icons don't hold a
+     GPU layer. */
 }
 
 .psuite-v5-icon-img {
@@ -129,7 +130,7 @@
   height: 100%;
   object-fit: cover;
   object-position: top center;
-  transition: opacity 400ms ease;
+  transition: opacity 250ms ease-out;
 }
 
 /* --- Responsive -------------------------------------------------------- */

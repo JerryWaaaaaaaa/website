@@ -1,0 +1,23 @@
+/* Shared media primitives for the BuiltDifferentiate V5 variants.
+   StepMedia fills its parent; each variant supplies a positioned, 5:4,
+   overflow:hidden wrapper. */
+
+.bd5-media-asset {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Frames of a crossfade sequence stack and fade between each other. */
+.bd5-seq-frame {
+  transition: opacity 500ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bd5-seq-frame {
+    transition: none;
+  }
+}

@@ -1,0 +1,82 @@
+import { useEffect, useState } from 'react';
+import type { Media } from './keyPoints';
+import './StepMedia.css';
+
+function SequenceMedia({
+  frames,
+  isActive,
+  intervalMs = 1800,
+}: {
+  frames: string[];
+  isActive: boolean;
+  intervalMs?: number;
+}) {
+  const [frame, setFrame] = useState(0);
+
+  // Cycle frames only while this step is the active/in-view one; reset to the
+  // first frame whenever it goes inactive so it always re-enters from the top.
+  useEffect(() => {
+    if (!isActive) {
+      setFrame(0);
+      return;
+    }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const id = window.setInterval(() => {
+      setFrame((f) => (f + 1) % frames.length);
+    }, intervalMs);
+    return () => window.clearInterval(id);
+  }, [isActive, frames.length, intervalMs]);
+
+  return (
+    <>
+      {frames.map((src, i) => (
+        <img
+          key={src}
+          src={src}
+          alt=""
+          className="bd5-media-asset bd5-seq-frame"
+          style={{ opacity: i === frame ? 1 : 0 }}
+          loading="lazy"
+          draggable={false}
+        />
+      ))}
+    </>
+  );
+}
+
+/**
+ * Renders a key point's media to fill its (positioned, 5:4, overflow-hidden)
+ * parent. The cross-step crossfade between points stays in each variant; this
+ * component owns only the intra-step frame crossfade for sequences.
+ */
+export function StepMedia({
+  media,
+  isActive,
+}: {
+  media: Media;
+  isActive: boolean;
+}) {
+  switch (media.kind) {
+    case 'image':
+      return (
+        <img
+          src={media.src}
+          alt=""
+          className="bd5-media-asset"
+          loading="lazy"
+          draggable={false}
+        />
+      );
+    case 'sequence':
+      return (
+        <SequenceMedia
+          frames={media.frames}
+          intervalMs={media.intervalMs}
+          isActive={isActive}
+        />
+      );
+    case 'layers':
+      // No renderer yet — kept so the model is ready for layered animations.
+      return null;
+  }
+}

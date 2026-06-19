@@ -1,0 +1,245 @@
+/* =============================================================================
+   Built to Differentiate V5 — D: Pinned wheel carousel
+   The section pins to the viewport while a tall scroll track steps a fractional
+   `pos` through the key points. The left copy column translates up one slot per
+   step (active line anchored to center, neighbors faded above/below) while the
+   right media forms a rounded vertical wheel that rotates in sync.
+   ========================================================================== */
+
+.bd5d-section {
+  --bd5d-slot: 300px; /* vertical spacing between copy lines */
+  background: var(--bg-accent-light);
+}
+
+/* Tall track on the page scroller (no nested overflow, so no double-scroll).
+   The pin stays stuck while N snap stops below it (pulled up to overlap the pin)
+   provide the scroll length + gentle rest points via the page's proximity snap. */
+.bd5d-track {
+  position: relative;
+  width: 100%;
+}
+
+.bd5d-snaps {
+  position: relative;
+  margin-top: -100vh; /* overlap the pin so snap stop 0 lands at scrollTop 0 */
+}
+
+.bd5d-snap {
+  height: 100vh;
+  scroll-snap-align: start;
+}
+
+.bd5d-pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px; /* gap between the box and the viewport edges */
+}
+
+/* The visible container: an inset, rounded, accent-filled box that clips the
+   wheel cards at its edges (matches the Figma design). */
+.bd5d-box {
+  position: relative;
+  width: 100%;
+  /* Box hugs the page content width plus a 120px inset on each side (matching
+     .bd5d-inner's horizontal padding) so the inner column lines up with the
+     rest of the page at --page-max-width. */
+  max-width: calc(var(--page-max-width) + 240px);
+  /* Hug the content with ~120px above/below instead of filling the viewport:
+     ~ card height (~416px) + ~120px top + ~120px bottom. */
+  height: 680px;
+  max-height: calc(100vh - 48px);
+  background: var(--bg-accent-medium);
+  border-radius: 32px;
+  overflow: hidden;
+}
+
+.bd5d-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 120px;
+}
+
+/* --- Left: stepping copy ----------------------------------------------- */
+.bd5d-copy-col {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 26%,
+    #000 74%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 26%,
+    #000 74%,
+    transparent 100%
+  );
+}
+
+/* The list is centered, then translated up so the active line sits mid-column.
+   Transform is driven by the scroll-linked `pos` every frame, so it intentionally
+   has no CSS transition — it must track the scroll position 1:1. */
+.bd5d-copy-list {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  margin-top: calc(-0.5 * var(--bd5d-slot));
+}
+
+.bd5d-copy {
+  height: var(--bd5d-slot);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+}
+
+.bd5d-copy-title {
+  margin: 0;
+  font-family: 'General Sans', sans-serif;
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.bd5d-copy-body {
+  margin: 0;
+  font-family: 'General Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+/* --- Right: flat rotating wheel (2D polar arc, mirrors ProductSuiteV5B) --- */
+.bd5d-carousel {
+  position: relative;
+  height: 100%;
+}
+
+.bd5d-wheel {
+  position: absolute;
+  inset: 0;
+}
+
+.bd5d-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  max-width: 560px;
+  aspect-ratio: 5 / 4;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--bg-surface, #fff);
+  transform-origin: center center;
+  /* transform/opacity are scroll-linked (set inline every frame) so they have
+     no transition and track scroll 1:1. */
+  will-change: transform, opacity;
+}
+
+/* Fallback list is hidden on desktop / when motion is allowed. When shown it
+   keeps the boxed look (accent-medium, rounded) so the section still reads as a
+   container without the pinned wheel. */
+.bd5d-fallback {
+  display: none;
+  background: var(--bg-accent-medium);
+  border-radius: 24px;
+}
+
+/* --- Responsive: collapse the pin into a plain stacked list ------------- */
+@media (max-width: 900px) {
+  .bd5d-section {
+    padding: 0 16px;
+  }
+  .bd5d-pin,
+  .bd5d-snaps {
+    display: none;
+  }
+  .bd5d-fallback {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+    width: 100%;
+    max-width: 680px;
+    margin: 40px auto;
+    padding: 64px 24px;
+  }
+  .bd5d-fallback-row {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .bd5d-fallback-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 5 / 4;
+    border-radius: 14px;
+    overflow: hidden;
+    margin-top: 10px;
+  }
+  .bd5d-copy-title {
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 560px) {
+  .bd5d-fallback {
+    padding: 64px 16px;
+  }
+  .bd5d-copy-title {
+    font-size: 26px;
+  }
+  .bd5d-copy-body {
+    font-size: 16px;
+  }
+}
+
+/* --- Reduced motion: static stacked list, no pin/transforms ------------- */
+@media (prefers-reduced-motion: reduce) {
+  .bd5d-section {
+    padding: 0 16px;
+  }
+  .bd5d-pin,
+  .bd5d-snaps {
+    display: none;
+  }
+  .bd5d-fallback {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+    width: 100%;
+    max-width: 680px;
+    margin: 40px auto;
+    padding: 64px 24px;
+  }
+  .bd5d-fallback-row {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .bd5d-fallback-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 5 / 4;
+    border-radius: 14px;
+    overflow: hidden;
+    margin-top: 10px;
+  }
+}
