@@ -11,35 +11,45 @@ function SequenceMedia({
   isActive: boolean;
   intervalMs?: number;
 }) {
-  const [frame, setFrame] = useState(0);
+  // `cur` is the frame fading in on top; `prev` stays fully opaque directly
+  // beneath it so the stack is always 100% covered during the crossfade and the
+  // dark backing never bleeds through (no luminance dip mid-swap).
+  const [pair, setPair] = useState({ cur: 0, prev: 0 });
 
   // Cycle frames only while this step is the active/in-view one; reset to the
   // first frame whenever it goes inactive so it always re-enters from the top.
   useEffect(() => {
     if (!isActive) {
-      setFrame(0);
+      setPair({ cur: 0, prev: 0 });
       return;
     }
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const id = window.setInterval(() => {
-      setFrame((f) => (f + 1) % frames.length);
+      setPair((p) => ({ cur: (p.cur + 1) % frames.length, prev: p.cur }));
     }, intervalMs);
     return () => window.clearInterval(id);
   }, [isActive, frames.length, intervalMs]);
 
   return (
     <>
-      {frames.map((src, i) => (
-        <img
-          key={src}
-          src={src}
-          alt=""
-          className="bd5-media-asset bd5-seq-frame"
-          style={{ opacity: i === frame ? 1 : 0 }}
-          loading="lazy"
-          draggable={false}
-        />
-      ))}
+      {frames.map((src, i) => {
+        const isCur = i === pair.cur;
+        const isPrev = i === pair.prev && pair.prev !== pair.cur;
+        return (
+          <img
+            key={src}
+            src={src}
+            alt=""
+            className={`bd5-media-asset bd5-seq-frame${isCur ? ' is-shown' : ''}`}
+            style={{
+              opacity: isCur || isPrev ? 1 : 0,
+              zIndex: isCur ? 2 : isPrev ? 1 : 0,
+            }}
+            loading="lazy"
+            draggable={false}
+          />
+        );
+      })}
     </>
   );
 }

@@ -1,8 +1,11 @@
 /* =============================================================================
-   Use Case section V5 (duplicated from Figma node 3245:86578)
+   Use Case section V5 — shared base (data + layout) for both transition variants
    Folder-style tabs (one per role) switch a content panel with a two-tone
    headline + persona image, over a faded strip of AI template cards. Sits on a
    white surface with an accent band filling the lower portion.
+
+   Variant A (Crossfade) uses these styles as-is. Variant B (Sliding) layers
+   UseCaseV5B.css on top to swap the grow-tab model for a sliding fill.
    ========================================================================== */
 
 .uc5-section {
@@ -50,13 +53,21 @@
 
 /* --- Tabs --------------------------------------------------------------- */
 .uc5-tabs {
+  --uc5-panel-radius: 24px;
+  --uc5-shoulder-w: 41px;
+  position: relative;
   display: flex;
   align-items: stretch;
   width: 100%;
+  gap: 48px;
 }
 
 .uc5-tab {
   flex: 0 0 auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 16px 24px;
   font-family: 'SF Pro Display', 'General Sans', sans-serif;
   font-size: 20px;
@@ -66,16 +77,9 @@
   color: var(--text-primary);
   background: transparent;
   border: none;
-  border-radius: 20px 20px 0 0;
   cursor: pointer;
   white-space: nowrap;
-  transition: color 150ms ease, background 150ms ease;
-}
-
-/* First tab grows so the active folder lip aligns flush-left with the panel */
-.uc5-tab:first-child {
-  flex: 1 1 auto;
-  text-align: left;
+  transition: color 200ms var(--ease-out), background 200ms var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -86,17 +90,28 @@
 
 .uc5-tab.is-active {
   color: var(--text-highlight);
-  background: var(--bg-accent-light);
+}
+
+.uc5-tab-label {
+  position: relative;
+  z-index: 1;
 }
 
 /* --- Content panel ------------------------------------------------------ */
+/* Top corners are dynamic (see modifiers): the corner flush with the active tab
+   stays square so the tab merges into the panel; the other top corner rounds. */
 .uc5-panel {
+  --uc5-panel-r: 24px;
   display: flex;
   align-items: stretch;
   gap: 48px;
   padding: 48px 64px 48px 48px;
   background: var(--bg-accent-light);
-  border-radius: 0 24px 24px 24px;
+  border-radius: var(--uc5-panel-r);
+}
+
+.uc5-panel.is-active-first {
+  border-top-left-radius: 0;
 }
 
 .uc5-panel-copy {
@@ -119,9 +134,9 @@
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.02em;
-  /* Replayed on tab change via keyed remount (see UseCaseV5.tsx) so the
-     copy + image swap bridges instead of hard-cutting. */
-  animation: uc5-panel-fade 220ms ease-out both;
+  /* Replayed on tab change via keyed remount (see PanelCopy) so the copy swap
+     bridges instead of hard-cutting. */
+  animation: uc5-panel-fade 220ms var(--ease-out) both;
 }
 
 .uc5-headline-lead {
@@ -132,20 +147,36 @@
   color: var(--text-primary);
 }
 
+/* Crossfade media: all persona images stay mounted, stacked, and fill the box;
+   only the active one is opaque. No keyed remount, so there's never an empty
+   frame or decode flicker between tabs. */
 .uc5-panel-media {
+  position: relative;
   flex: 1 1 0;
   min-width: 0;
-  align-self: stretch;
+  /* flex-start (not stretch) so the 1:1 aspect-ratio drives height in the row,
+     rather than being stretched to the panel's height. */
+  align-self: flex-start;
+  aspect-ratio: 1 / 1;
 }
 
-.uc5-panel-media img {
+.uc5-panel-img {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
-  max-height: 400px;
   object-fit: cover;
   border-radius: 24px;
-  animation: uc5-panel-fade 220ms ease-out both;
+  opacity: 0;
+  /* Outgoing layer blurs briefly to bridge the crossfade (Emil: blur to mask). */
+  filter: blur(6px);
+  transition: opacity 260ms var(--ease-out), filter 260ms var(--ease-out);
+}
+
+.uc5-panel-img.is-active {
+  opacity: 1;
+  filter: blur(0);
 }
 
 @keyframes uc5-panel-fade {
@@ -337,15 +368,13 @@
   .uc5-tabs::-webkit-scrollbar {
     display: none;
   }
-  .uc5-tab:first-child {
-    flex: 0 0 auto;
-  }
   .uc5-panel {
     flex-direction: column;
   }
-  .uc5-panel-media img {
-    max-height: none;
-    aspect-ratio: 16 / 10;
+  /* Column layout: stretch to full width; the 1:1 ratio (from the base rule)
+     derives the height. */
+  .uc5-panel-media {
+    align-self: stretch;
   }
   .uc5-templates {
     flex-direction: column;
@@ -376,7 +405,7 @@
   }
   .uc5-panel {
     padding: 28px;
-    border-radius: 0 20px 20px 20px;
+    --uc5-panel-r: 20px;
   }
   .uc5-headline {
     font-size: 28px;
@@ -388,8 +417,15 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .uc5-headline,
-  .uc5-panel-media img {
+  .uc5-headline {
     animation: none;
+  }
+  .uc5-panel-img {
+    /* Keep a gentle opacity crossfade, drop the blur. */
+    filter: none;
+    transition: opacity 160ms linear;
+  }
+  .uc5-panel-img:not(.is-active) {
+    filter: none;
   }
 }

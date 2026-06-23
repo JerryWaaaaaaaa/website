@@ -1,10 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { KEY_POINTS } from './keyPoints';
 import { StepMedia } from './StepMedia';
+import './reveal.css';
 import './BuiltDifferentiateV5C.css';
 
 export function BuiltDifferentiateV5C() {
   const [inView, setInView] = useState<boolean[]>(() =>
+    KEY_POINTS.map(() => false)
+  );
+  // Latches true per row on first view so the entrance plays once even though
+  // `inView` toggles back off when the row scrolls away.
+  const [revealed, setRevealed] = useState<boolean[]>(() =>
     KEY_POINTS.map(() => false)
   );
   const rowsRef = useRef<(HTMLDivElement | null)[]>([]);
@@ -23,6 +30,21 @@ export function BuiltDifferentiateV5C() {
             next[index] = entry.isIntersecting;
           });
           return next;
+        });
+        setRevealed((prev) => {
+          let changed = false;
+          const next = [...prev];
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const index = Number(
+              (entry.target as HTMLElement).dataset.index ?? 0
+            );
+            if (!next[index]) {
+              next[index] = true;
+              changed = true;
+            }
+          });
+          return changed ? next : prev;
         });
       },
       { rootMargin: '-15% 0px -15% 0px', threshold: 0 }
@@ -46,13 +68,25 @@ export function BuiltDifferentiateV5C() {
                 rowsRef.current[i] = el;
               }}
               data-index={i}
+              data-enter={revealed[i] ? 'true' : 'false'}
               className={`bd5z-row${i % 2 === 1 ? ' is-reversed' : ''}`}
             >
               <div className="bd5z-copy">
-                <h3 className="bd5z-title">{point.title}</h3>
-                <p className="bd5z-body">{point.body}</p>
+                <h3 className="bd5z-title bd5-reveal">
+                  {point.titleNode ?? point.title}
+                </h3>
+                <p
+                  className="bd5z-body bd5-reveal"
+                  style={{ '--reveal-delay': '70ms' } as CSSProperties}
+                >
+                  {point.body}
+                </p>
               </div>
-              <div className="bd5z-media" aria-hidden="true">
+              <div
+                className="bd5z-media bd5-reveal-media"
+                style={{ '--reveal-delay': '140ms' } as CSSProperties}
+                aria-hidden="true"
+              >
                 <StepMedia media={point.media} isActive={inView[i]} />
               </div>
             </div>

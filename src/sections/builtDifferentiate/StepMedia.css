@@ -11,13 +11,24 @@
   display: block;
 }
 
-/* Frames of a crossfade sequence stack and fade between each other. */
+/* Frames of a crossfade sequence stack by z-index: the incoming frame fades in
+   on top while the outgoing frame is held fully opaque directly beneath it, so
+   the stack stays fully covered and the backing never bleeds through. A short
+   blur resolves on the incoming frame for a soft settle. */
 .bd5-seq-frame {
-  transition: opacity 500ms ease;
+  filter: blur(4px);
+  transition:
+    opacity 450ms var(--ease-out),
+    filter 450ms var(--ease-out);
+}
+
+.bd5-seq-frame.is-shown {
+  filter: blur(0);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .bd5-seq-frame {
     transition: none;
+    filter: none;
   }
 }

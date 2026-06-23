@@ -117,3 +117,13 @@
     font-size: 16px;
   }
 }
+
+/* Reduced motion: the shared reveal recipe already drops the travel/scale, but
+   make doubly sure rows never sit hidden if their entrance is suppressed. */
+@media (prefers-reduced-motion: reduce) {
+  .bd5z-copy .bd5-reveal,
+  .bd5z-media.bd5-reveal-media {
+    opacity: 1;
+    transform: none;
+  }
+}

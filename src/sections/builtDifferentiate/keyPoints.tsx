@@ -1,3 +1,11 @@
+import type { ReactNode } from 'react';
+import {
+  Highlight,
+  ScreenshareChip,
+  TitleBadge,
+  Underline,
+} from './TitleDecorations';
+
 export type Media =
   | { kind: 'image'; src: string }
   | { kind: 'sequence'; frames: string[]; intervalMs?: number }
@@ -6,6 +14,11 @@ export type Media =
 
 export interface KeyPoint {
   title: string;
+  /**
+   * Optional decorated rendering of the title (HTML/CSS, no image exports).
+   * Falls back to the plain `title` string when omitted.
+   */
+  titleNode?: ReactNode;
   body: string;
   /** Tint used as the framed backing panel behind the screenshot. */
   tint: string;
@@ -22,6 +35,12 @@ export const KEY_POINTS: KeyPoint[] = [
   },
   {
     title: 'Fully editable AI outputs',
+    titleNode: (
+      <>
+        <TitleBadge>missing from most AI slide tools</TitleBadge>
+        <Underline>Fully editable</Underline> AI outputs
+      </>
+    ),
     body: "Every AI output is fully editable — refine, rewrite, or reshape until it's exactly what you need.",
     tint: 'var(--bg-highlight-blue)',
     media: {
@@ -36,6 +55,11 @@ export const KEY_POINTS: KeyPoint[] = [
   },
   {
     title: 'Inline AI, right where you need it.',
+    titleNode: (
+      <>
+        <Highlight>Inline AI</Highlight>, right where you need it.
+      </>
+    ),
     body: 'Select any text to trigger AI suggestions right where you are — no switching, no extra steps.',
     tint: 'var(--bg-highlight-pink)',
     media: {
@@ -50,6 +74,11 @@ export const KEY_POINTS: KeyPoint[] = [
   },
   {
     title: 'Share live, right in your meeting.',
+    titleNode: (
+      <>
+        Share live, <ScreenshareChip /> right in your meeting.
+      </>
+    ),
     body: 'Share and co-edit documents live, right inside your meeting.',
     tint: 'var(--gradient-accent)',
     media: { kind: 'image', src: '/core-features/share-live.png' },

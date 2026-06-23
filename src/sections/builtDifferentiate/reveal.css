@@ -1,0 +1,42 @@
+/* =============================================================================
+   Reveal-on-enter — shared entrance recipe for the BuiltDifferentiate V5 set.
+   An element (or an ancestor) flips `data-enter="true"` when it first scrolls
+   into view; tagged children settle from a faded + shifted start to rest.
+   Stagger with an inline `--reveal-delay`. Text travels; media scales so its
+   rounded, clipped frame keeps its corners through the reveal.
+   ========================================================================== */
+
+.bd5-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 450ms var(--ease-emphasized),
+    transform 450ms var(--ease-emphasized);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.bd5-reveal-media {
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    opacity 550ms var(--ease-emphasized),
+    transform 550ms var(--ease-emphasized);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+[data-enter='true'] .bd5-reveal,
+.bd5-reveal[data-enter='true'],
+[data-enter='true'] .bd5-reveal-media,
+.bd5-reveal-media[data-enter='true'] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Reduced motion: keep the fade, drop the travel/scale. */
+@media (prefers-reduced-motion: reduce) {
+  .bd5-reveal,
+  .bd5-reveal-media {
+    transform: none;
+    transition: opacity 300ms ease;
+  }
+}
