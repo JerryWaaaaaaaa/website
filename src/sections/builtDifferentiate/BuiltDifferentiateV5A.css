@@ -43,7 +43,7 @@
   gap: 20px;
   max-width: 560px;
   opacity: 0.4;
-  transition: opacity 300ms ease;
+  transition: opacity 240ms var(--ease-out);
 }
 
 .bd5-step.is-active {
@@ -90,11 +90,21 @@
   overflow: hidden;
 }
 
-/* Each step's media is stacked absolutely and crossfaded by opacity. */
+/* Each step's media is stacked absolutely and ordered by z-index: the incoming
+   slot fades in on top while the outgoing slot is held fully opaque beneath it,
+   so the dark backing never bleeds through mid-swap. A brief blur resolves on
+   the incoming slot so the swap reads as one settling transition. */
 .bd5-media-slot {
   position: absolute;
   inset: 0;
-  transition: opacity 400ms ease;
+  filter: blur(4px);
+  transition:
+    opacity 360ms var(--ease-out),
+    filter 360ms var(--ease-out);
+}
+
+.bd5-media-slot.is-shown {
+  filter: blur(0);
 }
 
 @media (max-width: 900px) {
@@ -148,5 +158,8 @@
   .bd5-step,
   .bd5-media-slot {
     transition: none;
+  }
+  .bd5-media-slot {
+    filter: none;
   }
 }

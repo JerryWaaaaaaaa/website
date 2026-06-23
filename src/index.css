@@ -56,6 +56,12 @@
 
   /* Layout — controlled live by the Section Variant Dial */
   --page-max-width: 1200px;
+
+  /* Motion — strong custom easings (built-in CSS easings are too weak).
+     --ease-out drives responsive UI feedback; --ease-emphasized is a touch
+     softer at the start for entrances that travel a longer distance. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Tailwind v4 theme bridge — makes tokens available as utility classes
@@ -130,7 +136,7 @@ body {
   white-space: nowrap;
   text-decoration: none;
   transition: opacity 150ms ease, background 150ms ease,
-    transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+    transform 160ms var(--ease-out);
 }
 
 /* Press feedback — the button should feel like it heard the click. */

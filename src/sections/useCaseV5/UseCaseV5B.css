@@ -1,0 +1,77 @@
+/* =============================================================================
+   Use Case V5 — Variant B "Sliding" overrides (layered over useCaseV5.css)
+   Tabs hug their labels and never grow; a single .uc5b-fill element provides the
+   active surface and slides/resizes between tabs. Measured geometry lives in
+   inline styles (left/width); motion comes from the transition below.
+   ========================================================================== */
+
+/* Tabs stay natural width and transparent (base styles); the fill behind them is
+   the only active surface, so labels just need to sit above it. */
+.uc5-tabs.is-sliding .uc5-tab {
+  z-index: 1;
+}
+
+/* The sliding fill — one element, animated via left/width with an emphasized
+   curve so it accelerates and settles naturally. */
+.uc5b-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  z-index: 0;
+  background: var(--bg-accent-light);
+  border-top-left-radius: var(--uc5-panel-radius);
+  border-top-right-radius: var(--uc5-panel-radius);
+  pointer-events: none;
+  transition: left 360ms var(--ease-emphasized), width 360ms var(--ease-emphasized);
+}
+
+/* Curved shoulders ride the fill's bottom corners and flare into the panel. */
+.uc5b-shoulder {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--uc5-shoulder-w);
+  pointer-events: none;
+}
+
+.uc5b-shoulder.left {
+  left: calc(var(--uc5-shoulder-w) * -1 + 1px);
+}
+
+.uc5b-shoulder.right {
+  right: calc(var(--uc5-shoulder-w) * -1 + 1px);
+}
+
+.uc5b-shoulder svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* When the active tab is flush with the panel's left edge, drop the left
+   shoulder (it would flare off-canvas). The fill keeps its rounded top-left so
+   the corner reads smoothly, while the panel stays squared (.is-active-first)
+   so the left edge continues straight below the corner. */
+.uc5b-fill.is-flush-left .uc5b-shoulder.left {
+  display: none;
+}
+
+/* On small screens the tab row scrolls horizontally, which would desync an
+   absolutely-positioned fill. Fall back to a simple filled active tab. */
+@media (max-width: 899px) {
+  .uc5-tabs.is-sliding .uc5b-fill {
+    display: none;
+  }
+  .uc5-tabs.is-sliding .uc5-tab.is-active {
+    background: var(--bg-accent-light);
+    border-radius: 16px 16px 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .uc5b-fill {
+    transition: none;
+  }
+}

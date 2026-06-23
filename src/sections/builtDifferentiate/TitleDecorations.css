@@ -1,0 +1,203 @@
+/* =============================================================================
+   Built Different — decorative title pieces
+   All sizing is em-relative so it scales with each variant's heading size.
+   Pieces are structured so they can be animated later (underline draw-on,
+   highlight sweep, sparkle pop, hand tap) without restructuring the markup.
+   ========================================================================== */
+
+/* Badge pill above a title (e.g. "missing from most AI slide tools"). */
+.kp-badge {
+  display: block;
+  width: fit-content;
+  margin-bottom: 0.16em;
+  padding: 0.43em 0.85em;
+  border-radius: 999px;
+  background: var(--bg-accent-light);
+  color: var(--text-highlight);
+  font-size: 0.32em;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+/* Underline swash beneath a phrase. */
+.kp-underline {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.kp-underline-line {
+  position: absolute;
+  left: 0;
+  right: 0; /* exactly the text width, no stretch/cap overshoot */
+  bottom: -0.04em;
+  height: 0.07em; /* ~3px at 44px */
+  background: var(--text-highlight);
+  border-radius: 999px;
+  transform-origin: left center; /* grows from the left edge */
+}
+
+/* Marker-style highlight behind a phrase, with tinted text. */
+.kp-highlight {
+  position: relative;
+  display: inline-block;
+  padding: 0 0.06em;
+}
+
+.kp-highlight-fill {
+  position: absolute;
+  top: 0.08em;
+  bottom: 0.06em;
+  left: 0;
+  right: 0;
+  background: #d4e6fc;
+  transform-origin: left center;
+}
+
+.kp-highlight-text {
+  position: relative;
+  color: var(--text-highlight);
+}
+
+/* AI Companion sparkle, anchored to the top-right of the highlight. */
+.kp-sparkle {
+  position: absolute;
+  top: -0.5em;
+  right: -0.42em;
+  width: 0.78em;
+  height: 0.78em;
+  pointer-events: none;
+}
+
+/* Inline dark screenshare control chip. */
+.kp-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.16em;
+  height: 1em;
+  margin: 0 0.06em;
+  border-radius: 0.14em;
+  background: #131619;
+  vertical-align: -0.16em;
+}
+
+.kp-chip-icon {
+  width: 0.55em;
+  height: 0.55em;
+}
+
+/* Pointing-hand cursor overlapping the chip's lower-right corner. */
+.kp-hand {
+  position: absolute;
+  right: -0.42em;
+  bottom: -0.58em;
+  width: 1.18em;
+  height: 1.18em;
+  pointer-events: none;
+}
+
+/* =============================================================================
+   Entrance — the decorations are the "second beat" of a title's reveal.
+   They sit in their final state by default, so any title that never opts in
+   (no `data-enter` ancestor) renders complete. When a title block flips
+   `data-enter="true"` they replay once, sequenced a beat after the text settles:
+   badge -> underline / highlight sweep -> sparkle pop -> hand tap.
+   ========================================================================== */
+
+/* Badge drifts up as the title arrives. */
+[data-enter] .kp-badge {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 300ms var(--ease-emphasized) 120ms,
+    transform 300ms var(--ease-emphasized) 120ms;
+}
+
+/* Underline grows on left-to-right from its left edge. */
+[data-enter] .kp-underline-line {
+  transform: scaleX(0);
+  transition: transform 500ms var(--ease-out) 250ms;
+}
+
+/* Highlight sweeps in like a marker stroke from its left edge. */
+[data-enter] .kp-highlight-fill {
+  transform: scaleX(0);
+  transition: transform 350ms var(--ease-out) 280ms;
+}
+
+/* Sparkle pops after the sweep lands. */
+[data-enter] .kp-sparkle {
+  opacity: 0;
+  transform: scale(0.6) rotate(-12deg);
+  transition:
+    opacity 200ms var(--ease-out) 440ms,
+    transform 260ms var(--ease-out) 440ms;
+}
+
+/* Hand fades in and taps the chip once. */
+[data-enter] .kp-hand {
+  opacity: 0;
+}
+
+[data-enter='true'] .kp-badge {
+  opacity: 1;
+  transform: none;
+}
+
+[data-enter='true'] .kp-underline-line {
+  transform: scaleX(1);
+}
+
+[data-enter='true'] .kp-highlight-fill {
+  transform: scaleX(1);
+}
+
+[data-enter='true'] .kp-sparkle {
+  opacity: 1;
+  transform: none;
+}
+
+[data-enter='true'] .kp-hand {
+  animation: kp-hand-tap 600ms var(--ease-out) 360ms both;
+}
+
+@keyframes kp-hand-tap {
+  0% {
+    opacity: 0;
+    transform: translate(4px, -6px) scale(0.9);
+  }
+  42% {
+    opacity: 1;
+    transform: translate(0, 3px) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+/* Reduced motion: land every decoration in its final state, no movement. */
+@media (prefers-reduced-motion: reduce) {
+  [data-enter] .kp-badge,
+  [data-enter] .kp-sparkle {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+  [data-enter] .kp-underline-line {
+    transition: none;
+    transform: scaleX(1);
+  }
+  [data-enter] .kp-highlight-fill {
+    transition: none;
+    transform: scaleX(1);
+  }
+  [data-enter] .kp-hand {
+    animation: none;
+    opacity: 1;
+  }
+}

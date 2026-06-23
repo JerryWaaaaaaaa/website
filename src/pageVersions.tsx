@@ -6,7 +6,7 @@ import { HeroV4 } from './sections/HeroV4';
 import { HeroV5 } from './sections/HeroV5';
 import { BuiltDifferentiate } from './sections/BuiltDifferentiate';
 import { OpenPlatformV5 } from './sections/OpenPlatformV5';
-import { UseCaseV5 } from './sections/UseCaseV5';
+import { UseCaseV5B } from './sections/useCaseV5/UseCaseV5B';
 import { ProductSuite } from './sections/ProductSuite';
 import { SectionVariantSlot } from './components/SectionVariantSlot';
 import { BuiltUnique } from './sections/BuiltUnique';
@@ -102,7 +102,7 @@ export const PAGE_VERSIONS: PageVersion[] = [
         <SectionVariantSlot groupId="productSuite" />
         <SectionVariantSlot groupId="builtDifferentiate" />
         <OpenPlatformV5 />
-        <UseCaseV5 />
+        <UseCaseV5B />
       </>
     ),
   },

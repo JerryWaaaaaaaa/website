@@ -151,7 +151,28 @@
   transform-origin: center center;
   /* transform/opacity are scroll-linked (set inline every frame) so they have
      no transition and track scroll 1:1. */
+}
+
+/* Promote cards to their own layers only while the wheel is actively turning;
+   the JS drops `is-scrolling` shortly after motion settles so idle cards don't
+   hold GPU memory. */
+.bd5d-wheel.is-scrolling .bd5d-card {
   will-change: transform, opacity;
+}
+
+/* The pinned box fades + scales in the first time it scrolls into view. Center
+   origin is correct here — it is a container in the viewport, not a popover. */
+.bd5d-box[data-enter] {
+  opacity: 0;
+  transform: scale(0.985);
+  transition:
+    opacity 600ms var(--ease-emphasized),
+    transform 600ms var(--ease-emphasized);
+}
+
+.bd5d-box[data-enter='true'] {
+  opacity: 1;
+  transform: none;
 }
 
 /* Fallback list is hidden on desktop / when motion is allowed. When shown it
