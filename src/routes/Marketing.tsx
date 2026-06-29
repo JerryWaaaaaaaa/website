@@ -1,7 +1,10 @@
 import { useSearchParams } from 'react-router-dom';
+import { DialRoot } from 'dialkit';
+import 'dialkit/styles.css';
 import { Nav } from '../components/Nav';
 import { HeroVariantToggle } from '../components/HeroVariantToggle';
-import { SectionVariantDial } from '../components/SectionVariantDial';
+import { V5Tuning } from '../components/V5Tuning';
+import { V5VariantProvider } from '../components/V5VariantContext';
 import { Footer } from '../sections/Footer';
 import { PAGE_VERSIONS, DEFAULT_VERSION } from '../pageVersions';
 
@@ -15,10 +18,13 @@ export function Marketing() {
   return (
     <>
       <Nav />
-      <main>{version.render()}</main>
+      <V5VariantProvider>
+        <main>{version.render()}</main>
+      </V5VariantProvider>
       <Footer />
       <HeroVariantToggle />
-      <SectionVariantDial />
+      <V5Tuning />
+      <DialRoot position="bottom-right" defaultOpen={false} />
     </>
   );
 }

@@ -157,7 +157,7 @@ export function BuiltDifferentiateV5D() {
               </div>
             </div>
 
-            {/* Right: rounded vertical wheel carousel. */}
+            {/* Right: vertical wheel carousel, masked to fade at top/bottom. */}
             <div className="bd5d-carousel" aria-hidden="true">
               <div className="bd5d-wheel" ref={wheelRef}>
                 {KEY_POINTS.map((point, i) => (

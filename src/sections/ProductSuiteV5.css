@@ -9,7 +9,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 64px;
+  gap: 40px;
   padding: 120px 24px;
   background: var(--bg-accent-light);
 }
@@ -39,7 +39,7 @@
   position: relative;
   width: 100%;
   max-width: 1051px;
-  height: 252px;
+  height: var(--psuite-stage-height, 252px);
   overflow: hidden;
 }
 
@@ -50,7 +50,9 @@
 .psuite-v5-glow {
   position: absolute;
   left: 50%;
-  top: 50%;
+  /* Fixed top anchor (= default stage height / 2) so the wash stays put as the
+     suiteHeight dial shrinks the stage; the bottom crops instead. */
+  top: 126px;
   width: 1305px;
   height: 1305px;
   transform: translate(-50%, calc(-50% + 566px));
@@ -79,7 +81,9 @@
 .psuite-v5-icon {
   position: absolute;
   left: 50%;
-  top: 50%;
+  /* Fixed top anchor (= default stage height / 2) so the arc stays pinned to the
+     top of the stage; shrinking the suiteHeight dial crops from the bottom. */
+  top: 126px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -116,7 +120,10 @@
 .psuite-v5-screen {
   position: relative;
   width: 100%;
-  aspect-ratio: 1176 / 757;
+  /* Matches the Slides stage (1280x694) so the live mockup fills it exactly and
+     the slide gets equal padding on all sides. Other products are object-fit:
+     cover, so they just crop slightly to this shorter card. */
+  aspect-ratio: 1280 / 694;
   background: #fff;
   border: 1px solid var(--stroke);
   border-radius: 28px;
@@ -131,13 +138,59 @@
   object-fit: cover;
   object-position: top center;
   transition: opacity 250ms ease-out;
+  /* Non-interactive product layers must not intercept clicks meant for the
+     live slides mockup stacked beneath them. */
+  pointer-events: none;
+}
+
+/* Live DOM mockup (Slides) participates in the same opacity cross-fade as the
+   other products' images/videos, but hosts children instead of a bitmap. */
+.psuite-v5-screen-live {
+  position: absolute;
+  inset: 0;
+  transition: opacity 250ms ease-out;
+}
+
+/* --- Floating Slides UI panels (spill outside the card) ---------------- */
+.psuite-v5-screen-wrap {
+  position: relative;
+  width: 100%;
+}
+.psuite-v5-floats {
+  position: absolute;
+  inset: 0; /* matches the card box; children spill via offsets */
+  z-index: 3;
+  pointer-events: none;
+  transition: opacity 250ms ease-out;
+}
+.psuite-v5-float {
+  position: absolute;
+  display: block;
+  height: auto;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.12));
+}
+/* Positions/sizes as % of the card so they scale with it. */
+.psuite-v5-float--prompt {
+  top: var(--float-prompt-top, -4%);
+  left: var(--float-prompt-left, 16.5%);
+  width: var(--float-prompt-w, 25.5%);
+}
+.psuite-v5-float--notes {
+  bottom: var(--float-notes-bottom, -6.5%);
+  left: var(--float-notes-left, 25%);
+  width: var(--float-notes-w, 53%);
+}
+.psuite-v5-float--voice {
+  top: var(--float-voice-top, 50%);
+  right: var(--float-voice-right, -20.5%);
+  width: var(--float-voice-w, 18.5%);
 }
 
 /* --- Responsive -------------------------------------------------------- */
 @media (max-width: 900px) {
   .psuite-v5 {
-    gap: 48px;
-    padding: 72px 20px;
+    gap: 32px;
+    padding: 56px 24px;
   }
   .psuite-v5-heading {
     font-size: 34px;

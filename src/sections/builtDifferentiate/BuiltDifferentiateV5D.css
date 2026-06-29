@@ -25,7 +25,7 @@
 }
 
 .bd5d-snap {
-  height: 100vh;
+  height: 140vh; /* was 100vh — longer pin / slower step; tunable */
   scroll-snap-align: start;
 }
 
@@ -40,22 +40,20 @@
   padding: 24px; /* gap between the box and the viewport edges */
 }
 
-/* The visible container: an inset, rounded, accent-filled box that clips the
-   wheel cards at its edges (matches the Figma design). */
+/* Transparent full-height layout wrapper. No card chrome — content sits directly
+   on the section background and fades at its edges via masks (see .bd5d-copy-col
+   and .bd5d-carousel) instead of being clipped by a box. Still drives the
+   entrance fade/scale and the width clamp. */
 .bd5d-box {
   position: relative;
   width: 100%;
-  /* Box hugs the page content width plus a 120px inset on each side (matching
+  /* Wrapper hugs the page content width plus a 120px inset on each side (matching
      .bd5d-inner's horizontal padding) so the inner column lines up with the
      rest of the page at --page-max-width. */
   max-width: calc(var(--page-max-width) + 240px);
-  /* Hug the content with ~120px above/below instead of filling the viewport:
-     ~ card height (~416px) + ~120px top + ~120px bottom. */
-  height: 680px;
-  max-height: calc(100vh - 48px);
-  background: var(--bg-accent-medium);
-  border-radius: 32px;
-  overflow: hidden;
+  /* Fill the pin (minus its 24px padding) so the content area is as tall as the
+     viewport allows. */
+  height: 100%;
 }
 
 .bd5d-inner {
@@ -131,6 +129,18 @@
 .bd5d-carousel {
   position: relative;
   height: 100%;
+  overflow: hidden; /* safety clip behind the fade */
+  /* Two stacked mask layers — vertical (top/bottom) fade + right-edge fade —
+     intersected so a pixel paints only where both are opaque. Cards fade out at
+     the right instead of being hard-cropped. */
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%),
+    linear-gradient(to right, #000 55%, transparent 100%);
+  -webkit-mask-composite: source-in; /* WebKit intersect */
+  mask-image:
+    linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%),
+    linear-gradient(to right, #000 55%, transparent 100%);
+  mask-composite: intersect; /* standard intersect */
 }
 
 .bd5d-wheel {

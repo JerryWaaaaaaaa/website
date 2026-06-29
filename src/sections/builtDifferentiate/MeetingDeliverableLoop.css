@@ -1,0 +1,87 @@
+/* =============================================================================
+   Meeting deliverable — animated illustration
+   A static floating video window on the left; the deliverable cards loop
+   vertically on the right as a seamless marquee. Mirrors the hero-marquee
+   pattern (src/index.css) on the Y axis and the edge-fade masks used by the
+   BuiltDifferentiate V5 variants. Fills its positioned, 5:4 media wrapper.
+   ========================================================================== */
+
+.md-loop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: linear-gradient(125deg, #f3f8ff 0%, #e3edfc 48%, #d2def2 100%);
+}
+
+/* Static video window, left of center and vertically centered. Sized as a share
+   of the frame width so it tracks the 5:4 wrapper at every variant scale. */
+.md-loop-video {
+  position: absolute;
+  left: 10%;
+  top: 50%;
+  width: 30%;
+  height: auto;
+  transform: translateY(-50%);
+}
+
+/* Right lane: clips the looping column and fades it at the top and bottom.
+   inline-size container so the inter-card gap can scale with the lane width. */
+.md-loop-lane {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 40%;
+  overflow: hidden;
+  container-type: inline-size;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 14%,
+    #000 86%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 14%,
+    #000 86%,
+    transparent 100%
+  );
+}
+
+.md-loop-track {
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+  animation: md-card-loop 24s linear infinite;
+}
+
+/* Each card carries its own trailing gap so the wrap point keeps the column's
+   rhythm. The track holds two identical sets; translating up by half its height
+   lands the duplicate exactly where the original sat — a seamless loop. */
+.md-loop-card {
+  width: 100%;
+  height: auto;
+  display: block;
+  /* Matches the agenda/summary cards' baked ~20px corner (≈10% of card width)
+     so the kanban cover — which exports with a square bottom — rounds to match. */
+  border-radius: 9cqw;
+  overflow: hidden;
+  margin-bottom: 10cqw;
+}
+
+@keyframes md-card-loop {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .md-loop-track {
+    animation: none;
+  }
+}
