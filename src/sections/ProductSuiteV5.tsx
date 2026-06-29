@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import './ProductSuiteV5.css';
+import { SlidesMockup } from './productSuite/SlidesMockup';
 
 type Product = {
   key: string;
@@ -24,13 +25,15 @@ const PRODUCTS: Product[] = [
     label: 'Slides',
     icon: '/Icon/product-slides.svg',
     screen: '/hero-browser/slides-UI.png',
-    video: '/product-videos/slides-website.mp4',
+    // Slides renders as a live, animated DOM mockup (see SlidesMockup) rather
+    // than a video — special-cased in the screen render below.
   },
   {
     key: 'sheets',
     label: 'Sheets',
     icon: '/Icon/product-sheet.svg',
     screen: '/hero-browser/sheets-ui.png',
+    video: '/product-videos/Sheets-%20finalized%20version.mp4',
   },
   {
     key: 'paper',
@@ -167,7 +170,7 @@ export function ProductSuiteV5() {
   return (
     <section className="psuite-v5">
       <h2 className="psuite-v5-heading">
-        The only productivity tool for every task you need
+        For every task you need
       </h2>
 
       <div className="psuite-v5-body">
@@ -205,9 +208,25 @@ export function ProductSuiteV5() {
           })}
         </div>
 
+        <div className="psuite-v5-screen-wrap">
         <div className="psuite-v5-screen">
-          {PRODUCTS.map((product) =>
-            product.video ? (
+          {PRODUCTS.map((product) => {
+            if (product.key === 'slides') {
+              return (
+                <div
+                  key="slides"
+                  className="psuite-v5-screen-live"
+                  style={{
+                    opacity: active === 'slides' ? 1 : 0,
+                    pointerEvents: active === 'slides' ? 'auto' : 'none',
+                  }}
+                  aria-hidden={active !== 'slides'}
+                >
+                  <SlidesMockup active={active === 'slides'} />
+                </div>
+              );
+            }
+            return product.video ? (
               <video
                 key={product.key}
                 src={product.video}
@@ -229,8 +248,32 @@ export function ProductSuiteV5() {
                 style={{ opacity: product.key === active ? 1 : 0 }}
                 aria-hidden={product.key !== active}
               />
-            ),
-          )}
+            );
+          })}
+        </div>
+
+        {/* Floating Slides UI panels that spill outside the card (shown on Slides). */}
+        <div
+          className="psuite-v5-floats"
+          style={{ opacity: active === 'slides' ? 1 : 0 }}
+          aria-hidden={active !== 'slides'}
+        >
+          <img
+            className="psuite-v5-float psuite-v5-float--prompt"
+            src="/slides-mockup/prompt.png"
+            alt=""
+          />
+          <img
+            className="psuite-v5-float psuite-v5-float--notes"
+            src="/slides-mockup/speaker-note.png"
+            alt=""
+          />
+          <img
+            className="psuite-v5-float psuite-v5-float--voice"
+            src="/slides-mockup/select-voice-over.png"
+            alt=""
+          />
+        </div>
         </div>
       </div>
     </section>

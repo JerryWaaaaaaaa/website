@@ -9,7 +9,7 @@
 // Behavior:
 //   - Resolves the BASE..TIP range; lists all non-[handoff] commits in it.
 //   - Skips if the range has no meaningful commits or only ignored-path changes.
-//   - Calls `cursor-agent -p --output-format text --force --trust "<prompt>"`.
+//   - Calls `claude -p --output-format text` with the prompt fed via stdin.
 //   - Writes the model's markdown section to handoffs/YYYY-MM-DD-HHMM-<base>-<tip>.md.
 //   - Commits the new file as `[handoff] for push (N commits): <first> ... <last>`.
 //   - Streams progress to stdout (pre-push hook forwards it to GitHub Desktop).
@@ -218,14 +218,14 @@ ${headerTitle}
 `;
 }
 
-function runCursorAgent(prompt) {
+function runClaude(prompt) {
   return new Promise((resolveP, rejectP) => {
-    const args = ["-p", "--output-format", "text", "--force", "--trust"];
+    const args = ["-p", "--output-format", "text"];
     if (MODEL) args.push("--model", MODEL);
-    args.push(prompt);
+    // Prompt is fed via stdin (below) to avoid ARG_MAX limits on large diffs.
 
-    log(`Invoking cursor-agent (prompt ${prompt.length} chars)...`);
-    const child = spawn("cursor-agent", args, {
+    log(`Invoking claude (prompt ${prompt.length} chars)...`);
+    const child = spawn("claude", args, {
       cwd: REPO_ROOT,
       env: {
         ...process.env,
@@ -240,10 +240,13 @@ function runCursorAgent(prompt) {
     child.on("error", (err) => rejectP(err));
     child.on("close", (code) => {
       if (code !== 0) {
-        return rejectP(new Error(`cursor-agent exited ${code}\nstderr:\n${stderr}\nstdout:\n${stdout}`));
+        return rejectP(new Error(`claude exited ${code}\nstderr:\n${stderr}\nstdout:\n${stdout}`));
       }
       resolveP(stdout.trim());
     });
+
+    child.stdin.write(prompt);
+    child.stdin.end();
   });
 }
 
@@ -322,10 +325,10 @@ async function main() {
 
   const now = new Date();
   const prompt = buildPrompt({ commits, stat, diff, range, baseShort, tipShort, now });
-  const entry = await runCursorAgent(prompt);
+  const entry = await runClaude(prompt);
 
   if (!entry || entry.length < 40) {
-    throw new Error(`cursor-agent returned an unexpectedly short response: ${JSON.stringify(entry)}`);
+    throw new Error(`claude returned an unexpectedly short response: ${JSON.stringify(entry)}`);
   }
 
   const stamp = fileStamp(now);

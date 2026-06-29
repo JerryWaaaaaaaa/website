@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Media } from './keyPoints';
+import { MeetingDeliverableLoop } from './MeetingDeliverableLoop';
 import './StepMedia.css';
 
 function SequenceMedia({
@@ -68,6 +69,11 @@ export function StepMedia({
 }) {
   switch (media.kind) {
     case 'image':
+      // The "every meeting becomes a deliverable" still is replaced by an
+      // animated illustration whose cards loop vertically. (Intercepted here by
+      // src rather than via the `layers` kind because keyPoints.tsx is locked.)
+      if (media.src === '/core-features/meeting-deliverable.png')
+        return <MeetingDeliverableLoop />;
       return (
         <img
           src={media.src}
@@ -86,7 +92,8 @@ export function StepMedia({
         />
       );
     case 'layers':
-      // No renderer yet — kept so the model is ready for layered animations.
+      if (media.animation === 'meeting-deliverable') return <MeetingDeliverableLoop />;
+      // No renderer for other layered animations yet.
       return null;
   }
 }

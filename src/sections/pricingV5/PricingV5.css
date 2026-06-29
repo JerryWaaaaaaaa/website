@@ -1,0 +1,296 @@
+/* =============================================================================
+   Pricing V5 — three-tier card grid with billing toggle
+   ========================================================================== */
+
+.pr5-section {
+  width: 100%;
+  padding: 120px 40px;
+  background: var(--bg-accent-light);
+}
+
+.pr5-inner {
+  width: 100%;
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+}
+
+/* Header — centered chip, title, billing toggle */
+.pr5-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+  margin-bottom: 56px;
+}
+
+.pr5-title {
+  font-family: 'General Sans', sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0;
+  max-width: 720px;
+}
+
+/* Toggle + explore link sit side by side under the title */
+.pr5-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Lightweight text button */
+.pr5-explore {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'General Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--text-highlight);
+  text-decoration: none;
+  transition: opacity 150ms ease;
+}
+
+.pr5-explore svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pr5-explore:hover {
+    opacity: 0.7;
+  }
+}
+
+/* Segmented billing pill */
+.pr5-toggle {
+  display: inline-flex;
+  padding: 4px;
+  background: var(--bg-accent-medium);
+  border-radius: var(--radius-pill);
+}
+
+.pr5-toggle-btn {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 20px;
+  font-family: 'General Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--text-secondary);
+  background: transparent;
+  border-radius: var(--radius-pill);
+  transition: background 200ms var(--ease-out), color 200ms var(--ease-out);
+}
+
+.pr5-toggle-btn.is-active {
+  background: var(--bg-contrast);
+  color: var(--text-contrast);
+}
+
+/* Card grid */
+.pr5-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.pr5-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 32px;
+  background: var(--bg-neutral);
+  border: 1px solid var(--stroke);
+  border-radius: 24px;
+}
+
+/* Featured card — filled blue highlight; flip text/CTA/icons for contrast */
+.pr5-card.is-featured {
+  background: var(--bg-highlight-blue);
+  border-color: transparent;
+  color: var(--text-contrast);
+}
+
+.pr5-card.is-featured .pr5-card-name,
+.pr5-card.is-featured .pr5-price-amount,
+.pr5-card.is-featured .pr5-credits,
+.pr5-card.is-featured .pr5-features-intro {
+  color: var(--text-contrast);
+}
+
+.pr5-card.is-featured .pr5-card-blurb,
+.pr5-card.is-featured .pr5-price-suffix,
+.pr5-card.is-featured .pr5-feature {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.pr5-card.is-featured .pr5-check {
+  color: var(--color-white);
+}
+
+.pr5-card.is-featured .pr5-features-intro {
+  border-top-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Badge + CTA flip to white-on-blue so they stay visible */
+.pr5-card.is-featured .pr5-badge {
+  background: var(--color-white);
+  color: var(--text-highlight);
+}
+
+.pr5-card.is-featured .pr5-cta {
+  background: var(--color-white);
+  color: var(--text-highlight);
+}
+
+.pr5-badge {
+  position: absolute;
+  top: -13px;
+  left: 32px;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: var(--bg-highlight-blue);
+  color: var(--text-contrast);
+  font-family: 'General Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.pr5-card-name {
+  font-family: 'General Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.pr5-card-blurb {
+  font-family: 'General Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  margin: 0;
+  min-height: 42px;
+}
+
+/* Price row */
+.pr5-price {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pr5-price-amount {
+  font-family: 'General Sans', sans-serif;
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.pr5-price-suffix {
+  font-family: 'General Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.pr5-credits {
+  font-family: 'General Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-highlight);
+  margin: 0;
+}
+
+/* CTA fills the card width */
+.pr5-cta {
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* Feature list — intro line owns the divider above the bullets */
+.pr5-features-intro {
+  margin: 8px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--stroke);
+  font-family: 'General Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--text-primary);
+}
+
+.pr5-features {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pr5-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-family: 'General Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--text-secondary);
+}
+
+.pr5-check {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  color: var(--text-highlight);
+}
+
+/* Pricing V5 — tablet */
+@media (max-width: 1199px) {
+  .pr5-section { padding: 72px 32px; }
+  .pr5-title { font-size: 36px; }
+  .pr5-head { margin-bottom: 40px; }
+  .pr5-grid { gap: 16px; }
+  .pr5-card { padding: 24px; }
+}
+
+/* Pricing V5 — mobile (cards stack to one column) */
+@media (max-width: 639px) {
+  .pr5-section { padding: 56px 20px; }
+  .pr5-title { font-size: 28px; }
+  .pr5-grid { grid-template-columns: 1fr; gap: 20px; }
+  .pr5-badge { left: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pr5-toggle-btn {
+    transition: none;
+  }
+}

@@ -3,10 +3,10 @@ import { Hero } from './sections/Hero';
 import { HeroV2 } from './sections/HeroV2';
 import { HeroV3 } from './sections/HeroV3';
 import { HeroV4 } from './sections/HeroV4';
-import { HeroV5 } from './sections/HeroV5';
 import { BuiltDifferentiate } from './sections/BuiltDifferentiate';
 import { OpenPlatformV5 } from './sections/OpenPlatformV5';
 import { UseCaseV5B } from './sections/useCaseV5/UseCaseV5B';
+import { PricingV5 } from './sections/pricingV5/PricingV5';
 import { ProductSuite } from './sections/ProductSuite';
 import { SectionVariantSlot } from './components/SectionVariantSlot';
 import { BuiltUnique } from './sections/BuiltUnique';
@@ -98,11 +98,12 @@ export const PAGE_VERSIONS: PageVersion[] = [
     // v5 is a full independent duplicate of v4 with its own section copies.
     render: () => (
       <>
-        <HeroV5 />
+        <SectionVariantSlot groupId="hero" />
         <SectionVariantSlot groupId="productSuite" />
         <SectionVariantSlot groupId="builtDifferentiate" />
         <OpenPlatformV5 />
         <UseCaseV5B />
+        <PricingV5 />
       </>
     ),
   },

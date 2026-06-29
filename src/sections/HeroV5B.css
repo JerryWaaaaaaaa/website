@@ -1,0 +1,82 @@
+/* =============================================================================
+   Hero V5B — grouped suite row with Mac-Dock-style hover (variant of HeroV5)
+   Base hero styles are inherited from HeroV5.css; this file only restyles the
+   bottom suite row into three story groups with hover magnification and a
+   caption line that fades in on hover.
+   ========================================================================== */
+
+.hero-v5b-suite-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 24px;
+}
+
+/* Wrapper that pairs each group with the divider that precedes it, so the rule
+   sits between groups and wraps along with them. */
+.hero-v5b-suite-cluster {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.hero-v5b-suite-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  border-radius: 12px;
+  outline: none;
+  transition: opacity 200ms var(--ease-out);
+}
+
+/* Per-icon magnetic magnification. JS writes a proximity factor (--mag, 0→1)
+   per badge based on cursor distance (see HeroV5B.tsx); CSS turns it into a
+   scale, multiplied by the dial-tunable --suite-magnify-max. transform only, so
+   no layout shift; transform-origin center grows each badge symmetrically about
+   the icon+label center, and a short transition smooths the cursor follow. */
+.hero-v5b-suite-row .hero-v5-suite-badge {
+  transform-origin: center;
+  transform: scale(calc(1 + (var(--suite-magnify-max, 1.45) - 1) * var(--mag, 0)));
+  transition: transform 120ms var(--ease-out);
+}
+
+/* Dim the groups you're not pointing at, to spotlight the hovered one. */
+.hero-v5b-suite-row.is-hovering .hero-v5b-suite-group:not(.is-active) {
+  opacity: 0.55;
+}
+
+/* Caption line below the row — height reserved so it never shifts the layout. */
+.hero-v5b-suite-hint {
+  margin: 0;
+  min-height: 22px;
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: center;
+  opacity: 0;
+  /* translateX (set inline) re-centers the hint under the hovered group. */
+  transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
+}
+
+.hero-v5b-suite-hint.is-visible {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* JS skips magnification under reduced motion; keep badges at rest. */
+  .hero-v5b-suite-row .hero-v5-suite-badge {
+    transform: none;
+  }
+}
+
+@media (max-width: 639px) {
+  .hero-v5b-suite-row,
+  .hero-v5b-suite-cluster {
+    gap: 12px;
+  }
+  .hero-v5b-suite-group {
+    gap: 8px;
+  }
+}

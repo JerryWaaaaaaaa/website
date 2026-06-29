@@ -11,6 +11,7 @@
     "handoff:run": "node scripts/generate-handoff.mjs"
   },
   "dependencies": {
+    "dialkit": "^1.3.0",
     "motion": "^12.38.0",
     "ogl": "^1.0.11",
     "react": "^19.2.5",
@@ -23,10 +24,10 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
+    "sharp": "^0.33.5",
     "tailwindcss": "^4.2.4",
     "typescript": "^6.0.3",
     "vite": "^8.0.9",
-    "sharp": "^0.33.5",
     "vite-plugin-markdown": "^2.2.0"
   }
 }

@@ -1,0 +1,391 @@
+/* =============================================================================
+   Slides Mockup — live, animated Zoom Slides editor (Figma node 3321:29416)
+   Replaces the static slides video inside ProductSuiteV5's screen card. The
+   chrome is reconstructed in the DOM on a fixed 1280x720 canvas (scaled to the
+   container) so the entrance, the "slides generate one by one" sequence, and
+   the collaborator cursors can all be animated.
+   ========================================================================== */
+
+.slm {
+  /* One near-white surface shared by the toolbar, rail and canvas. */
+  --slm-surface: #fcfcfc;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--slm-surface);
+  font-family: 'General Sans', sans-serif;
+  color: var(--text-primary);
+  /* The wrapper in ProductSuiteV5 owns the opacity cross-fade. */
+}
+
+/* Fixed design canvas, scaled to fill the screen card by width. Height (694)
+   is tuned so the centered 16:9 slide gets ~20px padding on all four sides;
+   the card's aspect-ratio (ProductSuiteV5.css) matches 1280/694. */
+.slm-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1280px;
+  height: 694px;
+  transform-origin: top left;
+  transform: scale(var(--slm-scale, 1));
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Entrance stagger (mirrors builtDifferentiate/reveal.css) ----------- */
+.slm-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 460ms var(--ease-emphasized),
+    transform 460ms var(--ease-emphasized);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.slm[data-enter='true'] .slm-reveal {
+  opacity: 1;
+  transform: none;
+}
+
+/* --- Top toolbar ------------------------------------------------------- */
+.slm-bar {
+  position: relative;
+  flex: 0 0 auto;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  background: var(--slm-surface);
+}
+.slm-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.slm-back {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  color: var(--text-secondary);
+}
+.slm-tools {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.slm-tool {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: transparent;
+}
+.slm-tool img {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+.slm-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.slm-avatars {
+  display: flex;
+  align-items: center;
+}
+/* Each avatar: colored presence ring + white gap, overlapping. */
+.slm-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  padding: 2px;
+  margin-left: -8px;
+}
+.slm-avatar:first-child {
+  margin-left: 0;
+}
+.slm-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1.5px solid var(--slm-surface);
+  object-fit: cover;
+  display: block;
+}
+.slm-share {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+}
+.slm-share img {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+.slm-iconbtn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+}
+.slm-iconbtn img {
+  width: 19px;
+  height: 19px;
+  display: block;
+}
+
+/* --- Body: rail + canvas ----------------------------------------------- */
+.slm-body {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  min-height: 0;
+}
+
+/* Left thumbnail rail */
+.slm-rail {
+  flex: 0 0 176px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 14px;
+  background: var(--slm-surface);
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Scrollable, but the scrollbar is hidden. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.slm-rail::-webkit-scrollbar {
+  display: none;
+}
+.slm-thumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  /* hidden until "generated" */
+  opacity: 0;
+  transform: translateY(8px) scale(0.96);
+  transition:
+    opacity 360ms var(--ease-out),
+    transform 360ms var(--ease-out);
+}
+.slm-thumb[data-on='true'] {
+  opacity: 1;
+  transform: none;
+}
+/* Selected row gets a soft card highlight (not a blue ring). */
+.slm-thumb[data-active='true'] {
+  background: rgba(0, 0, 0, 0.05);
+}
+.slm-thumb-num {
+  width: 14px;
+  flex: 0 0 14px;
+  text-align: right;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.slm-thumb-frame {
+  flex: 1 1 auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  cursor: pointer;
+}
+.slm-thumb[data-active='true'] .slm-thumb-frame {
+  border-color: rgba(0, 0, 0, 0.18);
+}
+.slm-thumb-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Canvas — the slide fills this area with a margin + rounded corners. */
+.slm-canvas {
+  position: relative;
+  flex: 1 1 auto;
+  background: var(--slm-surface);
+  overflow: hidden;
+}
+.slm-slide {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 40px);
+  aspect-ratio: 16 / 9;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #fff;
+  /* The custom "You" cursor stands in for the OS pointer over the slide. */
+  cursor: none;
+}
+.slm-slide img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 420ms var(--ease-out);
+}
+.slm-slide img[data-show='true'] {
+  opacity: 1;
+}
+/* Empty-canvas shimmer shown before the first slide generates */
+.slm-canvas-empty {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 40px);
+  aspect-ratio: 16 / 9;
+  border-radius: 20px;
+  background: linear-gradient(110deg, #ecebe7 30%, #f6f5f2 50%, #ecebe7 70%);
+  background-size: 200% 100%;
+  animation: slm-shimmer 1.3s linear infinite;
+}
+@keyframes slm-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* Page indicator — top-right inside the slide. */
+.slm-page {
+  position: absolute;
+  top: 22px;
+  right: 28px;
+  z-index: 2;
+  font-size: 13px;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+}
+/* Floating vertical AI toolbar over the slide's right edge. */
+.slm-aibar {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  cursor: none;
+}
+.slm[data-enter='true'] .slm-aibar {
+  /* keep the reveal's translateY from fighting the vertical centering */
+  transform: translateY(-50%);
+}
+.slm-aibar-btn {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+}
+.slm-aibar-btn img {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+/* --- Cursor overlay (screen-space px, above the scaled stage) ----------- */
+.slm-cursors {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+.slm-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.slm-cursor img {
+  display: block;
+  width: 124px;
+  height: auto;
+}
+
+/* "You" cursor follows the real pointer; shown only while over the slide. */
+.slm-cursor--mouse {
+  opacity: 0;
+  transition: opacity 160ms ease-out;
+}
+.slm-cursor--mouse[data-on='true'] {
+  opacity: 1;
+}
+.slm-cursor--mouse img {
+  width: 92px;
+}
+
+/* Two looped "editing" cursors — left/top percentage waypoints (relative to
+   the overlay) keep them roaming over the canvas and stay responsive. The
+   waypoints sit between the rail (~14%) and the voice panel (~78%). */
+.slm-cursor--a {
+  animation: slm-cursor-a 11s var(--ease-out) infinite;
+}
+.slm-cursor--b {
+  animation: slm-cursor-b 13s var(--ease-out) infinite;
+}
+@keyframes slm-cursor-a {
+  0%   { left: 30%; top: 66%; }
+  22%  { left: 44%; top: 40%; }
+  46%  { left: 38%; top: 28%; }
+  68%  { left: 56%; top: 54%; }
+  100% { left: 30%; top: 66%; }
+}
+@keyframes slm-cursor-b {
+  0%   { left: 60%; top: 32%; }
+  25%  { left: 42%; top: 70%; }
+  52%  { left: 26%; top: 50%; }
+  76%  { left: 52%; top: 40%; }
+  100% { left: 60%; top: 32%; }
+}
+
+/* --- Reduced motion ----------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .slm-reveal,
+  .slm-thumb,
+  .slm-slide img {
+    transition: none;
+  }
+  .slm-canvas-empty {
+    animation: none;
+  }
+  .slm-cursor--a,
+  .slm-cursor--b {
+    display: none;
+  }
+}
