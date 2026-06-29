@@ -31,7 +31,7 @@ const MONITOR_QUERY = '(min-width: 1440px)';
 // URL at mount via applyDefaults; the `tune` param packs both panels' changed
 // leaves keyed by `<Panel>.<path>` (e.g. "Layout.magnify", "Float.prompt.top").
 const LAYOUT_BASE: DialConfig = {
-  widthLaptop: [1024, WIDTH_MIN, WIDTH_MAX, WIDTH_STEP],
+  widthLaptop: [1020, WIDTH_MIN, WIDTH_MAX, WIDTH_STEP], // on the step-10 grid so dialkit doesn't re-snap (would falsely flag the default as changed)
   widthMonitor: [1200, WIDTH_MIN, WIDTH_MAX, WIDTH_STEP],
   magnify: [1.45, 1.0, 2.0, 0.05],
   suiteHeight: [190, 120, 400, 2], // .psuite-v5-stage height
