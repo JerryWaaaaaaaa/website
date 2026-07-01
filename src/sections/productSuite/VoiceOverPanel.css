@@ -1,0 +1,116 @@
+/* =============================================================================
+   Voice-over dropdown (Figma node 3321:29415) — replaces the static
+   select-voice-over float. Follows the Figma design's own styling (not the site
+   design system). The voice list is a pixel-faithful exported image; the
+   "Select Voice-over" button is a real DOM control that toggles the panel.
+   Built at a fixed 280x492 design box and scaled to the float slot.
+   ========================================================================== */
+
+.vo-wrap {
+  position: absolute;
+  inset: 0;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.vo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 492px;
+  transform: scale(var(--vo-scale, 1));
+  transform-origin: top left;
+}
+
+/* --- Voice list panel (image popover, floats above the button) ---------- */
+.vo-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 280px;
+  transform-origin: bottom center;
+  transition:
+    opacity 180ms var(--ease-out),
+    transform 200ms var(--ease-out);
+}
+.vo-panel img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 22px;
+  filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.12));
+}
+.vo[data-open='true'] .vo-panel {
+  opacity: 1;
+  transform: none;
+}
+.vo[data-open='false'] .vo-panel {
+  opacity: 0;
+  transform: scale(0.96) translateY(8px);
+  pointer-events: none;
+}
+
+/* --- "Select Voice-over" button (DOM, interactive) ---------------------- */
+.vo-btn {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 280px;
+  height: 65px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0.94px solid #fff;
+  border-radius: 75px;
+  background-image: linear-gradient(
+    178.5deg,
+    rgba(255, 255, 255, 0.75) 5%,
+    rgba(255, 242, 245, 0.75) 95%
+  );
+  -webkit-backdrop-filter: blur(8.9px);
+  backdrop-filter: blur(8.9px);
+  box-shadow:
+    0 12px 30px rgba(251, 60, 128, 0.18),
+    0 2px 10px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  pointer-events: auto; /* parent .psuite-v5-floats is pointer-events:none */
+  transition:
+    transform 160ms var(--ease-out),
+    box-shadow 200ms ease;
+}
+.vo-btn-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1;
+  background: linear-gradient(180deg, #000 0%, #666 60%, #fb3c80 86%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@media (hover: hover) and (pointer: fine) {
+  .vo-btn:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 16px 38px rgba(251, 60, 128, 0.26),
+      0 3px 12px rgba(0, 0, 0, 0.08);
+  }
+}
+.vo-btn:active {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vo-panel {
+    transition: opacity 150ms ease;
+  }
+  .vo[data-open='false'] .vo-panel {
+    transform: none;
+  }
+  .vo-btn {
+    transition: box-shadow 200ms ease;
+  }
+  .vo-btn:active {
+    transform: none;
+  }
+}

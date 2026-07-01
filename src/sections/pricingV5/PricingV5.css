@@ -272,6 +272,14 @@
   color: var(--text-highlight);
 }
 
+/* Product icon shown in place of the check for suite add-on features */
+.pr5-feature-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+}
+
 /* Pricing V5 — tablet */
 @media (max-width: 1199px) {
   .pr5-section { padding: 72px 32px; }

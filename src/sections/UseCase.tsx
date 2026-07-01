@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '../components/Button';
 import './UseCase.css';
 
@@ -111,17 +111,43 @@ function FileTypeIcon({ type }: { type: FileType }) {
 export function UseCase() {
   const [active, setActive] = useState(PERSONAS[0].key);
   const current = PERSONAS.find((p) => p.key === active) ?? PERSONAS[0];
+  const isFirstActive = active === PERSONAS[0].key;
+  const isLastActive = active === PERSONAS[PERSONAS.length - 1].key;
+
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // Keep the active tab visible by scrolling the row HORIZONTALLY only (via the
+  // container's scrollLeft) — never scrollIntoView, which would also pull the
+  // page vertically.
+  useEffect(() => {
+    const tabs = tabsRef.current;
+    const btn = tabRefs.current[PERSONAS.findIndex((p) => p.key === active)];
+    if (!tabs || !btn) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const behavior: ScrollBehavior = reduce ? 'auto' : 'smooth';
+    const left = btn.offsetLeft;
+    const right = left + btn.offsetWidth;
+    if (left < tabs.scrollLeft) {
+      tabs.scrollTo({ left, behavior });
+    } else if (right > tabs.scrollLeft + tabs.clientWidth) {
+      tabs.scrollTo({ left: right - tabs.clientWidth, behavior });
+    }
+  }, [active]);
 
   return (
     <section className="uc-section">
       <div className="uc-inner">
         <div className="uc-folder">
-          <div className="uc-tabs" role="tablist" aria-label="Use cases by role">
-            {PERSONAS.map((p) => {
+          <div className="uc-tabs" role="tablist" aria-label="Use cases by role" ref={tabsRef}>
+            {PERSONAS.map((p, i) => {
               const isActive = p.key === active;
               return (
                 <button
                   key={p.key}
+                  ref={(el) => {
+                    tabRefs.current[i] = el;
+                  }}
                   role="tab"
                   aria-selected={isActive}
                   className={`uc-tab${isActive ? ' is-active' : ''}`}
@@ -133,7 +159,9 @@ export function UseCase() {
             })}
           </div>
 
-          <div className="uc-panel">
+          <div
+            className={`uc-panel${isFirstActive ? ' is-active-first' : ''}${isLastActive ? ' is-active-last' : ''}`}
+          >
             <div className="uc-panel-copy">
               <span className="chip uc-chip">use cases</span>
               <h2 className="uc-headline">

@@ -1,0 +1,1128 @@
+/* =============================================================================
+   Paper Mockup — live, animated Zoom Paper document editor + AI Companion panel
+   (Figma node 3320-25918, frame "paper" 2000x1050). Replaces the static Paper
+   image inside ProductSuiteV5's screen card.
+
+   Like SheetsMockup, this component intentionally does NOT follow the site style
+   guide: it uses the Figma file's own Inter type system and the exact design-token
+   hexes — declared as --ppm-* below.
+
+   Intro sequence (plays once the section is in view AND Paper is active):
+     1. the editor chrome (header / toolbar / page surface / footer) staggers in,
+     2. the right AI panel streams its blocks in one by one,
+     3. the document body fills its two columns in parallel,
+     4. after both finish: the floating comments / suggestions / history panels
+        pop, the in-text underlines + highlight + selection wipe in, and the three
+        collaborator cursor flags appear.
+   ========================================================================== */
+
+/* ---- Figma colour tokens (exact hexes) ----
+   Shared with .ppm-floats so the comments / suggestions / history widgets
+   (rendered outside .ppm, in ProductSuiteV5's float layer) resolve the same
+   tokens + Inter font. Without this they fall back to transparent backgrounds
+   and the site's General Sans. */
+.ppm,
+.ppm-floats {
+  --ppm-black: #000000;
+  --ppm-text-stronger: #2a2b2d;
+  --ppm-text-strong: #555b62;
+  --ppm-text-neutral: #686f79;
+  --ppm-text-disabled: #939ba4;
+  --ppm-blue: #0d6bde;
+  --ppm-brand: #0e72ed;
+  --ppm-border-subtle: #dfe3e8;
+  --ppm-border: #e6e6e6;
+  --ppm-border-light: #efefef;
+  --ppm-surface: #f7f9fa;
+  --ppm-bg-neutral: #fcfdfd;
+  --ppm-white: #ffffff;
+  --ppm-yellow: #ffc105;
+  --ppm-yellow-border: #fac515;
+  --ppm-yellow-soft: #ffe9a3; /* in-text highlight wash */
+  --ppm-lavender: #9a67fb;
+  --ppm-pink: #e64593;
+  --ppm-blue-fill: #ebf4ff;
+
+  --ppm-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  font-family: var(--ppm-font);
+}
+
+.ppm {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--ppm-surface);
+  color: var(--ppm-text-stronger);
+  /* The wrapper in ProductSuiteV5 owns the opacity cross-fade. */
+}
+
+/* Fixed design canvas (matches the card aspect 1280/694), scaled to fill the
+   screen card by width — the main UI is full-bleed (like Slides/Sheets). */
+.ppm-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1280px;
+  height: 694px;
+  transform-origin: top left;
+  transform: scale(var(--ppm-scale, 1));
+  background: var(--ppm-surface);
+}
+
+/* ---- Reveal primitives (all gated by the single data-enter flip) ---------- */
+.ppm-reveal,
+.ppm-pblock,
+.ppm-pop {
+  opacity: 0;
+}
+/* Delay lives only on the entered rule so elements REVEAL on their stagger but
+   HIDE instantly when Paper is deactivated — keeps the replay-on-return sequence
+   clean (floats re-pop after the text rather than lingering visible). */
+.ppm-reveal {
+  transform: translateY(10px);
+  transition:
+    opacity 460ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ppm-pblock {
+  transform: translateY(8px);
+  transition:
+    opacity 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ppm-pop {
+  transform: translateY(8px) scale(0.98);
+  transition:
+    opacity 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ppm[data-enter='true'] .ppm-reveal,
+.ppm[data-enter='true'] .ppm-pblock,
+.ppm[data-enter='true'] .ppm-pop {
+  opacity: 1;
+  transform: none;
+  transition-delay: var(--d, 0ms);
+}
+
+/* ---- main-ui: editor + AI panel, full-bleed (fills the whole card) -------- */
+.ppm-main {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  background: var(--ppm-white);
+  overflow: hidden;
+}
+
+/* =============================================================================
+   Left: the Paper editor
+   ========================================================================== */
+.ppm-editor {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--ppm-white);
+  border-right: 1px solid var(--ppm-border-light);
+}
+
+/* ---- Title bar ---- */
+.ppm-titlebar {
+  flex: 0 0 auto;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  background: var(--ppm-white);
+}
+.ppm-tb-left,
+.ppm-tb-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ppm-tb-right {
+  gap: 4px;
+}
+.ppm-doc-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ppm-text-stronger);
+  white-space: nowrap;
+}
+.ppm-ic {
+  display: grid;
+  place-items: center;
+  color: var(--ppm-text-strong);
+}
+.ppm-ic svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+.ppm-ic--btn {
+  width: 24px;
+  height: 24px;
+}
+.ppm-tb-caret svg {
+  width: 13px;
+  height: 13px;
+}
+.ppm-tb-dim {
+  color: var(--ppm-text-neutral);
+  width: 28px;
+  height: 28px;
+}
+.ppm-tb-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin-right: 4px;
+}
+.ppm-share {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--ppm-border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ppm-text-stronger);
+}
+.ppm-share svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---- Toolbar card (menu row + formatting row) ---- */
+.ppm-toolcard {
+  flex: 0 0 auto;
+  margin: 2px 16px 8px;
+  border: 1px solid var(--ppm-border-light);
+  border-radius: 12px;
+  background: var(--ppm-white);
+  box-shadow: 0 1px 4px rgba(20, 28, 40, 0.04);
+  overflow: hidden;
+}
+.ppm-menubar {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--ppm-border-light);
+}
+.ppm-menu-item {
+  font-size: 13px;
+  color: var(--ppm-text-strong);
+}
+.ppm-menu-ai {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ppm-blue);
+}
+.ppm-menu-ai svg {
+  width: 15px;
+  height: 15px;
+}
+.ppm-toolbar {
+  height: 42px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+}
+.ppm-tg {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding: 0 8px;
+  border-right: 1px solid var(--ppm-border-light);
+}
+.ppm-tg:last-child {
+  border-right: none;
+}
+.ppm-tb {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  color: var(--ppm-text-strong);
+}
+.ppm-tb svg {
+  width: 17px;
+  height: 17px;
+  display: block;
+}
+.ppm-tb-glyph {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ppm-text-strong);
+  line-height: 1;
+}
+.ppm-tb-b {
+  font-weight: 700;
+}
+.ppm-tb-i {
+  font-style: italic;
+  font-family: Georgia, serif;
+}
+.ppm-tb-u {
+  text-decoration: underline;
+}
+.ppm-tb-s {
+  text-decoration: line-through;
+}
+.ppm-tb-sup {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ppm-text-strong);
+}
+.ppm-tb-sup sup,
+.ppm-tb-sup sub {
+  font-size: 9px;
+}
+.ppm-tb-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--ppm-text-strong);
+  white-space: nowrap;
+}
+.ppm-tb-select svg {
+  width: 13px;
+  height: 13px;
+}
+.ppm-tb-select--w {
+  min-width: 56px;
+}
+
+/* ---- Document canvas + page ---- */
+.ppm-canvas {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--ppm-surface);
+  padding-top: 26px;
+}
+.ppm-page {
+  position: relative;
+  width: 768px;
+  margin: 0 auto;
+  min-height: 100%;
+  padding: 8px 56px 48px;
+  background: var(--ppm-white);
+  box-shadow: 0 1px 0 rgba(20, 28, 40, 0.04);
+}
+/* Faint print-margin corner marks. */
+.ppm-corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 0 solid var(--ppm-border);
+}
+.ppm-corner--tl {
+  top: 30px;
+  left: 34px;
+  border-left-width: 1.5px;
+  border-top-width: 1.5px;
+}
+.ppm-corner--tr {
+  top: 30px;
+  right: 34px;
+  border-right-width: 1.5px;
+  border-top-width: 1.5px;
+}
+
+.ppm-doc-h1 {
+  margin: 26px 0 6px;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ppm-black);
+}
+.ppm-doc-sub {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0 0 22px;
+  font-size: 14px;
+  color: var(--ppm-text-strong);
+}
+.ppm-doc-sub i {
+  font-style: italic;
+}
+.ppm-doc-sub svg {
+  width: 16px;
+  height: 16px;
+  color: var(--ppm-blue);
+}
+.ppm-doc-sub b {
+  font-weight: 500;
+}
+
+.ppm-pbody {
+  display: flex;
+  gap: 44px;
+  align-items: flex-start;
+}
+.ppm-pcol {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.ppm-doc-h2 {
+  margin: 18px 0 8px;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--ppm-text-stronger);
+}
+.ppm-doc-p {
+  margin: 0 0 12px;
+  font-size: 13.5px;
+  line-height: 24px;
+  color: var(--ppm-text-strong);
+}
+.ppm-doc-list {
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+.ppm-doc-li {
+  position: relative;
+  margin: 0 0 12px;
+  padding-left: 16px;
+  font-size: 13.5px;
+  line-height: 24px;
+  color: var(--ppm-text-strong);
+}
+.ppm-doc-li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 9px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--ppm-text-strong);
+}
+.ppm-doc-li b {
+  font-weight: 700;
+  color: var(--ppm-text-stronger);
+}
+
+/* In-text yellow highlight (wipes left -> right behind the lead-in run). */
+.ppm-hl {
+  background-image: linear-gradient(var(--ppm-yellow-soft), var(--ppm-yellow-soft));
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 0% 86%;
+  border-radius: 2px;
+  padding: 1px 2px;
+  margin: 0 -2px;
+  transition: background-size 460ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ppm[data-enter='true'] .ppm-hl {
+  background-size: 100% 86%;
+  transition-delay: var(--d, 0ms);
+}
+
+/* In-text blue selection block (fades a wash + left accent behind the bullet). */
+.ppm-li--sel {
+  position: relative;
+}
+.ppm-sel-bg {
+  position: absolute;
+  inset: -2px -8px -2px -8px;
+  background: var(--ppm-blue-fill);
+  border-left: 2px solid var(--ppm-blue);
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 340ms ease;
+}
+.ppm[data-enter='true'] .ppm-sel-bg {
+  opacity: 1;
+  transition-delay: var(--d, 0ms);
+}
+.ppm-li--sel .ppm-li-text {
+  position: relative;
+}
+
+/* Blue tracked-change underlines under the Introduction paragraph. The
+   repeating gradient draws one blue rule per text line; background-size width
+   animates the wipe left -> right. line-height must match the gradient period. */
+.ppm-underlined {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 22.5px,
+    var(--ppm-yellow-border) 22.5px,
+    var(--ppm-yellow-border) 24px
+  );
+  background-repeat: no-repeat;
+  background-position: left top;
+  background-size: 0% 100%;
+  transition: background-size 620ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Wipes in together with the comments float (shares the --paper-start delay). */
+.ppm[data-enter='true'] .ppm-underlined {
+  background-size: 100% 100%;
+  transition-delay: var(--paper-start, 2560ms);
+}
+
+/* Collaborator cursor flags (caret + name tag), absolutely placed on the page. */
+.ppm-collab {
+  position: absolute;
+  width: 0;
+}
+.ppm-collab-caret {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 22px;
+  background: var(--cc);
+}
+.ppm-collab-tag {
+  position: absolute;
+  top: -2px;
+  left: 0;
+  height: 19px;
+  padding: 0 7px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 19px;
+  color: #fff;
+  white-space: nowrap;
+  background: var(--cc);
+  border-radius: 4px 4px 4px 0;
+}
+
+/* ---- Footer toolbar ---- */
+.ppm-footer {
+  flex: 0 0 auto;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: var(--ppm-white);
+  border-top: 1px solid var(--ppm-border-light);
+}
+.ppm-foot-left,
+.ppm-foot-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ppm-foot-words {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--ppm-border);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--ppm-text-strong);
+}
+.ppm-foot-words svg {
+  width: 15px;
+  height: 15px;
+}
+.ppm-foot-ic {
+  width: 28px;
+  height: 28px;
+  color: var(--ppm-text-neutral);
+}
+.ppm-foot-ic svg {
+  width: 16px;
+  height: 16px;
+}
+.ppm-foot-zoom {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--ppm-border);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--ppm-text-strong);
+}
+.ppm-foot-zoom span {
+  font-weight: 500;
+}
+
+/* =============================================================================
+   Right: the AI Companion panel
+   ========================================================================== */
+.ppm-panel {
+  flex: 0 0 400px;
+  display: flex;
+  flex-direction: column;
+  background: var(--ppm-white);
+  min-height: 0;
+}
+.ppm-panel-head {
+  flex: 0 0 auto;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+}
+.ppm-panel-edit {
+  color: var(--ppm-text-strong);
+}
+.ppm-panel-title {
+  flex: 1 1 auto;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ppm-text-stronger);
+}
+.ppm-panel-close {
+  color: var(--ppm-text-neutral);
+}
+
+.ppm-panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  padding: 6px 16px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ppm-usermsg {
+  align-self: stretch;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--ppm-blue-fill);
+  font-size: 13.5px;
+  line-height: 20px;
+  color: var(--ppm-text-stronger);
+}
+.ppm-aimsg {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 21px;
+  color: var(--ppm-text-strong);
+}
+
+/* Task header row. */
+.ppm-task {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.ppm-task-check {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #c1c6ce;
+  color: #fff;
+}
+.ppm-task-check svg {
+  width: 12px;
+  height: 12px;
+  stroke-width: 2.6;
+}
+.ppm-task-text {
+  flex: 1 1 auto;
+  font-size: 13.5px;
+  line-height: 19px;
+  font-weight: 500;
+  color: var(--ppm-text-stronger);
+}
+.ppm-task-caret {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--ppm-text-disabled);
+}
+.ppm-task-caret svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* Indented tool list with a dotted connector. */
+.ppm-tools {
+  position: relative;
+  margin-left: 9px;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ppm-tools::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -6px;
+  bottom: 14px;
+  border-left: 1.5px dotted var(--ppm-border);
+}
+.ppm-tool {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--ppm-border-light);
+  border-radius: 8px;
+  background: var(--ppm-white);
+  box-shadow: 0 1px 2px rgba(20, 28, 40, 0.03);
+}
+.ppm-tool svg {
+  flex: 0 0 auto;
+  width: 15px;
+  height: 15px;
+  color: var(--ppm-text-strong);
+}
+.ppm-tool-kind {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ppm-text-stronger);
+}
+.ppm-tool-desc {
+  flex: 1 1 auto;
+  font-size: 13px;
+  color: var(--ppm-text-disabled);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Generating status row (continuous spinner). */
+.ppm-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.ppm-spinner {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  border-radius: 50%;
+  border: 2px solid var(--ppm-blue-fill);
+  border-top-color: var(--ppm-blue);
+  animation: ppm-spin 0.8s linear infinite;
+}
+@keyframes ppm-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.ppm-status-text {
+  flex: 1 1 auto;
+  font-size: 13.5px;
+  line-height: 19px;
+  color: var(--ppm-text-strong);
+}
+
+/* Composer. */
+.ppm-composer {
+  flex: 0 0 auto;
+  margin: 8px 16px 16px;
+  padding: 14px 14px 10px;
+  border: 1px solid var(--ppm-border);
+  border-radius: 14px;
+  box-shadow: 0 2px 6px rgba(20, 28, 40, 0.04);
+}
+.ppm-composer-input {
+  font-size: 13.5px;
+  color: var(--ppm-text-disabled);
+  margin-bottom: 16px;
+}
+.ppm-composer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ppm-composer-ic {
+  width: 20px;
+  height: 20px;
+  color: var(--ppm-text-neutral);
+}
+.ppm-sources {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: var(--ppm-text-strong);
+}
+.ppm-sources-n {
+  color: var(--ppm-text-disabled);
+}
+.ppm-send {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--ppm-blue);
+  color: #fff;
+}
+.ppm-send svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* =============================================================================
+   Floating callout widgets — rendered by ProductSuiteV5 in the .ppm-floats layer
+   (a sibling of the clipped card in .psuite-v5-screen-wrap) so they spill OUTSIDE
+   the main UI. The layer owns position + entrance; mirrors .shm-floats / Slides'
+   .psuite-v5-floats.
+   ========================================================================== */
+.ppm-floats {
+  position: absolute;
+  inset: 0; /* matches the card box; the widgets spill via offsets */
+  z-index: 3;
+  pointer-events: none;
+}
+/* The three widgets enter one by one. Each fades+lifts on its own delay; the
+   delay lives only on the [data-on='true'] rule so they HIDE instantly on
+   tab-away (clean replay). Position/timing are driven by the dialkit's --paper-*
+   tokens (V5Tuning.tsx) so they can be fine-tuned live. */
+.ppm-floats > * {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity var(--paper-dur, 420ms) cubic-bezier(0.22, 1, 0.36, 1),
+    transform var(--paper-dur, 420ms) cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ppm-floats[data-on='true'] > * {
+  opacity: 1;
+  transform: none;
+}
+/* Stagger: comments first, then suggestions, then history. */
+.ppm-floats[data-on='true'] .ppm-comments {
+  transition-delay: var(--paper-start, 2560ms);
+}
+.ppm-floats[data-on='true'] .ppm-suggestions {
+  transition-delay: calc(var(--paper-start, 2560ms) + var(--paper-step, 240ms));
+}
+.ppm-floats[data-on='true'] .ppm-history {
+  transition-delay: calc(var(--paper-start, 2560ms) + 2 * var(--paper-step, 240ms));
+}
+/* Spill outside the card edges via offsets. comments overhangs the left edge,
+   history the right edge, suggestions overhangs the bottom over the document. */
+.ppm-floats .ppm-comments {
+  position: absolute;
+  left: var(--paper-cmt-left, -11%);
+  top: var(--paper-cmt-top, 31%);
+  width: 300px;
+}
+.ppm-floats .ppm-suggestions {
+  position: absolute;
+  left: var(--paper-sug-left, 30%);
+  bottom: var(--paper-sug-bottom, -7%);
+  width: 222px;
+}
+.ppm-floats .ppm-history {
+  position: absolute;
+  right: var(--paper-hist-right, -12%);
+  top: var(--paper-hist-top, 27%);
+  width: 304px;
+  height: 348px;
+}
+
+/* ---- comments (left) ---- */
+.ppm-comments {
+  background: var(--ppm-white);
+  border: 2px solid var(--ppm-yellow-border);
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(20, 28, 40, 0.16);
+  padding: 12px;
+}
+.ppm-cmt-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.ppm-cmt-nav {
+  display: flex;
+  gap: 8px;
+}
+.ppm-cmt-navbtn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 26px;
+  border: 1px solid var(--ppm-border);
+  border-radius: 8px;
+  color: var(--ppm-text-strong);
+}
+.ppm-cmt-navbtn svg {
+  width: 15px;
+  height: 15px;
+}
+.ppm-cmt-headr {
+  display: flex;
+  gap: 8px;
+}
+.ppm-cmt-headr .ppm-ic {
+  width: 26px;
+  height: 26px;
+  color: var(--ppm-text-neutral);
+}
+.ppm-cmt-thread {
+  margin-bottom: 14px;
+}
+.ppm-cmt-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.ppm-cmt-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+.ppm-cmt-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ppm-text-stronger);
+}
+.ppm-cmt-time {
+  font-size: 12px;
+  color: var(--ppm-text-disabled);
+}
+.ppm-cmt-body {
+  padding-left: 36px;
+}
+.ppm-cmt-quote {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--ppm-text-neutral);
+  margin-bottom: 3px;
+}
+.ppm-cmt-quote::before {
+  content: '';
+  flex: 0 0 auto;
+  width: 2px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--ppm-yellow);
+}
+/* The quoted (selected) text truncates to one line like a real comment quote. */
+.ppm-cmt-quote-txt {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ppm-cmt-text {
+  font-size: 14px;
+  color: var(--ppm-text-stronger);
+}
+.ppm-cmt-reply {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ppm-cmt-reply-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+.ppm-cmt-reply-input {
+  flex: 1 1 auto;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid var(--ppm-border);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--ppm-text-disabled);
+}
+
+/* ---- suggestions (over the document) ---- */
+.ppm-suggestions {
+  background: var(--ppm-white);
+  border: 1px solid var(--ppm-border-light);
+  border-radius: 12px;
+  box-shadow: 0 14px 36px rgba(20, 28, 40, 0.16);
+  padding: 8px;
+}
+.ppm-sug-label {
+  padding: 4px 8px 6px;
+  font-size: 12px;
+  color: var(--ppm-text-disabled);
+}
+.ppm-sug-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--ppm-text-stronger);
+}
+.ppm-sug-item svg {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  color: var(--ppm-text-strong);
+}
+.ppm-sug-item--active {
+  background: var(--ppm-surface);
+}
+.ppm-sug-chev {
+  margin-left: auto;
+  color: var(--ppm-text-disabled);
+}
+.ppm-sug-chev svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---- history (right) ---- */
+.ppm-history {
+  display: flex;
+  flex-direction: column;
+  background: var(--ppm-white);
+  border: 1px solid var(--ppm-border-light);
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(20, 28, 40, 0.16);
+  overflow: hidden;
+}
+.ppm-hist-pad {
+  padding: 16px 16px 8px;
+}
+.ppm-hist-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 9px;
+  margin-bottom: 14px;
+}
+.ppm-hist-tab {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ppm-text-strong);
+}
+.ppm-hist-tab--active {
+  background: var(--ppm-white);
+  color: var(--ppm-text-stronger);
+  box-shadow: 0 1px 2px rgba(20, 28, 40, 0.08);
+}
+.ppm-hist-link {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ppm-blue);
+  margin-bottom: 14px;
+}
+.ppm-hist-group {
+  margin-bottom: 6px;
+}
+.ppm-hist-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--ppm-text-neutral);
+  margin-bottom: 6px;
+}
+.ppm-hist-date svg {
+  width: 14px;
+  height: 14px;
+}
+.ppm-hist-item {
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+.ppm-hist-item--active {
+  border-color: var(--ppm-blue);
+  background: var(--ppm-blue-fill);
+}
+.ppm-hist-line {
+  font-size: 13.5px;
+  color: var(--ppm-text-stronger);
+}
+.ppm-hist-line b {
+  font-weight: 600;
+}
+.ppm-hist-sub {
+  font-size: 12px;
+  color: var(--ppm-text-disabled);
+  margin-top: 2px;
+}
+.ppm-hist-foot {
+  margin-top: auto;
+  height: 48px;
+  border-top: 1px solid var(--ppm-border-light);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+}
+.ppm-hist-foot-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ppm-border);
+}
+.ppm-hist-foot-dot:first-child {
+  background: var(--ppm-blue);
+}
+
+/* =============================================================================
+   Reduced motion — snap straight to the finished scene.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .ppm-reveal,
+  .ppm-pblock,
+  .ppm-pop,
+  .ppm-hl,
+  .ppm-sel-bg,
+  .ppm-underlined,
+  .ppm-floats > * {
+    transition: none;
+  }
+  .ppm-spinner {
+    animation: none;
+  }
+}

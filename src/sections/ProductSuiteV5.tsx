@@ -1,6 +1,24 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import './ProductSuiteV5.css';
 import { SlidesMockup } from './productSuite/SlidesMockup';
+import { VoiceOverPanel } from './productSuite/VoiceOverPanel';
+import {
+  SheetsMockup,
+  AiFormulaTooltip,
+  SheetsContextCard,
+} from './productSuite/SheetsMockup';
+import {
+  PaperMockup,
+  PaperComments,
+  PaperSuggestions,
+  PaperHistory,
+} from './productSuite/PaperMockup';
+import {
+  CanvasMockup,
+  CanvasComments,
+  CanvasPolishedMenu,
+  CanvasReaction,
+} from './productSuite/CanvasMockup';
 
 type Product = {
   key: string;
@@ -17,14 +35,15 @@ const PRODUCTS: Product[] = [
     key: 'canvas',
     label: 'Canvas',
     icon: '/Icon/product-docs.svg',
-    screen: '/hero-browser/canvas-ui.png',
-    video: '/product-videos/canvas-website.mp4',
+    screen: '/product-suite-assets/canvas-ui.png',
+    // Canvas renders as a live, animated DOM mockup (see CanvasMockup) rather
+    // than a video — special-cased in the screen render below.
   },
   {
     key: 'slides',
     label: 'Slides',
     icon: '/Icon/product-slides.svg',
-    screen: '/hero-browser/slides-UI.png',
+    screen: '/product-suite-assets/slides-UI.png',
     // Slides renders as a live, animated DOM mockup (see SlidesMockup) rather
     // than a video — special-cased in the screen render below.
   },
@@ -32,20 +51,22 @@ const PRODUCTS: Product[] = [
     key: 'sheets',
     label: 'Sheets',
     icon: '/Icon/product-sheet.svg',
-    screen: '/hero-browser/sheets-ui.png',
-    video: '/product-videos/Sheets-%20finalized%20version.mp4',
+    screen: '/product-suite-assets/sheets.png',
+    // Sheets renders as a live, animated DOM mockup (see SheetsMockup) built
+    // from Figma 3374:89098 rather than a video — special-cased in the screen
+    // render below.
   },
   {
     key: 'paper',
     label: 'Paper',
     icon: '/Icon/product-classic-doc.svg',
-    screen: '/hero-browser/paper-ui.png',
+    screen: '/product-suite-assets/paper-ui.png',
   },
   {
     key: 'datatable',
     label: 'Data table',
     icon: '/Icon/product-datatable.svg',
-    screen: '/hero-browser/datatable-ui.png',
+    screen: '/product-suite-assets/datatable-ui.png',
   },
 ];
 
@@ -226,6 +247,51 @@ export function ProductSuiteV5() {
                 </div>
               );
             }
+            if (product.key === 'sheets') {
+              return (
+                <div
+                  key="sheets"
+                  className="psuite-v5-screen-live"
+                  style={{
+                    opacity: active === 'sheets' ? 1 : 0,
+                    pointerEvents: active === 'sheets' ? 'auto' : 'none',
+                  }}
+                  aria-hidden={active !== 'sheets'}
+                >
+                  <SheetsMockup active={active === 'sheets'} />
+                </div>
+              );
+            }
+            if (product.key === 'paper') {
+              return (
+                <div
+                  key="paper"
+                  className="psuite-v5-screen-live"
+                  style={{
+                    opacity: active === 'paper' ? 1 : 0,
+                    pointerEvents: active === 'paper' ? 'auto' : 'none',
+                  }}
+                  aria-hidden={active !== 'paper'}
+                >
+                  <PaperMockup active={active === 'paper'} />
+                </div>
+              );
+            }
+            if (product.key === 'canvas') {
+              return (
+                <div
+                  key="canvas"
+                  className="psuite-v5-screen-live"
+                  style={{
+                    opacity: active === 'canvas' ? 1 : 0,
+                    pointerEvents: active === 'canvas' ? 'auto' : 'none',
+                  }}
+                  aria-hidden={active !== 'canvas'}
+                >
+                  <CanvasMockup active={active === 'canvas'} />
+                </div>
+              );
+            }
             return product.video ? (
               <video
                 key={product.key}
@@ -268,11 +334,50 @@ export function ProductSuiteV5() {
             src="/slides-mockup/speaker-note.png"
             alt=""
           />
-          <img
-            className="psuite-v5-float psuite-v5-float--voice"
-            src="/slides-mockup/select-voice-over.png"
-            alt=""
-          />
+          <div className="psuite-v5-float psuite-v5-float--voice">
+            <VoiceOverPanel />
+          </div>
+        </div>
+
+        {/* Floating cards that spill over the card (shown on Sheets): the AI
+            "context" prompt at the top-left, and the AI-formula tooltip below. */}
+        <div
+          className="shm-floats shm-floats--context"
+          data-on={active === 'sheets' ? 'true' : 'false'}
+          aria-hidden={active !== 'sheets'}
+        >
+          <SheetsContextCard />
+        </div>
+        <div
+          className="shm-floats"
+          data-on={active === 'sheets' ? 'true' : 'false'}
+          aria-hidden={active !== 'sheets'}
+        >
+          <AiFormulaTooltip />
+        </div>
+
+        {/* Comments / suggestions / history widgets that spill outside the card
+            (shown on Paper). */}
+        <div
+          className="ppm-floats"
+          data-on={active === 'paper' ? 'true' : 'false'}
+          aria-hidden={active !== 'paper'}
+        >
+          <PaperComments />
+          <PaperSuggestions />
+          <PaperHistory />
+        </div>
+
+        {/* Comments / polished-view menu / reaction widgets that spill outside
+            the card (shown on Canvas). */}
+        <div
+          className="cnv-floats"
+          data-on={active === 'canvas' ? 'true' : 'false'}
+          aria-hidden={active !== 'canvas'}
+        >
+          <CanvasComments />
+          <CanvasPolishedMenu />
+          <CanvasReaction />
         </div>
         </div>
       </div>

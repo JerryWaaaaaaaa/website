@@ -60,6 +60,20 @@
   align-items: stretch;
   width: 100%;
   gap: 48px;
+  /* Span the full width so the first tab anchors to the left corner and the last
+     to the right corner (both flush with the panel edges). When the tabs can't
+     fit there's no free space to distribute, so space-between is inert and the
+     row falls back to the horizontal scroll below. */
+  justify-content: space-between;
+  /* Content-driven horizontal scroll: when the tabs can't fit, the row scrolls
+     inside its own box (== panel width) instead of overflowing, so the active
+     tab can never poke past the panel edge — it's clipped to the container. */
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  scroll-behavior: smooth;
+}
+.uc5-tabs::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }
 
 .uc5-tab {
@@ -112,6 +126,10 @@
 
 .uc5-panel.is-active-first {
   border-top-left-radius: 0;
+}
+
+.uc5-panel.is-active-last {
+  border-top-right-radius: 0;
 }
 
 .uc5-panel-copy {
@@ -360,14 +378,6 @@
   .uc5-inner {
     gap: 48px;
   }
-  /* Tabs scroll horizontally instead of overflowing */
-  .uc5-tabs {
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .uc5-tabs::-webkit-scrollbar {
-    display: none;
-  }
   .uc5-panel {
     flex-direction: column;
   }
@@ -417,6 +427,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .uc5-tabs {
+    scroll-behavior: auto;
+  }
   .uc5-headline {
     animation: none;
   }

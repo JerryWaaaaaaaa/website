@@ -58,17 +58,18 @@
   display: none;
 }
 
-/* On small screens the tab row scrolls horizontally, which would desync an
-   absolutely-positioned fill. Fall back to a simple filled active tab. */
-@media (max-width: 899px) {
-  .uc5-tabs.is-sliding .uc5b-fill {
-    display: none;
-  }
-  .uc5-tabs.is-sliding .uc5-tab.is-active {
-    background: var(--bg-accent-light);
-    border-radius: 16px 16px 0 0;
-  }
+/* Mirror of the above for the last tab: when the active tab is flush with the
+   panel's right edge, drop the right shoulder. The fill keeps its rounded
+   top-right and the panel squares its top-right corner (.is-active-last) so the
+   right edge continues straight below the corner. */
+.uc5b-fill.is-flush-right .uc5b-shoulder.right {
+  display: none;
 }
+
+/* The tab row scrolls horizontally when it can't fit (see useCaseV5.css). The
+   fill is a descendant of the scroll container and is positioned from the tab's
+   scroll-independent offsetLeft, so it translates with the row and stays glued
+   to its tab while scrolling — no fallback needed. */
 
 @media (prefers-reduced-motion: reduce) {
   .uc5b-fill {

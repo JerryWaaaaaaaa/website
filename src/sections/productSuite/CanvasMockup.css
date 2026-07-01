@@ -1,0 +1,941 @@
+/* =============================================================================
+   Canvas Mockup — live, animated Zoom Docs (Canvas) editor
+   (Figma Microsite-V2 node 3387-39788, frame "canvas"; editor "main-ui" 1600x900).
+   Replaces the flat canvas-website.mp4 inside ProductSuiteV5's screen card.
+
+   Like SheetsMockup / PaperMockup, this component intentionally does NOT follow
+   the site style guide: it uses the Figma file's own Inter type system and the
+   exact design-token hexes — declared as --cnv-* below.
+
+   Intro sequence (plays once the section is in view AND Canvas is active):
+     1. the editor is already there (top bar + doc surface arrive with the card
+        cross-fade — no per-chrome stagger),
+     2. the document text fades in line by line, with the pink/yellow highlights
+        and the "Maurice Lawson" collaborator flag wiping in after their lines,
+     3. after the text finishes, the floating widgets pop in one by one:
+        comments → polished-view menu → reaction.
+   ========================================================================== */
+
+/* ---- Figma colour tokens (exact hexes) ----
+   Declared on .cnv AND .cnv-floats so the floating widgets (rendered outside
+   .cnv, in ProductSuiteV5's float layer) resolve the same tokens + Inter. */
+.cnv,
+.cnv-floats {
+  --cnv-text-primary: #1a1a1a;
+  --cnv-text-secondary: #5c5c5c;
+  --cnv-text-stronger: #222325;
+  --cnv-text-strong: #555b62;
+  --cnv-text-neutral: #686f79;
+  --cnv-text-tertiary: #a1a0a3;
+  --cnv-icon: #41464b;
+  --cnv-brand: #0e72ed;
+  --cnv-brand-tint: #f2f8ff;
+  --cnv-border: #ebebeb;
+  --cnv-border-default: #e6e6e6;
+  --cnv-border-light: #efefef;
+  --cnv-border-subtle: #dfe3e8;
+  --cnv-fill-subtle: #f1f4f6;
+  --cnv-gray-25: #fafafa;
+  --cnv-callout-bg: #f7f6fb;
+  --cnv-callout-border: #ece9f6;
+  --cnv-white: #ffffff;
+  --cnv-pink: #e64593;
+  --cnv-pink-soft: #fbdcec;
+  --cnv-yellow: #ffc105;
+  --cnv-yellow-border: #fac515;
+  --cnv-yellow-soft: #fff2c2;
+  --cnv-orange: #cc4819;
+  --cnv-orange-bg: #fff7f2;
+  --cnv-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.04);
+  --cnv-shadow-lg: 0 16px 40px rgba(20, 28, 40, 0.16);
+
+  --cnv-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--cnv-font);
+}
+
+.cnv {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--cnv-white);
+  color: var(--cnv-text-primary);
+  /* The wrapper in ProductSuiteV5 owns the opacity cross-fade. */
+}
+
+/* Fixed design canvas (1600x900), scaled to fill the screen card by width. The
+   card clips overflow — the bottom of the database table is cropped, matching
+   the Figma frame (where the table is already cut off). */
+.cnv-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1600px;
+  height: 900px;
+  transform-origin: top left;
+  transform: scale(var(--cnv-scale, 1));
+  background: var(--cnv-white);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Reveal primitives (gated by the single data-enter flip) -------------- */
+.cnv-reveal,
+.cnv-pop {
+  opacity: 0;
+}
+/* Delay lives only on the entered rule so blocks REVEAL on their stagger but
+   HIDE instantly when Canvas is deactivated — keeps the replay-on-return clean. */
+.cnv-reveal {
+  transform: translateY(10px);
+  transition:
+    opacity 460ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cnv-pop {
+  transform: translateY(6px) scale(0.9);
+  transition:
+    opacity 380ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cnv[data-enter='true'] .cnv-reveal,
+.cnv[data-enter='true'] .cnv-pop {
+  opacity: 1;
+  transform: none;
+  transition-delay: var(--d, 0ms);
+}
+
+/* =============================================================================
+   Top bar
+   ========================================================================== */
+.cnv-topbar {
+  flex: 0 0 auto;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--cnv-border-light);
+  background: var(--cnv-white);
+}
+.cnv-tb-left {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cnv-tb-tools {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.cnv-tb-right {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cnv-doc-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--cnv-text-primary);
+  white-space: nowrap;
+  margin-left: 2px;
+}
+.cnv-ic {
+  display: grid;
+  place-items: center;
+  color: var(--cnv-icon);
+}
+.cnv-ic svg {
+  width: 19px;
+  height: 19px;
+  display: block;
+}
+.cnv-ic--btn {
+  width: 28px;
+  height: 28px;
+}
+.cnv-tb-caret {
+  color: var(--cnv-text-tertiary);
+}
+.cnv-tb-caret svg {
+  width: 14px;
+  height: 14px;
+}
+.cnv-tb-dim {
+  color: var(--cnv-icon);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+/* Formatting tool groups */
+.cnv-tg {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding: 0 8px;
+  border-right: 1px solid var(--cnv-border-light);
+}
+.cnv-tg--last {
+  border-right: none;
+}
+.cnv-tb {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  color: var(--cnv-icon);
+}
+.cnv-tb svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+.cnv-tb-glyph {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--cnv-icon);
+  line-height: 1;
+}
+.cnv-tb-b { font-weight: 700; }
+.cnv-tb-i { font-style: italic; font-family: Georgia, serif; }
+.cnv-tb-u { text-decoration: underline; }
+.cnv-tb-s { text-decoration: line-through; }
+.cnv-tb-sigma { font-size: 17px; }
+.cnv-tb-a {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.cnv-tb-a i {
+  width: 15px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--cnv-brand);
+}
+.cnv-tb-sel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 7px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--cnv-icon);
+}
+.cnv-tb-sel svg {
+  width: 18px;
+  height: 18px;
+}
+.cnv-tb-sel svg:last-child {
+  width: 13px;
+  height: 13px;
+  color: var(--cnv-text-tertiary);
+}
+.cnv-tb-add {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  margin: 0 2px;
+  border-radius: 50%;
+  background: var(--cnv-brand);
+  color: #fff;
+}
+.cnv-tb-add svg {
+  width: 16px;
+  height: 16px;
+}
+
+.cnv-tb-avatars {
+  display: flex;
+  align-items: center;
+  margin-right: 6px;
+}
+.cnv-tb-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--cnv-white);
+  margin-left: -8px;
+}
+.cnv-tb-avatar:first-child {
+  margin-left: 0;
+}
+.cnv-share {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid var(--cnv-border-default);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--cnv-text-primary);
+  box-shadow: 0 1px 2px rgba(24, 24, 28, 0.06);
+}
+.cnv-share svg {
+  width: 15px;
+  height: 15px;
+  color: var(--cnv-icon);
+}
+
+/* =============================================================================
+   Document
+   ========================================================================== */
+.cnv-doc {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--cnv-white);
+  padding: 52px 0 0;
+}
+.cnv-doc-inner {
+  position: relative;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 40px 40px;
+}
+
+.cnv-h1 {
+  margin: 0 0 28px;
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--cnv-text-primary);
+}
+.cnv-h2 {
+  margin: 30px 0 12px;
+  font-size: 25px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--cnv-text-primary);
+}
+
+.cnv-ol {
+  margin: 0;
+  padding: 0 0 0 26px;
+  counter-reset: cnv-li;
+  list-style: none;
+}
+.cnv-li {
+  position: relative;
+  margin: 0 0 14px;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--cnv-text-primary);
+  counter-increment: cnv-li;
+}
+.cnv-li::before {
+  content: counter(cnv-li) '.';
+  position: absolute;
+  left: -26px;
+  top: 0;
+  color: var(--cnv-text-secondary);
+}
+.cnv-li-avatar {
+  position: absolute;
+  left: -66px;
+  top: 1px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* In-text highlights — wipe left -> right behind their run. */
+.cnv-hl {
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 0% 90%;
+  border-radius: 3px;
+  padding: 1px 1px;
+  transition: background-size 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cnv-hl--pink {
+  background-image: linear-gradient(var(--cnv-pink-soft), var(--cnv-pink-soft));
+}
+.cnv-hl--yellow {
+  background-image: linear-gradient(var(--cnv-yellow-soft), var(--cnv-yellow-soft));
+}
+.cnv[data-enter='true'] .cnv-hl {
+  background-size: 100% 90%;
+  transition-delay: var(--d, 0ms);
+}
+
+/* Collaborator name flag (caret + tag) on the pink highlight. */
+.cnv-flag {
+  position: absolute;
+  left: 150px;
+  top: -15px;
+  width: 0;
+  z-index: 2;
+}
+.cnv-flag-caret {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 46px;
+  background: var(--cnv-pink);
+}
+.cnv-flag-tag {
+  position: absolute;
+  top: -2px;
+  left: 0;
+  height: 20px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 20px;
+  color: #fff;
+  white-space: nowrap;
+  background: var(--cnv-pink);
+  border-radius: 4px 4px 4px 0;
+}
+
+.cnv-callout {
+  display: flex;
+  gap: 14px;
+  margin: 6px 0 20px;
+  padding: 20px 24px;
+  border: 1px solid var(--cnv-callout-border);
+  border-radius: 10px;
+  background: var(--cnv-callout-bg);
+}
+.cnv-callout-emoji {
+  flex: 0 0 auto;
+  font-size: 22px;
+  line-height: 1.5;
+}
+.cnv-callout-text {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--cnv-text-primary);
+}
+.cnv-p {
+  margin: 0 0 20px;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--cnv-text-primary);
+}
+
+/* ---- Database view ---- */
+.cnv-db-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 4px 0 4px;
+  height: 44px;
+}
+.cnv-db-views {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.cnv-db-view {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--cnv-text-secondary);
+}
+.cnv-db-view svg {
+  width: 17px;
+  height: 17px;
+}
+.cnv-db-view--active {
+  background: var(--cnv-fill-subtle);
+  color: var(--cnv-text-primary);
+}
+.cnv-db-add {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: var(--cnv-text-tertiary);
+}
+.cnv-db-add svg {
+  width: 17px;
+  height: 17px;
+}
+.cnv-db-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.cnv-db-controls .cnv-ic {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: var(--cnv-icon);
+}
+.cnv-db-controls .cnv-ic svg {
+  width: 18px;
+  height: 18px;
+}
+.cnv-db-divider {
+  width: 1px;
+  height: 18px;
+  margin: 0 4px;
+  background: var(--cnv-border);
+}
+.cnv-db-plus {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-left: 4px;
+  border-radius: 8px;
+  background: var(--cnv-brand);
+  color: #fff;
+}
+.cnv-db-plus svg {
+  width: 17px;
+  height: 17px;
+}
+
+.cnv-table {
+  border: 1px solid var(--cnv-border);
+  border-radius: 10px 10px 0 0;
+  border-bottom: none;
+  overflow: hidden;
+}
+.cnv-tr {
+  display: grid;
+  grid-template-columns: 52px 190px 1fr 260px 1fr 48px;
+  align-items: stretch;
+  border-bottom: 1px solid var(--cnv-border);
+}
+.cnv-th,
+.cnv-td {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  border-right: 1px solid var(--cnv-border);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--cnv-text-primary);
+}
+.cnv-th:last-child,
+.cnv-td:last-child {
+  border-right: none;
+}
+.cnv-tr--head {
+  background: var(--cnv-gray-25);
+}
+.cnv-th {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--cnv-text-secondary);
+}
+.cnv-th svg {
+  width: 15px;
+  height: 15px;
+  color: var(--cnv-text-tertiary);
+}
+.cnv-cell--check {
+  justify-content: center;
+  padding: 0;
+}
+.cnv-check {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--cnv-border-default);
+  border-radius: 4px;
+}
+.cnv-row-n {
+  font-size: 13px;
+  color: var(--cnv-text-tertiary);
+}
+.cnv-td {
+  align-items: flex-start;
+  color: var(--cnv-text-secondary);
+}
+.cnv-td--strong {
+  font-weight: 500;
+  color: var(--cnv-text-primary);
+}
+.cnv-cell--add {
+  color: var(--cnv-text-tertiary);
+}
+.cnv-cell--add svg {
+  width: 16px;
+  height: 16px;
+}
+.cnv-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.cnv-pill--blue {
+  color: var(--cnv-brand);
+  background: var(--cnv-brand-tint);
+}
+.cnv-pill--orange {
+  color: var(--cnv-orange);
+  background: var(--cnv-orange-bg);
+}
+
+/* =============================================================================
+   Floating widgets — rendered by ProductSuiteV5 in the .cnv-floats layer (a
+   sibling of the clipped card) so they spill OUTSIDE the editor. The layer owns
+   position + entrance; mirrors .ppm-floats / .shm-floats.
+   ========================================================================== */
+.cnv-floats {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+/* The three widgets enter one by one (comments → polished → reaction). Delay
+   lives only on [data-on='true'] so they hide instantly on tab-away. */
+.cnv-floats > * {
+  opacity: 0;
+  transform: translateY(10px) scale(0.98);
+  transition:
+    opacity 460ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cnv-floats[data-on='true'] > * {
+  opacity: 1;
+  transform: none;
+}
+.cnv-floats[data-on='true'] .cnv-comments {
+  transition-delay: 2350ms;
+}
+.cnv-floats[data-on='true'] .cnv-polished {
+  transition-delay: 2650ms;
+}
+.cnv-floats[data-on='true'] .cnv-reaction {
+  transition-delay: 2950ms;
+}
+/* Spill outside the card edges. */
+.cnv-floats .cnv-polished {
+  position: absolute;
+  right: -1%;
+  top: 6%;
+  width: 236px;
+}
+.cnv-floats .cnv-comments {
+  position: absolute;
+  right: -7%;
+  top: 42%;
+  width: 322px;
+}
+.cnv-floats .cnv-reaction {
+  position: absolute;
+  left: -2%;
+  bottom: 4%;
+  width: 150px;
+  height: 150px;
+}
+
+/* ---- polished-view menu (top-right) ---- */
+.cnv-polished {
+  background: var(--cnv-white);
+  border: 1px solid var(--cnv-border-light);
+  border-radius: 14px;
+  box-shadow: var(--cnv-shadow-lg);
+  padding: 8px;
+}
+.cnv-pol-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border-radius: 10px;
+}
+.cnv-pol-item--active {
+  background: linear-gradient(105deg, #fdeaf4 0%, #eee9fc 55%, #e6effd 100%);
+}
+.cnv-pol-ic {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  color: var(--cnv-text-strong);
+}
+.cnv-pol-ic svg {
+  width: 20px;
+  height: 20px;
+}
+.cnv-pol-ic--magic {
+  color: #8b5cf6;
+}
+.cnv-pol-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--cnv-text-primary);
+}
+.cnv-pol-sub {
+  font-size: 13px;
+  color: var(--cnv-text-tertiary);
+  margin-top: 1px;
+}
+
+/* ---- comments panel (right) ---- */
+.cnv-comments {
+  background: var(--cnv-white);
+  border: 1px solid var(--cnv-border-light);
+  border-radius: 16px;
+  box-shadow: var(--cnv-shadow-lg);
+  padding: 14px;
+}
+.cnv-cm-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 3px;
+  margin-bottom: 14px;
+}
+.cnv-cm-tab {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--cnv-text-secondary);
+}
+.cnv-cm-tab--active {
+  background: var(--cnv-fill-subtle);
+  color: var(--cnv-text-primary);
+}
+.cnv-cm-item {
+  padding: 4px 4px 14px;
+}
+.cnv-cm-item + .cnv-cm-item {
+  border-top: 1px solid var(--cnv-border-light);
+  padding-top: 14px;
+}
+.cnv-cm-item--active {
+  margin-top: 6px;
+  padding: 12px;
+  border: 1.5px solid var(--cnv-yellow-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 22px rgba(20, 28, 40, 0.1);
+}
+.cnv-cm-item--active + .cnv-cm-item,
+.cnv-cm-item--active {
+  border-top: none;
+}
+.cnv-cm-actionbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.cnv-cm-navs,
+.cnv-cm-actions {
+  display: flex;
+  gap: 6px;
+}
+.cnv-cm-navbtn,
+.cnv-cm-actbtn {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  color: var(--cnv-text-neutral);
+}
+.cnv-cm-actbtn--on {
+  background: var(--cnv-fill-subtle);
+  color: var(--cnv-text-strong);
+}
+.cnv-cm-navbtn svg,
+.cnv-cm-actbtn svg {
+  width: 15px;
+  height: 15px;
+}
+.cnv-cm-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.cnv-cm-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+.cnv-cm-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cnv-text-primary);
+}
+.cnv-cm-time {
+  font-size: 12px;
+  color: var(--cnv-text-tertiary);
+  margin-left: auto;
+}
+.cnv-cm-block {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--cnv-fill-subtle);
+}
+.cnv-cm-quote {
+  position: relative;
+  padding-left: 10px;
+  font-size: 13px;
+  color: var(--cnv-text-neutral);
+  margin-bottom: 4px;
+}
+.cnv-cm-quote::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 2px;
+  bottom: 2px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--cnv-yellow);
+}
+.cnv-cm-text {
+  font-size: 14px;
+  color: var(--cnv-text-primary);
+}
+.cnv-cm-mention {
+  color: var(--cnv-brand);
+  font-weight: 500;
+}
+.cnv-cm-reacts {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.cnv-cm-react {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 9px;
+  border-radius: 20px;
+  background: var(--cnv-fill-subtle);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--cnv-text-strong);
+}
+.cnv-cm-sugg {
+  font-size: 14px;
+  color: var(--cnv-text-primary);
+  line-height: 1.6;
+}
+.cnv-cm-sugg + .cnv-cm-sugg {
+  margin-top: 2px;
+}
+.cnv-cm-add-tag {
+  font-weight: 700;
+  color: var(--cnv-text-primary);
+}
+.cnv-cm-reply {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+.cnv-cm-reply-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+.cnv-cm-reply-input {
+  flex: 1 1 auto;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 20px;
+  background: var(--cnv-gray-25);
+  border: 1px solid var(--cnv-border-light);
+  font-size: 13px;
+  color: var(--cnv-text-tertiary);
+}
+
+/* ---- reaction (bottom-left) ---- */
+.cnv-reaction {
+  position: relative;
+}
+.cnv-reaction-emoji {
+  position: absolute;
+  left: 6%;
+  bottom: 4%;
+  font-size: 92px;
+  line-height: 1;
+  filter: drop-shadow(0 10px 16px rgba(20, 28, 40, 0.18));
+}
+.cnv-star {
+  position: absolute;
+  filter: drop-shadow(0 2px 4px rgba(91, 140, 255, 0.35));
+  transform-origin: center;
+}
+.cnv-star--a {
+  width: 34px;
+  height: 34px;
+  right: 20%;
+  top: 4%;
+  animation: cnv-twinkle 2.6s ease-in-out infinite;
+}
+.cnv-star--b {
+  width: 22px;
+  height: 22px;
+  right: 6%;
+  top: 30%;
+  animation: cnv-twinkle 2.6s ease-in-out 0.5s infinite;
+}
+.cnv-star--c {
+  width: 16px;
+  height: 16px;
+  right: 34%;
+  top: 26%;
+  animation: cnv-twinkle 2.6s ease-in-out 1s infinite;
+}
+@keyframes cnv-twinkle {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.28) rotate(12deg); }
+}
+
+/* =============================================================================
+   Reduced motion — snap straight to the finished scene.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .cnv-reveal,
+  .cnv-pop,
+  .cnv-hl,
+  .cnv-floats > * {
+    transition: none;
+  }
+  .cnv-star--a,
+  .cnv-star--b,
+  .cnv-star--c {
+    animation: none;
+  }
+}

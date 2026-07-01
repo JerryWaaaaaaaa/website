@@ -109,4 +109,4 @@ export const PAGE_VERSIONS: PageVersion[] = [
   },
 ];
 
-export const DEFAULT_VERSION: VersionId = 'v1';
+export const DEFAULT_VERSION: VersionId = 'v5';

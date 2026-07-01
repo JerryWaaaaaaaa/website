@@ -17,7 +17,7 @@ type Tab = {
 
 // Mail & Calendar and Hub have no dedicated screenshot yet — reuse a hero
 // screen as a stand-in placeholder.
-const PLACEHOLDER_SCREEN = '/hero-browser/canvas-ui.png';
+const PLACEHOLDER_SCREEN = '/product-suite-assets/canvas-ui.png';
 
 const TABS: Tab[] = [
   {
@@ -36,7 +36,7 @@ const TABS: Tab[] = [
     label: 'Slides',
     icon: '/Icon/product-slides.svg',
     monoIcon: '/Icon/mono/slides.svg',
-    screen: '/hero-browser/slides-UI.png',
+    screen: '/product-suite-assets/slides-UI.png',
     color: '#fb327e',
     tint: 'rgba(254, 193, 216, 0.2)',
     competitors: [
@@ -49,7 +49,7 @@ const TABS: Tab[] = [
     label: 'Sheets',
     icon: '/Icon/product-sheet.svg',
     monoIcon: '/Icon/mono/sheets.svg',
-    screen: '/hero-browser/sheets-ui.png',
+    screen: '/product-suite-assets/sheets.png',
     color: '#019f5c',
     tint: 'rgba(1, 159, 92, 0.12)',
     competitors: [
@@ -62,7 +62,7 @@ const TABS: Tab[] = [
     label: 'Data table',
     icon: '/Icon/product-datatable.svg',
     monoIcon: '/Icon/mono/datatable.svg',
-    screen: '/hero-browser/datatable-ui.png',
+    screen: '/product-suite-assets/datatable-ui.png',
     color: '#019f5c',
     tint: 'rgba(1, 159, 92, 0.12)',
     competitors: [],
@@ -72,7 +72,7 @@ const TABS: Tab[] = [
     label: 'Canvas',
     icon: '/Icon/product-docs.svg',
     monoIcon: '/Icon/mono/canvas.svg',
-    screen: '/hero-browser/canvas-ui.png',
+    screen: '/product-suite-assets/canvas-ui.png',
     color: '#3579fd',
     tint: 'rgba(53, 121, 253, 0.12)',
     competitors: [

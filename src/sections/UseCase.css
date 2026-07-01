@@ -53,6 +53,15 @@
   display: flex;
   align-items: stretch;
   width: 100%;
+  /* Content-driven horizontal scroll: when the tabs can't fit, the row scrolls
+     inside its own box (== panel width) instead of overflowing, so the active
+     tab can never poke past the panel edge — it's clipped to the container. */
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  scroll-behavior: smooth;
+}
+.uc-tabs::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }
 
 .uc-tab {
@@ -94,7 +103,17 @@
   gap: 48px;
   padding: 48px 64px 48px 48px;
   background: var(--bg-accent-light);
-  border-radius: 0 24px 24px 24px;
+  border-radius: 24px;
+}
+
+/* Square the corner under the active end-tab so its rounded top merges into a
+   straight edge down that side of the panel (continuous folder lip). */
+.uc-panel.is-active-first {
+  border-top-left-radius: 0;
+}
+
+.uc-panel.is-active-last {
+  border-top-right-radius: 0;
 }
 
 .uc-panel-copy {
@@ -310,14 +329,6 @@
   .uc-inner {
     gap: 48px;
   }
-  /* Tabs scroll horizontally instead of overflowing */
-  .uc-tabs {
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .uc-tabs::-webkit-scrollbar {
-    display: none;
-  }
   .uc-tab:first-child {
     flex: 0 0 auto;
   }
@@ -365,5 +376,11 @@
   .uc-tab {
     font-size: 16px;
     padding: 12px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .uc-tabs {
+    scroll-behavior: auto;
   }
 }

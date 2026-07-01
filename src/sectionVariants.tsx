@@ -4,6 +4,7 @@ import { HeroV5 } from './sections/HeroV5';
 import { HeroV5B } from './sections/HeroV5B';
 import { ProductSuiteV5 } from './sections/ProductSuiteV5';
 import { ProductSuiteV5B } from './sections/ProductSuiteV5B';
+import { ProductSuiteV5C } from './sections/ProductSuiteV5C';
 import { BuiltDifferentiateV5A } from './sections/builtDifferentiate/BuiltDifferentiateV5A';
 import { BuiltDifferentiateV5C } from './sections/builtDifferentiate/BuiltDifferentiateV5C';
 import { BuiltDifferentiateV5D } from './sections/builtDifferentiate/BuiltDifferentiateV5D';
@@ -45,11 +46,12 @@ export const SECTION_VARIANT_GROUPS: SectionVariantGroup[] = [
   {
     id: 'productSuite',
     label: 'Product Suite',
-    defaultId: 'a',
+    defaultId: 'c',
     appliesTo: ['v5'],
     variants: [
       { id: 'a', label: 'Video', render: () => <ProductSuiteV5 /> },
       { id: 'b', label: 'Product UI', render: () => <ProductSuiteV5B /> },
+      { id: 'c', label: 'Slider', render: () => <ProductSuiteV5C /> },
     ],
   },
   {

@@ -21,7 +21,7 @@ type Plan = {
   highlighted?: boolean;
   /** Intro line above the feature list, e.g. 'Everything in Basic, plus:'. */
   featuresIntro?: string;
-  features: string[];
+  features: Array<string | { label: string; icon: string }>;
 };
 
 // Placeholder prices — swap for real figures when available.
@@ -32,6 +32,7 @@ const PLANS: Plan[] = [
     priceMonthly: 'Free',
     priceAnnual: 'Free',
     blurb: 'Limited AI Productivity Suite features included with Workplace Basic.',
+    aiCredits: 'No AI credits',
     ctaLabel: 'Sign up',
     ctaVariant: 'secondary',
     featuresIntro: 'Includes:',
@@ -41,14 +42,14 @@ const PLANS: Plan[] = [
       '7-day version history',
       '10 MB attachment limit',
       'Limited template library',
-      'Limited AI capabilities',
+      'No AI capabilities for Slides, Sheets, Paper',
     ],
   },
   {
     key: 'standard',
     name: 'AI Productivity Suite',
-    priceMonthly: '$15.99',
-    priceAnnual: '$12.49',
+    priceMonthly: '$10',
+    priceAnnual: '$8.33',
     priceSuffix: '/user/month',
     blurb: 'All AI Productivity Suite features added to Workplace Basic.',
     aiCredits: '1,000 AI credits monthly',
@@ -56,11 +57,11 @@ const PLANS: Plan[] = [
     ctaVariant: 'secondary',
     featuresIntro: 'Everything in Basic, plus:',
     features: [
-      'Instant deck creation',
-      'AI voice presentation mode',
-      'Instant insights via AI analysis',
-      'Unlimited AI document creation',
-      '20,000+ rows per data table',
+      { label: 'Instant deck creation', icon: '/Icon/product-slides.svg' },
+      { label: 'AI voice presentation mode', icon: '/Icon/product-slides.svg' },
+      { label: 'Instant insights via AI analysis', icon: '/Icon/product-sheet.svg' },
+      { label: 'Unlimited AI document creation', icon: '/Icon/product-docs.svg' },
+      { label: '20,000+ rows per data table', icon: '/Icon/product-datatable.svg' },
       '1 GB attachment limit',
       'Advanced template library',
     ],
@@ -68,8 +69,8 @@ const PLANS: Plan[] = [
   {
     key: 'zoommate',
     name: 'ZoomMate',
-    priceMonthly: '$29.99',
-    priceAnnual: '$24.99',
+    priceMonthly: '$20',
+    priceAnnual: '$16.67',
     priceSuffix: '/user/month',
     blurb: 'Your AI teammate.',
     aiCredits: '2,200 AI credits monthly',
@@ -193,12 +194,28 @@ export function PricingV5() {
                 )}
 
                 <ul className="pr5-features">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="pr5-feature">
-                      <CheckIcon />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
+                  {plan.features.map((feature) => {
+                    const label =
+                      typeof feature === 'string' ? feature : feature.label;
+                    const icon =
+                      typeof feature === 'string' ? undefined : feature.icon;
+                    return (
+                      <li key={label} className="pr5-feature">
+                        {icon ? (
+                          <img
+                            src={icon}
+                            alt=""
+                            className="pr5-feature-icon"
+                            width={16}
+                            height={16}
+                          />
+                        ) : (
+                          <CheckIcon />
+                        )}
+                        <span>{label}</span>
+                      </li>
+                    );
+                  })}
                 </ul>
               </article>
             );
