@@ -121,11 +121,9 @@
   position: relative;
   width: 100%;
   /* Matches the Slides stage (1280x694) so the live mockup fills it exactly and
-     the slide gets equal padding on all sides. Other products are object-fit:
-     cover, so they just crop slightly to this shorter card. */
+     the slide gets equal padding on all sides. Videos are object-fit: cover, so
+     they fill this card; static images use object-fit: contain (see below). */
   aspect-ratio: 1280 / 694;
-  background: #fff;
-  border: 1px solid var(--stroke);
   border-radius: 28px;
   overflow: hidden;
 }
@@ -141,6 +139,11 @@
   /* Non-interactive product layers must not intercept clicks meant for the
      live slides mockup stacked beneath them. */
   pointer-events: none;
+}
+
+/* Static product screenshots fit fully (no crop); videos keep object-fit: cover. */
+img.psuite-v5-screen-img {
+  object-fit: contain;
 }
 
 /* Live DOM mockup (Slides) participates in the same opacity cross-fade as the
@@ -181,9 +184,14 @@
   width: var(--float-notes-w, 53%);
 }
 .psuite-v5-float--voice {
-  top: var(--float-voice-top, 50%);
+  top: var(--float-voice-top, 6%);
   right: var(--float-voice-right, -20.5%);
   width: var(--float-voice-w, 18.5%);
+  /* Interactive DOM component (not an image): give the slot a definite box so
+     the 280x492 design canvas scales into it, and drop the image drop-shadow
+     (the panel + button carry their own shadows). */
+  aspect-ratio: 280 / 492;
+  filter: none;
 }
 
 /* --- Responsive -------------------------------------------------------- */

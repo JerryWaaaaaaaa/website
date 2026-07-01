@@ -1,0 +1,965 @@
+/* =============================================================================
+   Sheets Mockup — live, animated Zoom Sheets editor + AI panel (Figma 3374:89098)
+   Replaces the static Sheets video inside ProductSuiteV5's screen card.
+
+   By design brief, this component does NOT follow the site style guide: it uses
+   the Figma file's own type system (Inter for the editor, SF Pro for the panel
+   title) and the exact design-token hexes — declared as --shm-* below.
+   ========================================================================== */
+
+/* ---- Figma colour tokens (exact hexes) ----
+   Shared with .shm-floats so the AI-formula tooltip (rendered outside .shm, in
+   ProductSuiteV5's float layer) resolves the same tokens + Inter font. */
+.shm,
+.shm-floats {
+  --shm-white: #ffffff;
+  --shm-surface: #f7f9fa; /* background/bg-darker-neutral, card-bg-1 */
+  --shm-subtle: #f1f4f6; /* fill/fill-subtle-neutral */
+  --shm-border: #dfe3e8; /* border/border-subtle-neutral */
+  --shm-cellborder: #e9edf1;
+  --shm-text: #222325; /* text/text-stronger-neutral */
+  --shm-text-strong: #555b62; /* text/text-strong-neutral */
+  --shm-text-neutral: #686f79; /* text/text-neutral */
+  --shm-text-disabled: #939ba4; /* text/text-disabled */
+  --shm-blue: #0d6bde; /* fill/fill-primary, text/text-primary */
+  --shm-blue-wash: #e6effb;
+  --shm-green: #14b87f; /* spreadsheet header fill (≈ Spearmint S1 #00D487) */
+  --shm-purple: #ab81fc; /* Lavender T1 */
+  --shm-mute-check: #c1c6ce; /* component/data/gray/20 */
+
+  --shm-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* SF Pro on Apple platforms; graceful fall back elsewhere. */
+  --shm-sf: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+    'Inter', system-ui, sans-serif;
+
+  font-family: var(--shm-font);
+}
+
+.shm {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--shm-white);
+  color: var(--shm-text);
+  /* The wrapper in ProductSuiteV5 owns the opacity cross-fade. */
+}
+
+/* Fixed design canvas, scaled to fill the screen card by width. */
+.shm-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1280px;
+  height: 694px;
+  transform-origin: top left;
+  transform: scale(var(--shm-scale, 1));
+  display: flex;
+  background: var(--shm-white);
+}
+
+/* ---- Reveal primitives (all gated by the single data-enter flip) ---------- */
+.shm-reveal,
+.shm-pblock,
+.shm-pop {
+  opacity: 0;
+}
+.shm-reveal {
+  transform: translateY(10px);
+  transition:
+    opacity 460ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--d, 0ms);
+}
+.shm-pblock {
+  transform: translateY(8px);
+  transition:
+    opacity 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--d, 0ms);
+}
+.shm-pop {
+  transform: translateY(6px) scale(0.985);
+  transition:
+    opacity 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--d, 0ms);
+}
+.shm[data-enter='true'] .shm-reveal,
+.shm[data-enter='true'] .shm-pblock,
+.shm[data-enter='true'] .shm-pop {
+  opacity: 1;
+  transform: none;
+}
+
+/* Cell "generation" — each filled cell fades + lifts on its own --d delay. */
+.shm-cell-anim {
+  opacity: 0;
+  transform: translateY(5px);
+  transition:
+    opacity 240ms ease-out,
+    transform 240ms ease-out;
+  transition-delay: var(--d, 0ms);
+}
+.shm[data-enter='true'] .shm-cell-anim {
+  opacity: 1;
+  transform: none;
+}
+
+/* =============================================================================
+   Left: the Sheets editor
+   ========================================================================== */
+.shm-editor {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--shm-border);
+}
+
+/* ---- Title bar ---- */
+.shm-titlebar {
+  flex: 0 0 auto;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: var(--shm-white);
+}
+.shm-tb-left,
+.shm-tb-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.shm-tb-right {
+  gap: 6px;
+}
+.shm-doc-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--shm-text);
+  white-space: nowrap;
+}
+.shm-ic {
+  display: grid;
+  place-items: center;
+  color: var(--shm-text-strong);
+}
+.shm-ic svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+.shm-ic--btn {
+  width: 24px;
+  height: 24px;
+}
+.shm-tb-caret svg {
+  width: 14px;
+  height: 14px;
+}
+.shm-tb-dim {
+  color: var(--shm-text-neutral);
+  width: 28px;
+  height: 28px;
+}
+.shm-tb-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin-right: 2px;
+}
+.shm-share {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--shm-border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--shm-text);
+}
+.shm-share svg {
+  width: 15px;
+  height: 15px;
+}
+.shm-ai-spark {
+  color: var(--shm-blue);
+  width: 28px;
+  height: 28px;
+}
+
+/* ---- Menu bar ---- */
+.shm-menubar {
+  flex: 0 0 auto;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 18px;
+  background: var(--shm-white);
+}
+.shm-menu-item {
+  font-size: 13px;
+  color: var(--shm-text-strong);
+}
+.shm-menu-ai {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--shm-blue);
+}
+.shm-menu-ai svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* ---- Formatting toolbar ---- */
+.shm-toolbar {
+  flex: 0 0 auto;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 14px;
+  background: var(--shm-surface);
+  border-top: 1px solid var(--shm-border);
+  border-bottom: 1px solid var(--shm-border);
+}
+.shm-tg {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 10px;
+  border-right: 1px solid var(--shm-border);
+}
+.shm-tg:last-child {
+  border-right: none;
+}
+.shm-tg:first-child {
+  padding-left: 0;
+}
+.shm-tb {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  color: var(--shm-text-strong);
+}
+.shm-tb svg {
+  width: 17px;
+  height: 17px;
+  display: block;
+}
+.shm-tb-glyph {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--shm-text-strong);
+  line-height: 1;
+}
+.shm-tb-b { font-weight: 700; }
+.shm-tb-i { font-style: italic; font-family: Georgia, serif; }
+.shm-tb-u { text-decoration: underline; }
+.shm-tb-s { text-decoration: line-through; }
+.shm-tb-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--shm-text-strong);
+  white-space: nowrap;
+}
+.shm-tb-select svg {
+  width: 13px;
+  height: 13px;
+}
+.shm-tb-select--w {
+  min-width: 64px;
+}
+
+/* ---- Formula bar ---- */
+.shm-formulabar {
+  flex: 0 0 auto;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--shm-white);
+  border-bottom: 1px solid var(--shm-border);
+}
+.shm-cellref {
+  width: 80px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+  font-size: 12px;
+  color: var(--shm-text-strong);
+  border-right: 1px solid var(--shm-border);
+}
+.shm-fx {
+  padding: 0 14px;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--shm-text-disabled);
+  border-right: 1px solid var(--shm-border);
+}
+.shm-formula-val {
+  padding-left: 14px;
+  font-size: 13px;
+  color: var(--shm-text);
+}
+
+/* ---- Grid ---- */
+.shm-gridwrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--shm-white);
+}
+.shm-grid {
+  position: relative;
+}
+.shm-colletters {
+  display: flex;
+  height: 24px;
+  background: var(--shm-surface);
+  border-bottom: 1px solid var(--shm-border);
+}
+.shm-corner {
+  flex: 0 0 34px;
+  border-right: 1px solid var(--shm-border);
+}
+.shm-colletter {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  color: var(--shm-text-neutral);
+  border-right: 1px solid var(--shm-border);
+}
+.shm-colletter[data-sel='true'] {
+  background: var(--shm-blue-wash);
+  color: var(--shm-blue);
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--shm-blue);
+}
+
+.shm-rows {
+  position: relative;
+}
+.shm-row {
+  display: flex;
+  height: 30px;
+}
+.shm-rownum {
+  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  color: var(--shm-text-disabled);
+  background: var(--shm-surface);
+  border-right: 1px solid var(--shm-border);
+  border-bottom: 1px solid var(--shm-cellborder);
+}
+.shm-cell {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 0 9px;
+  border-right: 1px solid var(--shm-cellborder);
+  border-bottom: 1px solid var(--shm-cellborder);
+  overflow: hidden;
+}
+.shm-cell[data-align='right'] {
+  justify-content: flex-end;
+}
+.shm-cell-txt {
+  font-size: 13px;
+  line-height: 1;
+  color: var(--shm-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.shm-cell--empty {
+  background: var(--shm-white);
+}
+/* Green formatted header row (row 1). */
+.shm-row[data-header='true'] .shm-cell {
+  background: var(--shm-green);
+  border-right-color: rgba(255, 255, 255, 0.28);
+  border-bottom-color: var(--shm-green);
+}
+.shm-cell--header .shm-cell-txt {
+  color: var(--shm-white);
+  font-weight: 600;
+}
+/* Clickable text cells select the "You" cell on click. */
+.shm-cell--click {
+  cursor: pointer;
+}
+
+/* Collaborator + "You" cell selection (coloured outline + name tag). Fades in
+   off the single data-enter gate, on its own --d delay (set so it lands after
+   the table has finished generating). */
+.shm-collab {
+  position: absolute;
+  box-shadow: inset 0 0 0 2px var(--cc);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  transition-delay: var(--d, 0ms);
+}
+.shm[data-enter='true'] .shm-collab {
+  opacity: 1;
+}
+/* The "You" selection uses the same in-grid treatment as the collaborators
+   (.shm-collab); the .shm-collab--you class only sets the blue --cc + "You" tag. */
+.shm-collab-tag {
+  position: absolute;
+  top: -16px;
+  right: -1px;
+  height: 16px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 16px;
+  color: #fff;
+  white-space: nowrap;
+  background: var(--cc);
+  border-radius: 3px 3px 3px 0;
+}
+
+/* Floating chart object — floats over the empty columns (E onward, x≥688) so the
+   data columns incl. Unit Price (col D, ends at 688) stay fully visible. */
+.shm-chart {
+  position: absolute;
+  top: 56px;
+  left: 692px;
+  width: 432px;
+  height: 232px;
+  padding: 12px 14px 6px;
+  background: var(--shm-white);
+  border: 1px solid var(--shm-border);
+  border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(20, 28, 40, 0.1);
+  /* Decorative — sits above the empty grid cells it floats over; clicks pass
+     through (no selectable cell lives under it). */
+  pointer-events: none;
+  z-index: 1;
+}
+.shm-chart-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--shm-text);
+  text-align: center;
+  margin-bottom: 2px;
+}
+.shm-chart-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.shm-chart-grid {
+  stroke: var(--shm-cellborder);
+  stroke-width: 1;
+}
+.shm-chart-ylabel {
+  fill: var(--shm-text-disabled);
+  font-size: 9px;
+  text-anchor: end;
+  font-family: var(--shm-font);
+}
+.shm-chart-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  stroke-dasharray: 1400;
+  stroke-dashoffset: 1400;
+}
+.shm-chart-svg[data-draw='true'] .shm-chart-line {
+  animation: shm-draw 1100ms ease-out forwards;
+  /* slight delay so the card pops first */
+  animation-delay: 160ms;
+}
+.shm-chart-line--blue {
+  stroke: #2f7ff0;
+}
+.shm-chart-line--green {
+  stroke: var(--shm-green);
+  animation-delay: 60ms;
+}
+@keyframes shm-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* "AI formula" suggestion tooltip — visual box only. It's rendered by
+   ProductSuiteV5 inside the .shm-floats layer, which owns position + entrance so
+   the tooltip can spill outside the card (see below). */
+.shm-aiformula {
+  padding: 12px 14px;
+  background: var(--shm-white);
+  border: 1px solid var(--shm-border);
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(20, 28, 40, 0.14);
+}
+
+/* Float layer (sibling of the card in .psuite-v5-screen-wrap) that lets the
+   AI-formula tooltip overhang the sheet's bottom edge. Mirrors .psuite-v5-floats
+   used by the Slides mockup. */
+.shm-floats {
+  position: absolute;
+  inset: 0; /* matches the card box; the tooltip spills via offsets */
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.shm-floats[data-on='true'] {
+  opacity: 1;
+  transform: none;
+  /* ≈ SheetsMockup intro length — appear once the table has generated. */
+  transition-delay: 2450ms;
+}
+/* Overhang the bottom-centre of the sheet (the AI panel is the right ~26%).
+   Position/size are tunable via the dialkit "Sheets" panel (--sheet-aif-*). */
+.shm-floats .shm-aiformula {
+  position: absolute;
+  left: var(--sheet-aif-left, 24%);
+  bottom: var(--sheet-aif-bottom, -7%);
+  width: var(--sheet-aif-w, 286px);
+}
+
+/* Context float — the AI prompt card at the top-left. Reuses the .shm-floats
+   base but enters EARLY (it's the prompt that drove the generation), so the
+   delay overrides the AI-formula tooltip's late entrance (source order wins). */
+.shm-floats--context[data-on='true'] {
+  transition-delay: 650ms;
+}
+.shm-floats--context .shm-ctxcard {
+  position: absolute;
+  top: var(--sheet-ctx-top, 21%);
+  left: var(--sheet-ctx-left, 1%);
+  width: var(--sheet-ctx-w, 332px);
+}
+
+/* The procurement-context card itself (Figma 3374:85152). Inline flow so the
+   text + chips wrap naturally. */
+.shm-ctxcard {
+  font-size: 13px;
+  line-height: 26px; /* room for the inline chips */
+  color: var(--shm-text);
+  background: rgba(241, 247, 254, 0.92); /* white + ~6% blue (blue-transparent-30) */
+  border: 1px solid #7ab1f4; /* component/data/blue/30 */
+  border-radius: 16px 16px 6px 16px; /* notch at bottom-right */
+  padding: 11px 15px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 26px rgba(20, 28, 40, 0.1);
+}
+.shm-ctxchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  vertical-align: middle;
+  max-width: 100%;
+  margin: 0 1px;
+  padding: 2px 7px 2px 6px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 0.5px solid var(--shm-border);
+  border-radius: 8px;
+}
+.shm-ctxchip-ic {
+  flex: 0 0 14px;
+  display: grid;
+  place-items: center;
+}
+.shm-ctxchip-ic svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+.shm-ctxchip-ic--doc {
+  color: #0d6bde; /* component/icon/fileType/text */
+}
+.shm-ctxchip-ic--sheet {
+  color: #23a52d; /* component/icon/fileTyle/sheet */
+}
+.shm-ctxchip-label {
+  font-size: 13px;
+  color: var(--shm-text);
+  white-space: nowrap;
+}
+.shm-ctxchip--trunc {
+  max-width: 188px;
+}
+.shm-ctxchip--trunc .shm-ctxchip-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.shm-aiformula-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--shm-text);
+  margin-bottom: 8px;
+}
+.shm-aiformula-head svg {
+  width: 17px;
+  height: 17px;
+  color: var(--shm-blue);
+}
+.shm-aiformula-body {
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--shm-text-strong);
+}
+.shm-token {
+  color: var(--shm-purple);
+}
+.shm-caret {
+  display: inline-block;
+  width: 1.5px;
+  height: 14px;
+  margin-right: 1px;
+  vertical-align: -2px;
+  background: var(--shm-text);
+  animation: shm-blink 1.1s steps(1) infinite;
+}
+@keyframes shm-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---- Sheet tabs ---- */
+.shm-sheettabs {
+  flex: 0 0 auto;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 12px;
+  background: var(--shm-white);
+  border-top: 1px solid var(--shm-border);
+}
+.shm-tab-ic {
+  width: 26px;
+  height: 26px;
+  color: var(--shm-text-neutral);
+}
+.shm-tab-ic svg {
+  width: 16px;
+  height: 16px;
+}
+.shm-sheettab {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 12px;
+  font-size: 13px;
+  color: var(--shm-text-neutral);
+  border-radius: 6px;
+}
+.shm-sheettab svg {
+  width: 13px;
+  height: 13px;
+}
+.shm-sheettab--active {
+  color: var(--shm-blue);
+  font-weight: 600;
+  background: var(--shm-blue-wash);
+}
+
+/* =============================================================================
+   Right: the AI panel
+   ========================================================================== */
+.shm-panel {
+  flex: 0 0 332px;
+  display: flex;
+  flex-direction: column;
+  background: var(--shm-white);
+  min-height: 0;
+}
+.shm-panel-head {
+  flex: 0 0 auto;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+}
+.shm-panel-menu {
+  color: var(--shm-text-strong);
+}
+.shm-panel-title {
+  flex: 1 1 auto;
+  font-family: var(--shm-sf);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--shm-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.shm-panel-dim {
+  color: var(--shm-text-neutral);
+  width: 24px;
+  height: 24px;
+}
+.shm-panel-dim svg {
+  width: 17px;
+  height: 17px;
+}
+
+.shm-panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  padding: 4px 16px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+.shm-msg {
+  margin: 0;
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--shm-text);
+}
+
+/* Step rows (completed task items). */
+.shm-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+.shm-step-check {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--shm-mute-check);
+  color: #fff;
+}
+.shm-step-check svg {
+  width: 12px;
+  height: 12px;
+  stroke-width: 2.4;
+}
+.shm-step-text {
+  flex: 1 1 auto;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  color: var(--shm-text);
+}
+.shm-step-caret {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--shm-text-disabled);
+}
+.shm-step-caret svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* Sub-step (indented, dotted connector on the left). */
+.shm-substep {
+  position: relative;
+  margin-left: 9px;
+  padding-left: 18px;
+}
+.shm-substep::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -10px;
+  bottom: 8px;
+  border-left: 1.5px dotted var(--shm-border);
+}
+.shm-substep-text {
+  margin: 0 0 8px;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--shm-text-neutral);
+}
+.shm-srcchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--shm-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.shm-srcchip svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  color: var(--shm-text-strong);
+}
+.shm-srcchip-strong {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--shm-text);
+  white-space: nowrap;
+}
+.shm-srcchip-div {
+  width: 1px;
+  height: 16px;
+  background: var(--shm-border);
+  flex: 0 0 auto;
+}
+.shm-srcchip-dim {
+  font-size: 12px;
+  color: var(--shm-text-neutral);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Generated-file card. */
+.shm-filecard {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 12px;
+  border: 1px solid var(--shm-border);
+  border-radius: 10px;
+}
+.shm-filecard-ic {
+  flex: 0 0 24px;
+  display: grid;
+  place-items: center;
+}
+.shm-filecard-ic img {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+.shm-filecard-name {
+  flex: 1 1 auto;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--shm-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.shm-filecard-open {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  color: var(--shm-text-disabled);
+}
+.shm-filecard-open svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---- Composer ---- */
+.shm-composer {
+  flex: 0 0 auto;
+  margin: 8px 14px 14px;
+  padding: 12px 12px 10px;
+  border: 1px solid var(--shm-border);
+  border-radius: 14px;
+  box-shadow: 0 2px 6px rgba(20, 28, 40, 0.04);
+}
+.shm-composer-input {
+  font-size: 13px;
+  color: var(--shm-text-disabled);
+  margin-bottom: 14px;
+}
+.shm-composer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.shm-composer-ic {
+  width: 24px;
+  height: 24px;
+  color: var(--shm-text-strong);
+}
+.shm-sources {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: var(--shm-text-strong);
+}
+.shm-sources svg {
+  width: 15px;
+  height: 15px;
+}
+.shm-sources-n {
+  color: var(--shm-text-disabled);
+}
+.shm-send {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--shm-subtle);
+  color: var(--shm-text-disabled);
+}
+.shm-send svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* =============================================================================
+   Reduced motion — snap straight to the finished scene.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .shm-reveal,
+  .shm-pblock,
+  .shm-pop,
+  .shm-cell-anim,
+  .shm-collab,
+  .shm-floats {
+    transition: none;
+  }
+  .shm-chart-svg[data-draw='true'] .shm-chart-line {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .shm-caret {
+    animation: none;
+  }
+}

@@ -28,6 +28,7 @@ export function UseCaseV5B() {
   const current = PERSONAS.find((p) => p.key === active) ?? PERSONAS[0];
   const activeIndex = PERSONAS.findIndex((p) => p.key === active);
   const isFirstActive = activeIndex === 0;
+  const isLastActive = activeIndex === PERSONAS.length - 1;
 
   const tabsRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -41,6 +42,29 @@ export function UseCaseV5B() {
       setFill({ left: btn.offsetLeft, width: btn.offsetWidth });
     };
     measure();
+
+    // Keep the active tab visible by scrolling the row HORIZONTALLY only (via
+    // the container's scrollLeft) — never scrollIntoView, which would also pull
+    // the page vertically. Runs on active change (this effect's dep), not on
+    // resize. The +shoulder allowance keeps the active tab's right shoulder in
+    // view when scrolling to the end.
+    const tabs = tabsRef.current;
+    const btn = tabRefs.current[activeIndex];
+    if (tabs && btn) {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const behavior: ScrollBehavior = reduce ? 'auto' : 'smooth';
+      // Reserve the shoulder width so a tab's right shoulder stays visible when
+      // scrolled to the right edge — except the last tab, whose right shoulder
+      // is dropped (is-flush-right), so it should land exactly flush.
+      const reserve = isLastActive ? 0 : 41; // --uc5-shoulder-w
+      const left = btn.offsetLeft;
+      const right = left + btn.offsetWidth + reserve;
+      if (left < tabs.scrollLeft) {
+        tabs.scrollTo({ left, behavior });
+      } else if (right > tabs.scrollLeft + tabs.clientWidth) {
+        tabs.scrollTo({ left: right - tabs.clientWidth, behavior });
+      }
+    }
 
     const ro = new ResizeObserver(measure);
     if (tabsRef.current) ro.observe(tabsRef.current);
@@ -62,7 +86,7 @@ export function UseCaseV5B() {
             ref={tabsRef}
           >
             <span
-              className={`uc5b-fill${isFirstActive ? ' is-flush-left' : ''}`}
+              className={`uc5b-fill${isFirstActive ? ' is-flush-left' : ''}${isLastActive ? ' is-flush-right' : ''}`}
               aria-hidden="true"
               style={fill ? { left: `${fill.left}px`, width: `${fill.width}px` } : { opacity: 0 }}
             >
@@ -89,7 +113,9 @@ export function UseCaseV5B() {
             })}
           </div>
 
-          <div className={`uc5-panel${isFirstActive ? ' is-active-first' : ''}`}>
+          <div
+            className={`uc5-panel${isFirstActive ? ' is-active-first' : ''}${isLastActive ? ' is-active-last' : ''}`}
+          >
             <PanelCopy persona={current} />
             <PanelMedia activeKey={active} />
           </div>

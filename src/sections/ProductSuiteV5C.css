@@ -1,0 +1,71 @@
+/* =============================================================================
+   Product Suite V5C — segmented slider navigation
+   Reuses the V5 section/screen/float layout (see ProductSuiteV5.css); this file
+   replaces the fanned-arc navigation with a row of segmented progress bars. The
+   active product's bar fills left->right over one cycle in that product's brand
+   color, then auto-advances to the next product (driven by the fill's
+   animationend — see ProductSuiteV5C.tsx). Hover/focus pauses the fill.
+   ========================================================================== */
+
+.psuite-v5c-slider {
+  /* One cycle per screen; the fill animation and the auto-advance share it.
+     --psuite-v5c-cycle is set on :root by the dialkit "suiteCycle" dial (see
+     V5Tuning.tsx); the fill falls back to 3000ms when that isn't mounted. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 1051px;
+  /* Roughly the vertical room the arc stage held, so the screen sits put. */
+  padding: 24px 0 40px;
+}
+
+.psuite-v5c-seg {
+  position: relative;
+  width: 20px;
+  height: 6px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: var(--bg-accent-medium);
+  cursor: pointer;
+  overflow: hidden;
+  transition: width 250ms ease;
+}
+
+.psuite-v5c-slider [aria-selected='true'] {
+  width: 36px;
+}
+
+.psuite-v5c-fill {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  border-radius: inherit;
+  /* background (product color) is set inline per active segment */
+  animation: psuite-v5c-fill var(--psuite-v5c-cycle, 3000ms) linear forwards;
+}
+
+.psuite-v5c-fill[data-paused='true'] {
+  animation-play-state: paused;
+}
+
+@keyframes psuite-v5c-fill {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No countdown/auto-advance: the active bar just shows filled. Because there
+     is no animation, animationend never fires, so advance() is never called —
+     segments remain click-to-switch. */
+  .psuite-v5c-fill {
+    width: 100%;
+    animation: none;
+  }
+}

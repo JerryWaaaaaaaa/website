@@ -325,7 +325,10 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 5;
+  /* Above the slide stage (a transform stacking context, painted at z-auto) but
+     below the spilling floats (.psuite-v5-floats, z-index 3) so the cursor slides
+     under the prompt / notes / voice panels. */
+  z-index: 2;
 }
 .slm-cursor {
   position: absolute;
