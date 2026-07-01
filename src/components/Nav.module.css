@@ -45,8 +45,7 @@
 /* Scrolled pill state */
 .navWrap.isScrolled .navBar {
   background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(16px);
   border-color: var(--border-subtle);
   overflow: hidden;
 }
