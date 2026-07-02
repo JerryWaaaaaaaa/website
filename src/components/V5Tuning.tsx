@@ -43,8 +43,8 @@ const HERO_BASE: DialConfig = {
   // container; consumed via --hero-meeting-w / --hero-meeting-max-w.
   meeting: {
     _collapsed: true,
-    width: [28, 15, 50, 0.5], // % of hero container — fluid proportional size
-    maxWidth: [520, 200, 800, 10], // px — absolute ceiling, only clamps when the % width would exceed it
+    width: [30, 15, 50, 0.5], // % of hero container — fluid proportional size
+    maxWidth: [220, 200, 800, 10], // px — absolute ceiling, only clamps when the % width would exceed it
   },
 };
 
@@ -52,7 +52,7 @@ const HERO_BASE: DialConfig = {
 // Each step is centered in its own min-height block, so this is the effective gap
 // between titles. Drives .bd5-step min-height via --bd5-step-height.
 const BUILTDIFF_BASE: DialConfig = {
-  stepHeight: [70, 20, 120, 1],
+  stepHeight: [36, 20, 120, 1],
 };
 
 // Variant-scoped Product Suite controls, grouped in the "Product Suite" panel so
@@ -62,7 +62,7 @@ const CAROUSEL_BASE: DialConfig = {
   stageHeight: [188, 120, 400, 2], // .psuite-v5-stage height (ProductSuiteV5) via --psuite-stage-height
 };
 const AUTOPLAY_BASE: DialConfig = {
-  cycle: [8000, 8000, 20000, 100], // --psuite-v5c-cycle: Slider (V5C) countdown + Tab bar (V5D) underline (ms)
+  cycle: [13000, 8000, 20000, 100], // --psuite-v5c-cycle: Slider (V5C) countdown + Tab bar (V5D) underline (ms)
 };
 
 // Floating Slides panels (ProductSuiteV5). Values are % of the card and may be
@@ -109,7 +109,7 @@ const PAPER_BASE: DialConfig = {
   },
   timing: {
     _collapsed: true,
-    start: [2560, 0, 5000, 20], // when comments + the underline begin (ms)
+    start: [2080, 0, 5000, 20], // when comments + the underline begin (ms)
     step: [240, 0, 1500, 10], // gap between each float (ms)
     duration: [420, 100, 1200, 10], // fade duration (ms)
   },
@@ -139,20 +139,20 @@ const SHEETS_BASE: DialConfig = {
 const CANVAS_BASE: DialConfig = {
   polished: {
     _collapsed: true,
-    right: [-1, -50, 60, 0.5],
-    top: [6, -10, 100, 0.5],
-    width: [236, 120, 480, 2],
+    right: [-7, -50, 60, 0.5],
+    top: [12, -10, 100, 0.5],
+    width: [180, 120, 480, 2],
   },
   comments: {
     _collapsed: true,
-    right: [-7, -50, 60, 0.5],
-    top: [42, -10, 100, 0.5],
-    width: [322, 160, 560, 2],
+    right: [-10.5, -50, 60, 0.5],
+    top: [41.5, -10, 100, 0.5],
+    width: [254, 160, 560, 2],
   },
   reaction: {
     _collapsed: true,
-    left: [-2, -50, 60, 0.5],
-    bottom: [4, -50, 60, 0.5],
+    left: [-4.5, -50, 60, 0.5],
+    bottom: [-5, -50, 60, 0.5],
     width: [150, 60, 320, 2],
   },
 };
@@ -170,15 +170,15 @@ const CANVAS_BASE_W = { polished: 236, comments: 322, reaction: 150 } as const;
 const DATATABLE_BASE: DialConfig = {
   pie: {
     _collapsed: true,
-    left: [-9, -50, 60, 0.5],
-    bottom: [-11.5, -50, 60, 0.5],
-    width: [520, 280, 800, 2],
+    left: [-20, -50, 60, 0.5],
+    bottom: [-14.5, -50, 60, 0.5],
+    width: [432, 280, 800, 2],
   },
   aiPopover: {
     _collapsed: true,
-    right: [-4, -50, 60, 0.5],
-    top: [26, -10, 100, 0.5],
-    width: [300, 180, 520, 2],
+    right: [-17.5, -50, 60, 0.5],
+    top: [31.5, -10, 100, 0.5],
+    width: [276, 180, 520, 2],
   },
 };
 const DATATABLE_BASE_W = { pie: 520, aipop: 300 } as const;
