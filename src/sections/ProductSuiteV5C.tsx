@@ -76,6 +76,7 @@ const PRODUCTS: Product[] = [
 export function ProductSuiteV5C() {
   const [active, setActive] = useState('slides');
   const [paused, setPaused] = useState(false);
+  const [voiceOpen, setVoiceOpen] = useState(false);
   // Bumped on every segment click so the fill remounts and the countdown replays
   // from the start — even when the clicked bar is already the active one.
   const [runId, setRunId] = useState(0);
@@ -245,7 +246,7 @@ export function ProductSuiteV5C() {
               alt=""
             />
             <div className="psuite-v5-float psuite-v5-float--voice">
-              <VoiceOverPanel />
+              <VoiceOverPanel open={voiceOpen} onToggle={() => setVoiceOpen((o) => !o)} />
             </div>
           </div>
 
