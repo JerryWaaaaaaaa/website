@@ -33,9 +33,36 @@ const MONITOR_QUERY = '(min-width: 1440px)';
 const LAYOUT_BASE: DialConfig = {
   widthLaptop: [1020, WIDTH_MIN, WIDTH_MAX, WIDTH_STEP], // on the step-10 grid so dialkit doesn't re-snap (would falsely flag the default as changed)
   widthMonitor: [1200, WIDTH_MIN, WIDTH_MAX, WIDTH_STEP],
-  magnify: [1.25, 1.0, 2.0, 0.05],
-  suiteHeight: [188, 120, 400, 2], // .psuite-v5-stage height
-  suiteCycle: [6000, 500, 8000, 100], // --psuite-v5c-cycle: ProductSuiteV5C slider countdown (ms)
+};
+
+// Hero controls, grouped by the variant they drive. magnify is HeroV5B (Grouped)
+// only — the magnetic-hover peak scale, consumed via --suite-magnify-max.
+const HERO_BASE: DialConfig = {
+  grouped: { _collapsed: true, magnify: [1.25, 1.0, 2.0, 0.05] },
+  // Floating meeting window (.hero-v5-meeting, HeroV5 + HeroV5B). % of the hero
+  // container; consumed via --hero-meeting-w / --hero-meeting-max-w.
+  meeting: {
+    _collapsed: true,
+    width: [30, 15, 50, 0.5], // % of hero container — fluid proportional size
+    maxWidth: [220, 200, 800, 10], // px — absolute ceiling, only clamps when the % width would exceed it
+  },
+};
+
+// Built Different (Scroll variant): vertical space each title step occupies (vh).
+// Each step is centered in its own min-height block, so this is the effective gap
+// between titles. Drives .bd5-step min-height via --bd5-step-height.
+const BUILTDIFF_BASE: DialConfig = {
+  stepHeight: [36, 20, 120, 1],
+};
+
+// Variant-scoped Product Suite controls, grouped in the "Product Suite" panel so
+// each control sits next to the variant it drives. stageHeight is Carousel-only;
+// the autoplay cycle is shared by the Slider (V5C) and Tab bar (V5D) variants.
+const CAROUSEL_BASE: DialConfig = {
+  stageHeight: [188, 120, 400, 2], // .psuite-v5-stage height (ProductSuiteV5) via --psuite-stage-height
+};
+const AUTOPLAY_BASE: DialConfig = {
+  cycle: [13000, 8000, 20000, 100], // --psuite-v5c-cycle: Slider (V5C) countdown + Tab bar (V5D) underline (ms)
 };
 
 // Floating Slides panels (ProductSuiteV5). Values are % of the card and may be
@@ -82,7 +109,7 @@ const PAPER_BASE: DialConfig = {
   },
   timing: {
     _collapsed: true,
-    start: [2560, 0, 5000, 20], // when comments + the underline begin (ms)
+    start: [2080, 0, 5000, 20], // when comments + the underline begin (ms)
     step: [240, 0, 1500, 10], // gap between each float (ms)
     duration: [420, 100, 1200, 10], // fade duration (ms)
   },
@@ -106,12 +133,76 @@ const SHEETS_BASE: DialConfig = {
   },
 };
 
+// Canvas floats (ProductSuiteV5 Canvas tab): position (% of the card, may be
+// negative to spill outside an edge) + size (px). Consumed by .cnv-floats via
+// --canvas-* tokens. The reaction width also scales its emoji + sparkle stars.
+const CANVAS_BASE: DialConfig = {
+  polished: {
+    _collapsed: true,
+    right: [-7, -50, 60, 0.5],
+    top: [12, -10, 100, 0.5],
+    width: [180, 120, 480, 2],
+  },
+  comments: {
+    _collapsed: true,
+    right: [-10.5, -50, 60, 0.5],
+    top: [41.5, -10, 100, 0.5],
+    width: [254, 160, 560, 2],
+  },
+  reaction: {
+    _collapsed: true,
+    left: [-4.5, -50, 60, 0.5],
+    bottom: [-5, -50, 60, 0.5],
+    width: [150, 60, 320, 2],
+  },
+};
+
+// Unscaled (100%) card widths. The width dial scales the whole card by
+// width / base via a CSS transform (see CanvasMockup.css), so the rendered card
+// width tracks the dial value while text / padding / icons scale with it.
+const CANVAS_BASE_W = { polished: 236, comments: 322, reaction: 150 } as const;
+
+// Data table floats (ProductSuiteV5 / V5D Data table tab): the pie-chart dashboard
+// card (bottom-left) + the "Fill column with AI" popover (right). Position is % of
+// the card (may be negative to spill outside an edge); width is the BASE card px,
+// scaled as a whole via --dt-*-scale (see DataTableMockup.css). Consumed via the
+// --dt-pie-* / --dt-aipop-* tokens.
+const DATATABLE_BASE: DialConfig = {
+  pie: {
+    _collapsed: true,
+    left: [-20, -50, 60, 0.5],
+    bottom: [-14.5, -50, 60, 0.5],
+    width: [432, 280, 800, 2],
+  },
+  aiPopover: {
+    _collapsed: true,
+    right: [-17.5, -50, 60, 0.5],
+    top: [31.5, -10, 100, 0.5],
+    width: [276, 180, 520, 2],
+  },
+};
+const DATATABLE_BASE_W = { pie: 520, aipop: 300 } as const;
+
 interface LayoutValues {
   widthLaptop: number;
   widthMonitor: number;
-  magnify: number;
-  suiteHeight: number;
-  suiteCycle: number;
+}
+
+interface HeroValues {
+  grouped: { magnify: number };
+  meeting: { width: number; maxWidth: number };
+}
+
+interface BuiltDiffValues {
+  stepHeight: number;
+}
+
+interface CarouselValues {
+  stageHeight: number;
+}
+
+interface AutoplayValues {
+  cycle: number;
 }
 
 interface SlidesValues {
@@ -132,6 +223,17 @@ interface SheetsValues {
   context: { top: number; left: number; width: number };
 }
 
+interface CanvasValues {
+  polished: { right: number; top: number; width: number };
+  comments: { right: number; top: number; width: number };
+  reaction: { left: number; bottom: number; width: number };
+}
+
+interface DataTableValues {
+  pie: { left: number; bottom: number; width: number };
+  aiPopover: { right: number; top: number; width: number };
+}
+
 function prefixKeys(prefix: string, map: Record<string, Scalar>): Record<string, Scalar> {
   const out: Record<string, Scalar> = {};
   for (const [k, v] of Object.entries(map)) out[`${prefix}.${k}`] = v;
@@ -148,9 +250,15 @@ function stripPrefix(prefix: string, map: Record<string, Scalar>): Record<string
 // Default values for the packed `tune` param, namespaced by panel (constant).
 const TUNE_DEFAULTS: Record<string, Scalar> = {
   ...prefixKeys('Layout', configDefaults(LAYOUT_BASE)),
+  ...prefixKeys('Hero', configDefaults(HERO_BASE)),
+  ...prefixKeys('BuiltDifferent', configDefaults(BUILTDIFF_BASE)),
+  ...prefixKeys('Carousel', configDefaults(CAROUSEL_BASE)),
+  ...prefixKeys('Autoplay', configDefaults(AUTOPLAY_BASE)),
   ...prefixKeys('Slides', configDefaults(SLIDES_BASE)),
   ...prefixKeys('Paper', configDefaults(PAPER_BASE)),
   ...prefixKeys('Sheets', configDefaults(SHEETS_BASE)),
+  ...prefixKeys('Canvas', configDefaults(CANVAS_BASE)),
+  ...prefixKeys('DataTable', configDefaults(DATATABLE_BASE)),
 };
 
 // Active breakpoint tier, tracked live as the viewport crosses the 1440 threshold.
@@ -179,20 +287,38 @@ export function V5Tuning() {
     applyDefaults(LAYOUT_BASE, stripPrefix('Layout', overrides)),
   ) as unknown as LayoutValues;
 
-  const slides = useDialKit(
-    'Slides',
-    applyDefaults(SLIDES_BASE, stripPrefix('Slides', overrides)),
-  ) as unknown as SlidesValues;
+  const hero = useDialKit(
+    'Hero',
+    applyDefaults(HERO_BASE, stripPrefix('Hero', overrides)),
+  ) as unknown as HeroValues;
 
-  const paper = useDialKit(
-    'Paper',
-    applyDefaults(PAPER_BASE, stripPrefix('Paper', overrides)),
-  ) as unknown as PaperValues;
+  const builtDiff = useDialKit(
+    'Built Different',
+    applyDefaults(BUILTDIFF_BASE, stripPrefix('BuiltDifferent', overrides)),
+  ) as unknown as BuiltDiffValues;
 
-  const sheets = useDialKit(
-    'Sheets',
-    applyDefaults(SHEETS_BASE, stripPrefix('Sheets', overrides)),
-  ) as unknown as SheetsValues;
+  // Product Suite controls grouped under a single collapsible panel: the
+  // variant-scoped controls (carousel stage height; the Slider/Tab bar autoplay
+  // cycle) followed by the per-tab float folders. Each sub-folder is seeded from the
+  // URL under its own prefix so the packed `tune` keys stay stable per control.
+  const suite = useDialKit('Product Suite', {
+    carousel: { _collapsed: true, ...applyDefaults(CAROUSEL_BASE, stripPrefix('Carousel', overrides)) },
+    autoplay: { _collapsed: true, ...applyDefaults(AUTOPLAY_BASE, stripPrefix('Autoplay', overrides)) },
+    slides: { _collapsed: true, ...applyDefaults(SLIDES_BASE, stripPrefix('Slides', overrides)) },
+    paper: { _collapsed: true, ...applyDefaults(PAPER_BASE, stripPrefix('Paper', overrides)) },
+    sheets: { _collapsed: true, ...applyDefaults(SHEETS_BASE, stripPrefix('Sheets', overrides)) },
+    canvas: { _collapsed: true, ...applyDefaults(CANVAS_BASE, stripPrefix('Canvas', overrides)) },
+    datatable: { _collapsed: true, ...applyDefaults(DATATABLE_BASE, stripPrefix('DataTable', overrides)) },
+  }) as unknown as {
+    carousel: CarouselValues;
+    autoplay: AutoplayValues;
+    slides: SlidesValues;
+    paper: PaperValues;
+    sheets: SheetsValues;
+    canvas: CanvasValues;
+    datatable: DataTableValues;
+  };
+  const { carousel, autoplay, slides, paper, sheets, canvas, datatable } = suite;
 
   // --page-max-width: the tier matching the current viewport drives the live token.
   const activeWidth = tier === 'monitor' ? layout.widthMonitor : layout.widthLaptop;
@@ -200,20 +326,35 @@ export function V5Tuning() {
     document.documentElement.style.setProperty('--page-max-width', `${activeWidth}px`);
   }, [activeWidth]);
 
-  // --suite-magnify-max: peak scale of the hovered HeroV5B suite icons.
+  // --suite-magnify-max: peak scale of the hovered HeroV5B (Grouped) suite icons.
   useEffect(() => {
-    document.documentElement.style.setProperty('--suite-magnify-max', String(layout.magnify));
-  }, [layout.magnify]);
+    document.documentElement.style.setProperty('--suite-magnify-max', String(hero.grouped.magnify));
+  }, [hero.grouped.magnify]);
 
-  // --psuite-stage-height: live height of the ProductSuiteV5 arc stage.
+  // --hero-meeting-w / --hero-meeting-max-w: size of the floating meeting window
+  // on the V5 hero (.hero-v5-meeting), as % of the hero container.
   useEffect(() => {
-    document.documentElement.style.setProperty('--psuite-stage-height', `${layout.suiteHeight}px`);
-  }, [layout.suiteHeight]);
+    const root = document.documentElement.style;
+    root.setProperty('--hero-meeting-w', `${hero.meeting.width}%`);
+    root.setProperty('--hero-meeting-max-w', `${hero.meeting.maxWidth}px`);
+  }, [hero.meeting.width, hero.meeting.maxWidth]);
 
-  // --psuite-v5c-cycle: ProductSuiteV5C slider countdown (fill + auto-advance) duration.
+  // --bd5-step-height: vertical space each Built Different (Scroll) title step
+  // occupies, i.e. the effective gap between titles.
   useEffect(() => {
-    document.documentElement.style.setProperty('--psuite-v5c-cycle', `${layout.suiteCycle}ms`);
-  }, [layout.suiteCycle]);
+    document.documentElement.style.setProperty('--bd5-step-height', `${builtDiff.stepHeight}vh`);
+  }, [builtDiff.stepHeight]);
+
+  // --psuite-stage-height: live height of the Carousel (ProductSuiteV5) arc stage.
+  useEffect(() => {
+    document.documentElement.style.setProperty('--psuite-stage-height', `${carousel.stageHeight}px`);
+  }, [carousel.stageHeight]);
+
+  // --psuite-v5c-cycle: auto-advance countdown — drives the Slider (V5C) fill and
+  // the Tab bar (V5D) underline.
+  useEffect(() => {
+    document.documentElement.style.setProperty('--psuite-v5c-cycle', `${autoplay.cycle}ms`);
+  }, [autoplay.cycle]);
 
   // Per-panel float position/size tokens consumed by .psuite-v5-float--*.
   useEffect(() => {
@@ -256,13 +397,48 @@ export function V5Tuning() {
     root.setProperty('--sheet-ctx-w', `${sheets.context.width}px`);
   }, [sheets]);
 
+  // Canvas float position + proportional-scale tokens, consumed by .cnv-floats.
+  useEffect(() => {
+    const root = document.documentElement.style;
+    root.setProperty('--canvas-pol-right', `${canvas.polished.right}%`);
+    root.setProperty('--canvas-pol-top', `${canvas.polished.top}%`);
+    root.setProperty('--canvas-cmt-right', `${canvas.comments.right}%`);
+    root.setProperty('--canvas-cmt-top', `${canvas.comments.top}%`);
+    root.setProperty('--canvas-rxn-left', `${canvas.reaction.left}%`);
+    root.setProperty('--canvas-rxn-bottom', `${canvas.reaction.bottom}%`);
+    // Size dials scale the whole card proportionally: width / base → a unitless
+    // factor applied as a CSS transform (not just a container-width change).
+    root.setProperty('--canvas-pol-scale', String(canvas.polished.width / CANVAS_BASE_W.polished));
+    root.setProperty('--canvas-cmt-scale', String(canvas.comments.width / CANVAS_BASE_W.comments));
+    root.setProperty('--canvas-rxn-scale', String(canvas.reaction.width / CANVAS_BASE_W.reaction));
+  }, [canvas]);
+
+  // Data table float position + whole-card scale tokens, consumed by
+  // .dtm-floats--pie / .dtm-floats--ai. Offsets in %; width → unitless scale factor
+  // (width / base) applied as a CSS transform so the whole card zooms.
+  useEffect(() => {
+    const root = document.documentElement.style;
+    root.setProperty('--dt-pie-left', `${datatable.pie.left}%`);
+    root.setProperty('--dt-pie-bottom', `${datatable.pie.bottom}%`);
+    root.setProperty('--dt-pie-scale', String(datatable.pie.width / DATATABLE_BASE_W.pie));
+    root.setProperty('--dt-aipop-right', `${datatable.aiPopover.right}%`);
+    root.setProperty('--dt-aipop-top', `${datatable.aiPopover.top}%`);
+    root.setProperty('--dt-aipop-scale', String(datatable.aiPopover.width / DATATABLE_BASE_W.aipop));
+  }, [datatable]);
+
   // Mirror both panels' non-default leaves into a single packed `tune` param,
   // debounced so dragging a slider never re-renders the page mid-gesture.
   const combinedValues: Record<string, Scalar> = {
     ...prefixKeys('Layout', flattenValues(layout as unknown as Record<string, unknown>)),
+    ...prefixKeys('Hero', flattenValues(hero as unknown as Record<string, unknown>)),
+    ...prefixKeys('BuiltDifferent', flattenValues(builtDiff as unknown as Record<string, unknown>)),
+    ...prefixKeys('Carousel', flattenValues(carousel as unknown as Record<string, unknown>)),
+    ...prefixKeys('Autoplay', flattenValues(autoplay as unknown as Record<string, unknown>)),
     ...prefixKeys('Slides', flattenValues(slides as unknown as Record<string, unknown>)),
     ...prefixKeys('Paper', flattenValues(paper as unknown as Record<string, unknown>)),
     ...prefixKeys('Sheets', flattenValues(sheets as unknown as Record<string, unknown>)),
+    ...prefixKeys('Canvas', flattenValues(canvas as unknown as Record<string, unknown>)),
+    ...prefixKeys('DataTable', flattenValues(datatable as unknown as Record<string, unknown>)),
   };
   const tune = encodeTune(combinedValues, TUNE_DEFAULTS);
   useDialUrlSync({ keys: ['tune'], target: tune ? { tune } : {}, immediate: false });

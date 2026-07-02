@@ -24,13 +24,16 @@
   border-top-left-radius: var(--uc5-panel-radius);
   border-top-right-radius: var(--uc5-panel-radius);
   pointer-events: none;
-  transition: left 360ms var(--ease-emphasized), width 360ms var(--ease-emphasized);
+  transition: left var(--uc5-slide-duration) var(--ease-emphasized), width var(--uc5-slide-duration) var(--ease-emphasized);
 }
 
 /* Curved shoulders ride the fill's bottom corners and flare into the panel. */
 .uc5b-shoulder {
   position: absolute;
-  top: 0;
+  /* Start where the fill's rounded top corner ends, so the shoulder only hugs
+     the fill's straight side. Above this line the rounded corner is the fill's
+     alone — no straight shoulder edge to expose a background sliver beside it. */
+  top: var(--uc5-panel-radius);
   bottom: 0;
   width: var(--uc5-shoulder-w);
   pointer-events: none;

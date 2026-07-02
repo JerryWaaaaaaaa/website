@@ -1,0 +1,101 @@
+/* =============================================================================
+   Product Suite V5D — horizontal tab-row navigation (Figma "Tab bar")
+   Reuses the V5 section/screen/float layout (see ProductSuiteV5.css); this file
+   replaces the navigation with a centered row of icon+label tabs. The active tab
+   gets a tinted pill in its brand color plus an accent underline that doubles as
+   the auto-advance progress bar: it fills left->right over one cycle, then
+   advances to the next product (driven by the underline's animationend — see
+   ProductSuiteV5D.tsx). Each tab exposes its brand color via the --pc var.
+   ========================================================================== */
+
+.psuite-v5d-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  /* Roughly the vertical room the arc stage held, so the screen sits put. */
+  padding: 24px 0 40px;
+}
+
+.psuite-v5d-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-inactive, #a3b9dd);
+  font-size: 14px;
+  line-height: 16px;
+  cursor: pointer;
+  transition: background 250ms ease, color 250ms ease;
+}
+
+.psuite-v5d-tab[data-active] {
+  /* Tinted pill in the product's brand color (Figma: ~20% tint). */
+  background: color-mix(in srgb, var(--pc) 18%, transparent);
+  color: var(--pc);
+}
+
+.psuite-v5d-tab-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Inactive tabs use the -mono silhouette recolored to the label color:
+   currentColor = the tab's inherited color (var(--text-inactive, #a3b9dd)), so
+   the icon always matches its label. Active tabs render the -fill icon as a real
+   <img> (see ProductSuiteV5D.tsx) since its white marks can't be masked away. */
+.psuite-v5d-tab-icon--mono {
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+  transition: background-color 250ms ease;
+}
+
+.psuite-v5d-tab-label {
+  white-space: nowrap;
+}
+
+.psuite-v5d-underline {
+  position: absolute;
+  /* Accent/progress bar sits above the active tab (Figma 3403-45548). */
+  top: -8px;
+  left: 10px;
+  /* Grows from the left inset to the right inset (Figma: 10px insets). */
+  width: 0;
+  height: 4px;
+  border-radius: 12px;
+  background: var(--pc);
+  /* One cycle per screen; the fill and the auto-advance share it.
+     --psuite-v5c-cycle is set on :root by the dialkit "suiteCycle" dial (see
+     V5Tuning.tsx); falls back to 6000ms when that isn't mounted. */
+  animation: psuite-v5d-underline var(--psuite-v5c-cycle, 6000ms) linear forwards;
+}
+
+.psuite-v5d-underline[data-paused='true'] {
+  animation-play-state: paused;
+}
+
+@keyframes psuite-v5d-underline {
+  from {
+    width: 0;
+  }
+  to {
+    width: calc(100% - 20px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No countdown/auto-advance: the active underline just shows filled. Because
+     there is no animation, animationend never fires, so advance() is never
+     called — tabs remain click-to-switch. */
+  .psuite-v5d-underline {
+    width: calc(100% - 20px);
+    animation: none;
+  }
+}

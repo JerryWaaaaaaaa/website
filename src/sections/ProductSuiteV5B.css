@@ -11,6 +11,9 @@
   gap: 64px;
   padding: 120px 24px;
   background: var(--bg-accent-light);
+  /* Clip anything that spills past the window so the page never gets a
+     horizontal scrollbar; `clip` leaves the vertical axis free. */
+  overflow-x: clip;
 }
 
 .psuite-v5b-heading {

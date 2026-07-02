@@ -13,11 +13,17 @@ import './SlidesMockup.css';
    chrome staggers in, slides "generate" one by one, and three collaborator
    cursors appear (a blue one tracking the real pointer, two looping). */
 
-const SLIDE_COUNT = 8;
-const SLIDES = Array.from(
-  { length: SLIDE_COUNT },
-  (_, i) => `/slides-mockup/slide-0${i + 1}.jpg`,
-);
+// slide-06 intentionally omitted (removed from the deck).
+const SLIDES = [
+  '/slides-mockup/slide-01.jpg',
+  '/slides-mockup/slide-02.jpg',
+  '/slides-mockup/slide-03.jpg',
+  '/slides-mockup/slide-04.jpg',
+  '/slides-mockup/slide-05.jpg',
+  '/slides-mockup/slide-07.jpg',
+  '/slides-mockup/slide-08.jpg',
+];
+const SLIDE_COUNT = SLIDES.length; // 7
 
 const GEN_START = 700; // ms before the first slide generates
 const GEN_STEP = 380; // ms between generated slides
@@ -46,7 +52,13 @@ function prefersReducedMotion(): boolean {
   );
 }
 
-export function SlidesMockup({ active }: { active: boolean }) {
+export function SlidesMockup({
+  active,
+  onReadyChange,
+}: {
+  active: boolean;
+  onReadyChange?: (ready: boolean) => void;
+}) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const mouseCursorRef = useRef<HTMLDivElement | null>(null);
   const slideRef = useRef<HTMLDivElement | null>(null);
@@ -94,12 +106,14 @@ export function SlidesMockup({ active }: { active: boolean }) {
       setEntered(false);
       setGenCount(0);
       setSelected(0);
+      onReadyChange?.(false);
       return;
     }
     if (prefersReducedMotion()) {
       setEntered(true);
       setGenCount(SLIDE_COUNT);
       setSelected(SLIDE_COUNT - 1);
+      onReadyChange?.(true);
       return;
     }
 
@@ -107,6 +121,7 @@ export function SlidesMockup({ active }: { active: boolean }) {
     setEntered(true);
     setGenCount(0);
     setSelected(0);
+    onReadyChange?.(false);
 
     for (let i = 1; i <= SLIDE_COUNT; i++) {
       timers.push(
@@ -116,10 +131,17 @@ export function SlidesMockup({ active }: { active: boolean }) {
         }, GEN_START + (i - 1) * GEN_STEP),
       );
     }
-    // The deck rests on the last generated slide once complete.
+    // The deck rests on the last generated slide once complete; signal ready so
+    // the parent can stagger in the speaker-note / voice-over floats.
+    timers.push(
+      window.setTimeout(
+        () => onReadyChange?.(true),
+        GEN_START + (SLIDE_COUNT - 1) * GEN_STEP,
+      ),
+    );
 
     return () => timers.forEach(clearTimeout);
-  }, [active, revealed]);
+  }, [active, revealed, onReadyChange]);
 
   // "You" cursor tracks the real pointer, but only shows while it's over the
   // slide image area. Written straight to the node (no React re-render),
@@ -251,7 +273,10 @@ export function SlidesMockup({ active }: { active: boolean }) {
             <div className="slm-aibar slm-reveal" style={revealDelay(300)}>
               {AI_TOOLS.map((icon) => (
                 <span key={icon} className="slm-aibar-btn">
-                  <img src={`/slides-mockup/product-icons/${icon}`} alt="" />
+                  <img
+                    src={icon === 'ai.svg' ? '/Icon/ai-tag.svg' : `/slides-mockup/product-icons/${icon}`}
+                    alt=""
+                  />
                 </span>
               ))}
             </div>

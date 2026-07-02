@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import './ProductSuiteV5.css';
 import { SlidesMockup } from './productSuite/SlidesMockup';
 import { VoiceOverPanel } from './productSuite/VoiceOverPanel';
@@ -19,6 +19,11 @@ import {
   CanvasPolishedMenu,
   CanvasReaction,
 } from './productSuite/CanvasMockup';
+import {
+  DataTableMockup,
+  DataTablePieCard,
+  DataTableAiPopover,
+} from './productSuite/DataTableMockup';
 
 type Product = {
   key: string;
@@ -34,7 +39,7 @@ const PRODUCTS: Product[] = [
   {
     key: 'canvas',
     label: 'Canvas',
-    icon: '/Icon/product-docs.svg',
+    icon: '/Icon/product-icons/canvas-fill.svg',
     screen: '/product-suite-assets/canvas-ui.png',
     // Canvas renders as a live, animated DOM mockup (see CanvasMockup) rather
     // than a video — special-cased in the screen render below.
@@ -42,7 +47,7 @@ const PRODUCTS: Product[] = [
   {
     key: 'slides',
     label: 'Slides',
-    icon: '/Icon/product-slides.svg',
+    icon: '/Icon/product-icons/slides-fill.svg',
     screen: '/product-suite-assets/slides-UI.png',
     // Slides renders as a live, animated DOM mockup (see SlidesMockup) rather
     // than a video — special-cased in the screen render below.
@@ -50,7 +55,7 @@ const PRODUCTS: Product[] = [
   {
     key: 'sheets',
     label: 'Sheets',
-    icon: '/Icon/product-sheet.svg',
+    icon: '/Icon/product-icons/sheets-fill.svg',
     screen: '/product-suite-assets/sheets.png',
     // Sheets renders as a live, animated DOM mockup (see SheetsMockup) built
     // from Figma 3374:89098 rather than a video — special-cased in the screen
@@ -59,13 +64,13 @@ const PRODUCTS: Product[] = [
   {
     key: 'paper',
     label: 'Paper',
-    icon: '/Icon/product-classic-doc.svg',
+    icon: '/Icon/product-icons/paper-fill.svg',
     screen: '/product-suite-assets/paper-ui.png',
   },
   {
     key: 'datatable',
     label: 'Data table',
-    icon: '/Icon/product-datatable.svg',
+    icon: '/Icon/product-icons/datatable-fill.svg',
     screen: '/product-suite-assets/datatable-ui.png',
   },
 ];
@@ -110,6 +115,34 @@ const SLIDES_INDEX = PRODUCTS.findIndex((p) => p.key === 'slides');
 export function ProductSuiteV5() {
   const [active, setActive] = useState('slides');
   const activeIndex = PRODUCTS.findIndex((p) => p.key === active);
+
+  // Staged reveal of the spilling Slides floats once the deck finishes
+  // generating: speaker note → voice-over button → voice-over dropdown opens.
+  const [slidesReady, setSlidesReady] = useState(false);
+  const [noteIn, setNoteIn] = useState(false);
+  const [voiceIn, setVoiceIn] = useState(false);
+  const [voiceOpen, setVoiceOpen] = useState(false);
+
+  useEffect(() => {
+    if (active !== 'slides' || !slidesReady) {
+      setNoteIn(false);
+      setVoiceIn(false);
+      setVoiceOpen(false);
+      return;
+    }
+    if (prefersReducedMotion()) {
+      setNoteIn(true);
+      setVoiceIn(true);
+      setVoiceOpen(true);
+      return;
+    }
+    const timers = [
+      window.setTimeout(() => setNoteIn(true), 200),
+      window.setTimeout(() => setVoiceIn(true), 650),
+      window.setTimeout(() => setVoiceOpen(true), 1100),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [active, slidesReady]);
 
   const iconRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   // Slot each product currently rests in; seeded so Slides starts centred.
@@ -243,7 +276,7 @@ export function ProductSuiteV5() {
                   }}
                   aria-hidden={active !== 'slides'}
                 >
-                  <SlidesMockup active={active === 'slides'} />
+                  <SlidesMockup active={active === 'slides'} onReadyChange={setSlidesReady} />
                 </div>
               );
             }
@@ -292,6 +325,21 @@ export function ProductSuiteV5() {
                 </div>
               );
             }
+            if (product.key === 'datatable') {
+              return (
+                <div
+                  key="datatable"
+                  className="psuite-v5-screen-live"
+                  style={{
+                    opacity: active === 'datatable' ? 1 : 0,
+                    pointerEvents: active === 'datatable' ? 'auto' : 'none',
+                  }}
+                  aria-hidden={active !== 'datatable'}
+                >
+                  <DataTableMockup active={active === 'datatable'} />
+                </div>
+              );
+            }
             return product.video ? (
               <video
                 key={product.key}
@@ -333,9 +381,14 @@ export function ProductSuiteV5() {
             className="psuite-v5-float psuite-v5-float--notes"
             src="/slides-mockup/speaker-note.png"
             alt=""
+            data-in={noteIn ? 'true' : 'false'}
           />
           <div className="psuite-v5-float psuite-v5-float--voice">
-            <VoiceOverPanel />
+            <VoiceOverPanel
+              visible={voiceIn}
+              open={voiceOpen}
+              onToggle={() => setVoiceOpen((o) => !o)}
+            />
           </div>
         </div>
 
@@ -378,6 +431,24 @@ export function ProductSuiteV5() {
           <CanvasComments />
           <CanvasPolishedMenu />
           <CanvasReaction />
+        </div>
+
+        {/* Pie-chart dashboard card + "Fill column with AI" popover that spill
+            outside the card (shown on Data table). They pop in one by one once
+            the Notes (AI) column has finished loading. */}
+        <div
+          className="dtm-floats dtm-floats--pie"
+          data-on={active === 'datatable' ? 'true' : 'false'}
+          aria-hidden={active !== 'datatable'}
+        >
+          <DataTablePieCard />
+        </div>
+        <div
+          className="dtm-floats dtm-floats--ai"
+          data-on={active === 'datatable' ? 'true' : 'false'}
+          aria-hidden={active !== 'datatable'}
+        >
+          <DataTableAiPopover />
         </div>
         </div>
       </div>

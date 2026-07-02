@@ -8,10 +8,10 @@ import { RibbonTunerPanel } from '../components/RibbonTunerPanel';
 import { HeroTranscript, type Speaker } from './HeroTranscript';
 
 const PRODUCTS = [
-  { name: 'Slides', color: '#fb327e', icon: '/Icon/product-slides.svg' },
-  { name: 'Sheets', color: '#23a52d', icon: '/Icon/product-sheet.svg' },
-  { name: 'Docs', color: '#0d6bde', icon: '/Icon/product-docs.svg' },
-  { name: 'Data table', color: '#23a52d', icon: '/Icon/product-datatable.svg' },
+  { name: 'Slides', color: '#fb327e', icon: '/Icon/product-icons/slides-fill.svg' },
+  { name: 'Sheets', color: '#23a52d', icon: '/Icon/product-icons/sheets-fill.svg' },
+  { name: 'Docs', color: '#0d6bde', icon: '/Icon/product-icons/canvas-fill.svg' },
+  { name: 'Data table', color: '#23a52d', icon: '/Icon/product-icons/datatable-fill.svg' },
 ];
 
 const ARTIFACTS = [
@@ -50,7 +50,7 @@ const HERO_TRANSCRIPT_SPEAKERS_2: Speaker[] = [
   },
 ];
 
-export function HeroV2() {
+export function HeroV2({ showTuner = true }: { showTuner?: boolean } = {}) {
   const [ribbonConfig, setRibbonConfig] = useState<RibbonConfig>(RIBBON_DEFAULTS);
 
   return (
@@ -122,11 +122,13 @@ export function HeroV2() {
       </div>
 
       {/* Floating ribbon tuner GUI */}
-      <RibbonTunerPanel
-        config={ribbonConfig}
-        onChange={setRibbonConfig}
-        defaults={RIBBON_DEFAULTS}
-      />
+      {showTuner && (
+        <RibbonTunerPanel
+          config={ribbonConfig}
+          onChange={setRibbonConfig}
+          defaults={RIBBON_DEFAULTS}
+        />
+      )}
     </section>
   );
 }

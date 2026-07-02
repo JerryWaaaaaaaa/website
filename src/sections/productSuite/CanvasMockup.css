@@ -46,8 +46,7 @@
   --cnv-yellow-soft: #fff2c2;
   --cnv-orange: #cc4819;
   --cnv-orange-bg: #fff7f2;
-  --cnv-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.04);
-  --cnv-shadow-lg: 0 16px 40px rgba(20, 28, 40, 0.16);
+  /* Elevation comes from the global --elevation-* scale in index.css. */
 
   --cnv-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-family: var(--cnv-font);
@@ -62,15 +61,17 @@
   /* The wrapper in ProductSuiteV5 owns the opacity cross-fade. */
 }
 
-/* Fixed design canvas (1600x900), scaled to fill the screen card by width. The
-   card clips overflow — the bottom of the database table is cropped, matching
-   the Figma frame (where the table is already cut off). */
+/* Fixed design canvas, scaled to fill the screen card by width. Sized 1280x720
+   to match the other mockups' stage scale (nav/chrome then render at the shared
+   size); the document body is counter-scaled 0.8 in .cnv-doc-scale to preserve
+   its original appearance. The card clips overflow — the bottom of the database
+   table is cropped, matching the Figma frame (where the table is already cut off). */
 .cnv-stage {
   position: absolute;
   top: 0;
   left: 0;
-  width: 1600px;
-  height: 900px;
+  width: 1280px;
+  height: 720px;
   transform-origin: top left;
   transform: scale(var(--cnv-scale, 1));
   background: var(--cnv-white);
@@ -112,6 +113,7 @@
   height: 56px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
   padding: 0 20px;
   border-bottom: 1px solid var(--cnv-border-light);
@@ -123,13 +125,6 @@
   align-items: center;
   gap: 8px;
 }
-.cnv-tb-tools {
-  flex: 1 1 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-}
 .cnv-tb-right {
   flex: 0 0 auto;
   display: flex;
@@ -138,7 +133,7 @@
 }
 .cnv-doc-title {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--cnv-text-primary);
   white-space: nowrap;
   margin-left: 2px;
@@ -148,10 +143,16 @@
   place-items: center;
   color: var(--cnv-icon);
 }
-.cnv-ic svg {
-  width: 19px;
-  height: 19px;
+.cnv-ic svg,
+.cnv-ic img {
+  width: 16px;
+  height: 16px;
   display: block;
+}
+/* star: slightly smaller, lighter (colour baked into the SVG) */
+.cnv-ic.cnv-tb-soft img {
+  width: 14px;
+  height: 14px;
 }
 .cnv-ic--btn {
   width: 28px;
@@ -160,97 +161,16 @@
 .cnv-tb-caret {
   color: var(--cnv-text-tertiary);
 }
-.cnv-tb-caret svg {
-  width: 14px;
-  height: 14px;
+.cnv-tb-caret svg,
+.cnv-tb-caret img {
+  width: 16px;
+  height: 16px;
 }
 .cnv-tb-dim {
   color: var(--cnv-icon);
   width: 32px;
   height: 32px;
   border-radius: 8px;
-}
-
-/* Formatting tool groups */
-.cnv-tg {
-  display: flex;
-  align-items: center;
-  gap: 1px;
-  padding: 0 8px;
-  border-right: 1px solid var(--cnv-border-light);
-}
-.cnv-tg--last {
-  border-right: none;
-}
-.cnv-tb {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 7px;
-  color: var(--cnv-icon);
-}
-.cnv-tb svg {
-  width: 18px;
-  height: 18px;
-  display: block;
-}
-.cnv-tb-glyph {
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--cnv-icon);
-  line-height: 1;
-}
-.cnv-tb-b { font-weight: 700; }
-.cnv-tb-i { font-style: italic; font-family: Georgia, serif; }
-.cnv-tb-u { text-decoration: underline; }
-.cnv-tb-s { text-decoration: line-through; }
-.cnv-tb-sigma { font-size: 17px; }
-.cnv-tb-a {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-.cnv-tb-a i {
-  width: 15px;
-  height: 3px;
-  border-radius: 2px;
-  background: var(--cnv-brand);
-}
-.cnv-tb-sel {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  height: 30px;
-  padding: 0 8px;
-  border-radius: 7px;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--cnv-icon);
-}
-.cnv-tb-sel svg {
-  width: 18px;
-  height: 18px;
-}
-.cnv-tb-sel svg:last-child {
-  width: 13px;
-  height: 13px;
-  color: var(--cnv-text-tertiary);
-}
-.cnv-tb-add {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  margin: 0 2px;
-  border-radius: 50%;
-  background: var(--cnv-brand);
-  color: #fff;
-}
-.cnv-tb-add svg {
-  width: 16px;
-  height: 16px;
 }
 
 .cnv-tb-avatars {
@@ -262,12 +182,19 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--cnv-white);
+  padding: 2px;
   margin-left: -8px;
 }
 .cnv-tb-avatar:first-child {
   margin-left: 0;
+}
+.cnv-tb-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1.5px solid var(--cnv-white);
+  object-fit: cover;
+  display: block;
 }
 .cnv-share {
   display: inline-flex;
@@ -280,11 +207,12 @@
   font-size: 14px;
   font-weight: 500;
   color: var(--cnv-text-primary);
-  box-shadow: 0 1px 2px rgba(24, 24, 28, 0.06);
+  box-shadow: var(--elevation-1);
 }
-.cnv-share svg {
-  width: 15px;
-  height: 15px;
+.cnv-share svg,
+.cnv-share img {
+  width: 16px;
+  height: 16px;
   color: var(--cnv-icon);
 }
 
@@ -296,7 +224,15 @@
   min-height: 0;
   overflow: hidden;
   background: var(--cnv-white);
+}
+/* Keep the document at its original 1600-authored scale: a 1600-wide layer
+   scaled by 0.8 fills the now 1280-wide stage, so the body renders the same
+   physical size as before while the stage/nav match the other mockups. */
+.cnv-doc-scale {
+  width: 1600px;
   padding: 52px 0 0;
+  transform: scale(0.8);
+  transform-origin: top left;
 }
 .cnv-doc-inner {
   position: relative;
@@ -359,9 +295,14 @@
   background-size: 0% 90%;
   border-radius: 3px;
   padding: 1px 1px;
+  /* The yellow highlight now spans a full (multi-line) sentence; clone applies the
+     highlight box + wipe to each wrapped line rather than one sliced box. */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
   transition: background-size 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .cnv-hl--pink {
+  position: relative;
   background-image: linear-gradient(var(--cnv-pink-soft), var(--cnv-pink-soft));
 }
 .cnv-hl--yellow {
@@ -375,7 +316,7 @@
 /* Collaborator name flag (caret + tag) on the pink highlight. */
 .cnv-flag {
   position: absolute;
-  left: 150px;
+  left: 100%; /* trailing edge of the pink highlight it lives inside */
   top: -15px;
   width: 0;
   z-index: 2;
@@ -609,47 +550,64 @@
   z-index: 3;
   pointer-events: none;
 }
-/* The three widgets enter one by one (comments → polished → reaction). Delay
-   lives only on [data-on='true'] so they hide instantly on tab-away. */
+/* The three widgets enter one by one (comments → polished → reaction) via a
+   staggered fade + rise. The persistent proportional scale (--cnv-fscale, set per
+   float below) rides a SEPARATE transform track with 0 delay, so dragging a size
+   dial zooms the card instantly rather than after the ~2.5s entrance stagger. */
 .cnv-floats > * {
   opacity: 0;
-  transform: translateY(10px) scale(0.98);
-  transition:
-    opacity 460ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
+  translate: 0 10px;
+  transform: scale(var(--cnv-fscale, 1));
+  transition-property: opacity, translate, transform;
+  transition-duration: 460ms, 460ms, 200ms;
+  transition-timing-function:
+    cubic-bezier(0.22, 1, 0.36, 1),
+    cubic-bezier(0.22, 1, 0.36, 1),
+    cubic-bezier(0.22, 1, 0.36, 1);
 }
 .cnv-floats[data-on='true'] > * {
   opacity: 1;
-  transform: none;
+  translate: 0 0;
 }
+/* Stagger only the entrance (opacity + rise); the scale transform keeps 0 delay. */
 .cnv-floats[data-on='true'] .cnv-comments {
-  transition-delay: 2350ms;
+  transition-delay: 2350ms, 2350ms, 0ms;
 }
 .cnv-floats[data-on='true'] .cnv-polished {
-  transition-delay: 2650ms;
+  transition-delay: 2650ms, 2650ms, 0ms;
 }
 .cnv-floats[data-on='true'] .cnv-reaction {
-  transition-delay: 2950ms;
+  transition-delay: 2950ms, 2950ms, 0ms;
 }
-/* Spill outside the card edges. */
+/* Spill outside the card edges. Position offsets are live-tunable via the dialkit
+   ("Product Suite" → canvas in V5Tuning.tsx → --canvas-* tokens on <html>). Each
+   float keeps a fixed BASE size and is scaled as a whole by --cnv-fscale (the size
+   dial, applied as the transform above), anchored at the corner it spills from so
+   the anchored edge stays put as it zooms. */
 .cnv-floats .cnv-polished {
   position: absolute;
-  right: -1%;
-  top: 6%;
+  right: var(--canvas-pol-right, -1%);
+  top: var(--canvas-pol-top, 6%);
   width: 236px;
+  --cnv-fscale: var(--canvas-pol-scale, 1);
+  transform-origin: top right;
 }
 .cnv-floats .cnv-comments {
   position: absolute;
-  right: -7%;
-  top: 42%;
+  right: var(--canvas-cmt-right, -7%);
+  top: var(--canvas-cmt-top, 42%);
   width: 322px;
+  --cnv-fscale: var(--canvas-cmt-scale, 1);
+  transform-origin: top right;
 }
 .cnv-floats .cnv-reaction {
   position: absolute;
-  left: -2%;
-  bottom: 4%;
+  left: var(--canvas-rxn-left, -2%);
+  bottom: var(--canvas-rxn-bottom, 4%);
   width: 150px;
-  height: 150px;
+  aspect-ratio: 196 / 177; /* matches floating-reaction.png so it fills, no letterbox */
+  --cnv-fscale: var(--canvas-rxn-scale, 1);
+  transform-origin: bottom left;
 }
 
 /* ---- polished-view menu (top-right) ---- */
@@ -657,7 +615,7 @@
   background: var(--cnv-white);
   border: 1px solid var(--cnv-border-light);
   border-radius: 14px;
-  box-shadow: var(--cnv-shadow-lg);
+  box-shadow: var(--elevation-4);
   padding: 8px;
 }
 .cnv-pol-item {
@@ -678,7 +636,8 @@
   height: 22px;
   color: var(--cnv-text-strong);
 }
-.cnv-pol-ic svg {
+.cnv-pol-ic svg,
+.cnv-pol-ic img {
   width: 20px;
   height: 20px;
 }
@@ -701,7 +660,7 @@
   background: var(--cnv-white);
   border: 1px solid var(--cnv-border-light);
   border-radius: 16px;
-  box-shadow: var(--cnv-shadow-lg);
+  box-shadow: var(--elevation-4);
   padding: 14px;
 }
 .cnv-cm-tabs {
@@ -731,46 +690,6 @@
 .cnv-cm-item + .cnv-cm-item {
   border-top: 1px solid var(--cnv-border-light);
   padding-top: 14px;
-}
-.cnv-cm-item--active {
-  margin-top: 6px;
-  padding: 12px;
-  border: 1.5px solid var(--cnv-yellow-border);
-  border-radius: 12px;
-  box-shadow: 0 8px 22px rgba(20, 28, 40, 0.1);
-}
-.cnv-cm-item--active + .cnv-cm-item,
-.cnv-cm-item--active {
-  border-top: none;
-}
-.cnv-cm-actionbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-.cnv-cm-navs,
-.cnv-cm-actions {
-  display: flex;
-  gap: 6px;
-}
-.cnv-cm-navbtn,
-.cnv-cm-actbtn {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
-  color: var(--cnv-text-neutral);
-}
-.cnv-cm-actbtn--on {
-  background: var(--cnv-fill-subtle);
-  color: var(--cnv-text-strong);
-}
-.cnv-cm-navbtn svg,
-.cnv-cm-actbtn svg {
-  width: 15px;
-  height: 15px;
 }
 .cnv-cm-row {
   display: flex;
@@ -842,85 +761,18 @@
   font-weight: 500;
   color: var(--cnv-text-strong);
 }
-.cnv-cm-sugg {
-  font-size: 14px;
-  color: var(--cnv-text-primary);
-  line-height: 1.6;
-}
-.cnv-cm-sugg + .cnv-cm-sugg {
-  margin-top: 2px;
-}
-.cnv-cm-add-tag {
-  font-weight: 700;
-  color: var(--cnv-text-primary);
-}
-.cnv-cm-reply {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-}
-.cnv-cm-reply-avatar {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex: 0 0 auto;
-}
-.cnv-cm-reply-input {
-  flex: 1 1 auto;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  border-radius: 20px;
-  background: var(--cnv-gray-25);
-  border: 1px solid var(--cnv-border-light);
-  font-size: 13px;
-  color: var(--cnv-text-tertiary);
-}
-
 /* ---- reaction (bottom-left) ---- */
 .cnv-reaction {
   position: relative;
 }
-.cnv-reaction-emoji {
-  position: absolute;
-  left: 6%;
-  bottom: 4%;
-  font-size: 92px;
-  line-height: 1;
-  filter: drop-shadow(0 10px 16px rgba(20, 28, 40, 0.18));
-}
-.cnv-star {
-  position: absolute;
-  filter: drop-shadow(0 2px 4px rgba(91, 140, 255, 0.35));
-  transform-origin: center;
-}
-.cnv-star--a {
-  width: 34px;
-  height: 34px;
-  right: 20%;
-  top: 4%;
-  animation: cnv-twinkle 2.6s ease-in-out infinite;
-}
-.cnv-star--b {
-  width: 22px;
-  height: 22px;
-  right: 6%;
-  top: 30%;
-  animation: cnv-twinkle 2.6s ease-in-out 0.5s infinite;
-}
-.cnv-star--c {
-  width: 16px;
-  height: 16px;
-  right: 34%;
-  top: 26%;
-  animation: cnv-twinkle 2.6s ease-in-out 1s infinite;
-}
-@keyframes cnv-twinkle {
-  0%, 100% { transform: scale(1) rotate(0deg); }
-  50% { transform: scale(1.28) rotate(12deg); }
+/* The reaction is the ready-made floating-reaction.png (3D thumb + sparkles); it
+   fills the container and zooms as a unit via the parent's --cnv-fscale transform. */
+.cnv-reaction-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 16px rgba(20, 28, 40, 0.16));
 }
 
 /* =============================================================================
@@ -932,10 +784,5 @@
   .cnv-hl,
   .cnv-floats > * {
     transition: none;
-  }
-  .cnv-star--a,
-  .cnv-star--b,
-  .cnv-star--c {
-    animation: none;
   }
 }

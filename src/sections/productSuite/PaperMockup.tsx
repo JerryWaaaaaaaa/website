@@ -26,6 +26,9 @@ import './PaperMockup.css';
 
 const STAGE_W = 1280;
 
+// Shared top-bar icon source (single set used across all product mockups).
+const II = '/product-suite-assets/icons-interface';
+
 // ---- Timing (everything is CSS-driven off the single data-enter gate; each
 // animated element carries its own --d delay) -------------------------------
 const PANEL_BASE = 360;
@@ -40,6 +43,16 @@ const DOC_END = docDelay(12);
 
 // Floating panels + in-text decorations land strictly after BOTH streams finish.
 const DECOR = Math.max(PANEL_END, DOC_END) + 300; // 2580
+
+// Top-right presence stack: the three cursor-flag collaborators (ring = their
+// flag colour) followed by the current user ("You", neutral ring). Photos are
+// gender-matched to the names.
+const AVATAR_STACK = [
+  { src: '/avatars/diego.png', ring: 'var(--ppm-lavender)' }, // Dan
+  { src: '/avatars/claire.png', ring: 'var(--ppm-pink)' }, // Erika Simmons
+  { src: '/avatars/mei.png', ring: 'var(--ppm-yellow)' }, // Sonia Long
+  { src: '/avatars/marcus.png', ring: '#94a3b8' }, // You
+];
 
 function prefersReducedMotion(): boolean {
   return (
@@ -108,18 +121,24 @@ export function PaperMockup({ active }: { active: boolean }) {
             {/* Title bar */}
             <div className="ppm-titlebar ppm-reveal" style={rd(0)}>
               <div className="ppm-tb-left">
-                <span className="ppm-ic ppm-ic--btn"><Ico n="back" /></span>
+                <span className="ppm-ic ppm-ic--btn"><img src={`${II}/left.svg`} alt="" /></span>
                 <span className="ppm-doc-title">AI writing tools business proposal</span>
-                <span className="ppm-ic ppm-tb-caret"><Ico n="chevronDown" /></span>
-                <span className="ppm-ic ppm-tb-dim"><Ico n="star" /></span>
-                <span className="ppm-ic ppm-tb-dim"><Ico n="cloud" /></span>
+                <span className="ppm-ic ppm-tb-caret"><img src={`${II}/chevron-down.svg`} alt="" /></span>
+                <span className="ppm-ic ppm-tb-dim ppm-tb-soft"><img src={`${II}/star.svg`} alt="" /></span>
+                <span className="ppm-ic ppm-tb-dim ppm-tb-soft"><img src={`${II}/Saved.svg`} alt="" /></span>
               </div>
               <div className="ppm-tb-right">
-                <img className="ppm-tb-avatar" src="/avatars/marcus.png" alt="" />
-                <span className="ppm-share"><Ico n="lock" />Share</span>
-                <span className="ppm-ic ppm-tb-dim"><Ico n="video" /></span>
-                <span className="ppm-ic ppm-tb-dim"><Ico n="comment" /></span>
-                <span className="ppm-ic ppm-tb-dim"><Ico n="more" /></span>
+                <span className="ppm-avatars">
+                  {AVATAR_STACK.map((a) => (
+                    <span key={a.src} className="ppm-avatar" style={{ background: a.ring }}>
+                      <img src={a.src} alt="" />
+                    </span>
+                  ))}
+                </span>
+                <span className="ppm-share"><img src={`${II}/lock.svg`} alt="" />Share</span>
+                <span className="ppm-ic ppm-tb-dim"><img src={`${II}/video-on.svg`} alt="" /></span>
+                <span className="ppm-ic ppm-tb-dim"><img src={`${II}/Comment.svg`} alt="" /></span>
+                <span className="ppm-ic ppm-tb-dim"><img src={`${II}/ellipsis.svg`} alt="" /></span>
               </div>
             </div>
 
@@ -129,7 +148,7 @@ export function PaperMockup({ active }: { active: boolean }) {
                 {['File', 'Edit', 'View', 'Insert', 'Format', 'Design'].map((m) => (
                   <span key={m} className="ppm-menu-item">{m}</span>
                 ))}
-                <span className="ppm-menu-ai"><Ico n="sparkle" />AI</span>
+                <span className="ppm-menu-ai"><img src="/Icon/ai-tag.svg" alt="AI" />AI</span>
               </div>
               <div className="ppm-toolbar">
                 <ToolGroup>
@@ -183,11 +202,6 @@ export function PaperMockup({ active }: { active: boolean }) {
                 {/* Title block */}
                 <div className="ppm-pblock" style={dd(0)}>
                   <h1 className="ppm-doc-h1">Zoom Paper</h1>
-                </div>
-                <div className="ppm-pblock" style={dd(1)}>
-                  <div className="ppm-doc-sub">
-                    <i>with</i> <Ico n="sparkle" /> <b>AI Companion</b>
-                  </div>
                 </div>
 
                 <div className="ppm-pbody">
@@ -372,7 +386,7 @@ export function PaperMockup({ active }: { active: boolean }) {
                 <span className="ppm-sources">
                   Sources<span className="ppm-sources-n">(2)</span>
                 </span>
-                <span className="ppm-send"><Ico n="sparkle" /></span>
+                <span className="ppm-send"><img src="/Icon/ai-tag.svg" alt="AI" /></span>
               </div>
             </div>
           </div>
@@ -405,11 +419,13 @@ export function PaperComments() {
       </div>
       <CommentThread
         avatar="/avatars/priya.png"
+        name="Erika Simmons"
         quote="Zoom Paper is an AI-native, structured document editor…"
         text="Wow"
       />
       <CommentThread
         avatar="/avatars/claire.png"
+        name="Claire Bennett"
         quote="AI-Native Authoring"
         text="Sounds good"
       />
@@ -425,7 +441,7 @@ export function PaperSuggestions() {
   return (
     <div className="ppm-suggestions">
       <div className="ppm-sug-label">Suggested</div>
-      <div className="ppm-sug-item"><Ico n="sparklePen" />Improve writing</div>
+      <div className="ppm-sug-item"><img src="/Icon/ai-tag.svg" alt="AI" />Improve writing</div>
       <div className="ppm-sug-item"><Ico n="edit" />Continue writing</div>
       <div className="ppm-sug-item"><Ico n="alignLong" />Make longer</div>
       <div className="ppm-sug-item"><Ico n="alignShort" />Make shorter</div>
@@ -519,10 +535,12 @@ function Collab({
 
 function CommentThread({
   avatar,
+  name,
   quote,
   text,
 }: {
   avatar: string;
+  name: string;
   quote: string;
   text: string;
 }) {
@@ -530,7 +548,7 @@ function CommentThread({
     <div className="ppm-cmt-thread">
       <div className="ppm-cmt-row">
         <img className="ppm-cmt-avatar" src={avatar} alt="" />
-        <span className="ppm-cmt-name">Erika Simmons</span>
+        <span className="ppm-cmt-name">{name}</span>
         <span className="ppm-cmt-time">Just now</span>
       </div>
       <div className="ppm-cmt-body">

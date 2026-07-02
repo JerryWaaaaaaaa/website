@@ -38,17 +38,17 @@ const SUITE_GROUPS = [
     id: 'office',
     caption: 'Replacing Office and Google Suite',
     items: [
-      { name: 'Paper', icon: '/Icon/product-classic-doc.svg' },
-      { name: 'Slides', icon: '/Icon/product-slides.svg' },
-      { name: 'Sheets', icon: '/Icon/product-sheet.svg' },
+      { name: 'Paper', icon: '/Icon/product-icons/paper-fill.svg' },
+      { name: 'Slides', icon: '/Icon/product-icons/slides-fill.svg' },
+      { name: 'Sheets', icon: '/Icon/product-icons/sheets-fill.svg' },
     ],
   },
   {
     id: 'notion',
     caption: 'Replacing Notion',
     items: [
-      { name: 'Canvas', icon: '/Icon/product-docs.svg' },
-      { name: 'Data table', icon: '/Icon/product-datatable.svg' },
+      { name: 'Canvas', icon: '/Icon/product-icons/canvas-fill.svg' },
+      { name: 'Data table', icon: '/Icon/product-icons/datatable-fill.svg' },
     ],
   },
   {

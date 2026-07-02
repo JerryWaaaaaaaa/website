@@ -4,7 +4,6 @@ import {
   useRef,
   useState,
   type CSSProperties,
-  type ReactNode,
 } from 'react';
 import './CanvasMockup.css';
 
@@ -27,7 +26,20 @@ import './CanvasMockup.css';
         comments panel, then the polished-view menu, then the reaction — each
         floating OUTSIDE the editor card (rendered by ProductSuiteV5 in .cnv-floats). */
 
-const STAGE_W = 1600;
+const STAGE_W = 1280;
+
+// Shared top-bar icon source (single set used across all product mockups).
+const II = '/product-suite-assets/icons-interface';
+
+// Top-right presence stack: the doc's collaborators (Maurice's flag is pink;
+// the two comment authors get complementary rings, photos kept consistent with
+// their comment avatars) followed by the current user ("You", neutral ring).
+const AVATAR_STACK = [
+  { src: '/avatars/marcus.png', ring: '#16b378' }, // Carlos Washington (comment author)
+  { src: '/avatars/priya.png', ring: '#f59e0b' }, // Hester Wilson (comment author)
+  { src: '/avatars/diego.png', ring: 'var(--cnv-pink)' }, // Maurice Lawson (flag)
+  { src: '/avatars/Avatar-1.png', ring: '#94a3b8' }, // You
+];
 
 // ---- Timing (everything CSS-driven off the single data-enter gate; each
 // animated block carries its own --d delay) ---------------------------------
@@ -98,63 +110,35 @@ export function CanvasMockup({ active }: { active: boolean }) {
         {/* ===== Top bar (present at t=0) ===== */}
         <div className="cnv-topbar">
           <div className="cnv-tb-left">
-            <span className="cnv-ic cnv-ic--btn"><Ico n="back" /></span>
-            <span className="cnv-ic cnv-tb-dim"><Ico n="sidebar" /></span>
+            <span className="cnv-ic cnv-ic--btn"><img src={`${II}/left.svg`} alt="" /></span>
+            <span className="cnv-ic cnv-tb-dim"><img src={`${II}/side-bar.svg`} alt="" /></span>
             <span className="cnv-doc-title">Mention improvement</span>
-            <span className="cnv-ic cnv-tb-caret"><Ico n="chevronDown" /></span>
-            <span className="cnv-ic cnv-tb-dim"><Ico n="star" /></span>
-          </div>
-
-          <div className="cnv-tb-tools">
-            <span className="cnv-tg">
-              <Tb><Ico n="undo" /></Tb>
-              <Tb><Ico n="redo" /></Tb>
-            </span>
-            <span className="cnv-tg">
-              <span className="cnv-tb-sel">Aa<Ico n="chevronDown" /></span>
-            </span>
-            <span className="cnv-tg">
-              <Tb><span className="cnv-tb-glyph cnv-tb-b">B</span></Tb>
-              <Tb><span className="cnv-tb-glyph cnv-tb-i">I</span></Tb>
-              <Tb><span className="cnv-tb-glyph cnv-tb-u">U</span></Tb>
-              <Tb><span className="cnv-tb-glyph cnv-tb-s">S</span></Tb>
-            </span>
-            <span className="cnv-tg">
-              <Tb><span className="cnv-tb-a"><span className="cnv-tb-glyph">A</span><i /></span></Tb>
-              <Tb><Ico n="chevronDown" /></Tb>
-            </span>
-            <span className="cnv-tg">
-              <Tb><Ico n="link" /></Tb>
-              <Tb><Ico n="code" /></Tb>
-              <Tb><span className="cnv-tb-glyph cnv-tb-sigma">&Sigma;</span></Tb>
-            </span>
-            <span className="cnv-tg">
-              <span className="cnv-tb-sel"><Ico n="align" /><Ico n="chevronDown" /></span>
-            </span>
-            <span className="cnv-tg cnv-tg--last">
-              <Tb><Ico n="commentPlus" /></Tb>
-              <span className="cnv-tb-add"><Ico n="plus" /></span>
-              <Tb><Ico n="chevronUp" /></Tb>
-            </span>
+            <span className="cnv-ic cnv-tb-caret"><img src={`${II}/chevron-down.svg`} alt="" /></span>
+            <span className="cnv-ic cnv-tb-dim cnv-tb-soft"><img src={`${II}/star.svg`} alt="" /></span>
           </div>
 
           <div className="cnv-tb-right">
             <div className="cnv-tb-avatars">
-              {['marcus', 'priya', 'claire', 'mei'].map((a) => (
-                <img key={a} className="cnv-tb-avatar" src={`/avatars/${a}.png`} alt="" />
+              {AVATAR_STACK.map((a) => (
+                <span key={a.src} className="cnv-tb-avatar" style={{ background: a.ring }}>
+                  <img src={a.src} alt="" />
+                </span>
               ))}
-              <img className="cnv-tb-avatar" src="/avatars/Avatar-1.png" alt="" />
             </div>
-            <span className="cnv-share"><Ico n="lock" />Share</span>
-            <span className="cnv-ic cnv-tb-dim"><Ico n="video" /></span>
-            <span className="cnv-ic cnv-tb-dim"><Ico n="comment" /></span>
-            <span className="cnv-ic cnv-tb-dim"><Ico n="export" /></span>
-            <span className="cnv-ic cnv-tb-dim"><Ico n="more" /></span>
+            <span className="cnv-share"><img src={`${II}/lock.svg`} alt="" />Share</span>
+            <span className="cnv-ic cnv-tb-dim"><img src={`${II}/video-on.svg`} alt="" /></span>
+            <span className="cnv-ic cnv-tb-dim"><img src={`${II}/Comment.svg`} alt="" /></span>
+            <span className="cnv-ic cnv-tb-dim"><img src={`${II}/share.svg`} alt="" /></span>
+            <span className="cnv-ic cnv-tb-dim"><img src={`${II}/ellipsis.svg`} alt="" /></span>
           </div>
         </div>
 
         {/* ===== Document ===== */}
         <div className="cnv-doc">
+          {/* Body kept at its original 1600-authored scale (0.8× inside the now
+              1280-wide stage) so the document reads the same size as before,
+              while the stage/nav match the other mockups. */}
+          <div className="cnv-doc-scale">
           <div className="cnv-doc-inner">
             <h1 className="cnv-h1 cnv-reveal" style={d(0)}>Mention improvement</h1>
 
@@ -164,17 +148,16 @@ export function CanvasMockup({ active }: { active: boolean }) {
               <li className="cnv-li cnv-reveal" style={d(2)}>
                 <img className="cnv-li-avatar cnv-pop" src="/avatars/Avatar-2.png" alt="" style={dv(lineDelay(2))} />
                 After&nbsp;
-                <span className="cnv-hl cnv-hl--pink" style={dv(lineDelay(2) + 260)}>the mention featu</span>re went
+                <span className="cnv-hl cnv-hl--pink" style={dv(lineDelay(2) + 260)}>the mention featu<Flag name="Maurice Lawson" delay={lineDelay(2) + 180} /></span>re went
                 live, we discovered several shortcomings in its online performance. We plan to address these issues
                 with unified optimizations.
-                <Flag name="Maurice Lawson" delay={lineDelay(2) + 180} />
               </li>
               <li className="cnv-li cnv-reveal" style={d(3)}>
                 <img className="cnv-li-avatar cnv-pop" src="/avatars/Avatar-3.png" alt="" style={dv(lineDelay(3))} />
-                After integrating with Chat and Meeting, we can referen
-                <span className="cnv-hl cnv-hl--yellow" style={dv(lineDelay(3) + 260)}>ce Meeting and Chann</span>el
-                information within the document, enabling users to have a complete overview of all information within
-                the Zoom workspace.
+                <span className="cnv-hl cnv-hl--yellow" style={dv(lineDelay(3) + 260)}>
+                  After integrating with Chat and Meeting, we can reference Meeting and Channel information within the
+                  document, enabling users to have a complete overview of all information within the Zoom workspace.
+                </span>
               </li>
             </ol>
 
@@ -245,6 +228,7 @@ export function CanvasMockup({ active }: { active: boolean }) {
               </div>
             </div>
           </div>
+          </div>
         </div>
       </div>
     </div>
@@ -259,21 +243,21 @@ export function CanvasPolishedMenu() {
   return (
     <div className="cnv-polished">
       <div className="cnv-pol-item">
-        <span className="cnv-pol-ic"><Ico n="file" /></span>
+        <span className="cnv-pol-ic"><img src={`${II}/original-doc.svg`} alt="" /></span>
         <div className="cnv-pol-text">
           <div className="cnv-pol-title">Original</div>
           <div className="cnv-pol-sub">Original page</div>
         </div>
       </div>
       <div className="cnv-pol-item cnv-pol-item--active">
-        <span className="cnv-pol-ic cnv-pol-ic--magic"><Ico n="magic" /></span>
+        <span className="cnv-pol-ic cnv-pol-ic--magic"><img src={`${II}/polished-doc.svg`} alt="" /></span>
         <div className="cnv-pol-text">
           <div className="cnv-pol-title">Polished</div>
           <div className="cnv-pol-sub">Easy to read, view-only</div>
         </div>
       </div>
       <div className="cnv-pol-item">
-        <span className="cnv-pol-ic"><Ico n="editSquare" /></span>
+        <span className="cnv-pol-ic"><img src={`${II}/edit-contained.svg`} alt="" /></span>
         <div className="cnv-pol-text">
           <div className="cnv-pol-title">Edit polished view</div>
         </div>
@@ -297,7 +281,7 @@ export function CanvasComments() {
           <span className="cnv-cm-time">Today, 10:02 AM</span>
         </div>
         <div className="cnv-cm-block">
-          <div className="cnv-cm-quote">Docs notification type settings</div>
+          <div className="cnv-cm-quote">After integrating with Chat and Meeting, we can reference Meeting and Channel information within the document, enabling users to have a complete overview of all information within the Zoom workspace.</div>
           <div className="cnv-cm-text">This leads to Docs growth</div>
         </div>
         <div className="cnv-cm-reacts">
@@ -319,33 +303,6 @@ export function CanvasComments() {
           </div>
         </div>
       </div>
-
-      <div className="cnv-cm-item cnv-cm-item--active">
-        <div className="cnv-cm-actionbar">
-          <div className="cnv-cm-navs">
-            <span className="cnv-cm-navbtn"><Ico n="chevronUp" /></span>
-            <span className="cnv-cm-navbtn"><Ico n="chevronDown" /></span>
-          </div>
-          <div className="cnv-cm-actions">
-            <span className="cnv-cm-actbtn cnv-cm-actbtn--on"><Ico n="check" /></span>
-            <span className="cnv-cm-actbtn"><Ico n="close" /></span>
-            <span className="cnv-cm-actbtn"><Ico n="more" /></span>
-          </div>
-        </div>
-        <div className="cnv-cm-row">
-          <img className="cnv-cm-avatar" src="/avatars/claire.png" alt="" />
-          <span className="cnv-cm-name">Erika Simmons</span>
-          <span className="cnv-cm-time">Yesterday, 04:29</span>
-        </div>
-        <div className="cnv-cm-block">
-          <div className="cnv-cm-sugg"><span className="cnv-cm-add-tag">Add</span> “line breaks”</div>
-          <div className="cnv-cm-sugg"><span className="cnv-cm-add-tag">Add</span> “Notification CTR improvement”</div>
-        </div>
-        <div className="cnv-cm-reply">
-          <img className="cnv-cm-reply-avatar" src="/avatars/mei.png" alt="" />
-          <span className="cnv-cm-reply-input">Reply...</span>
-        </div>
-      </div>
     </div>
   );
 }
@@ -353,10 +310,7 @@ export function CanvasComments() {
 export function CanvasReaction() {
   return (
     <div className="cnv-reaction">
-      <span className="cnv-reaction-emoji">👍</span>
-      <Star className="cnv-star cnv-star--a" />
-      <Star className="cnv-star cnv-star--b" />
-      <Star className="cnv-star cnv-star--c" />
+      <img className="cnv-reaction-img" src="/product-suite-assets/floating-reaction.png" alt="" />
     </div>
   );
 }
@@ -369,33 +323,12 @@ function dv(ms: number): CSSProperties {
   return { '--d': `${ms}ms` } as CSSProperties;
 }
 
-function Tb({ children }: { children: ReactNode }) {
-  return <span className="cnv-tb">{children}</span>;
-}
-
 function Flag({ name, delay }: { name: string; delay: number }) {
   return (
     <span className="cnv-flag cnv-pop" style={dv(delay)}>
       <span className="cnv-flag-caret" />
       <span className="cnv-flag-tag">{name}</span>
     </span>
-  );
-}
-
-function Star({ className }: { className: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        d="M12 1c.6 5.8 4.2 9.4 10 10-5.8.6-9.4 4.2-10 10-.6-5.8-4.2-9.4-10-10 5.8-.6 9.4-4.2 10-10z"
-        fill="url(#cnv-star-grad)"
-      />
-      <defs>
-        <linearGradient id="cnv-star-grad" x1="0" y1="0" x2="24" y2="24">
-          <stop offset="0" stopColor="#9a86ff" />
-          <stop offset="1" stopColor="#5b8cff" />
-        </linearGradient>
-      </defs>
-    </svg>
   );
 }
 

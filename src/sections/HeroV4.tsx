@@ -27,7 +27,7 @@ const TABS: Tab[] = [
   {
     key: 'slides',
     label: 'Slides',
-    icon: '/Icon/product-slides.svg',
+    icon: '/Icon/product-icons/slides-fill.svg',
     screen: '/hero-browser/slides-UI.png',
     color: '#fb327e',
     tint: 'rgba(254, 193, 216, 0.2)',
@@ -35,7 +35,7 @@ const TABS: Tab[] = [
   {
     key: 'sheets',
     label: 'Sheets',
-    icon: '/Icon/product-sheet.svg',
+    icon: '/Icon/product-icons/sheets-fill.svg',
     screen: '/hero-browser/sheets-ui.png',
     color: '#019f5c',
     tint: 'rgba(1, 159, 92, 0.12)',
@@ -43,7 +43,7 @@ const TABS: Tab[] = [
   {
     key: 'datatable',
     label: 'Data table',
-    icon: '/Icon/product-datatable.svg',
+    icon: '/Icon/product-icons/datatable-fill.svg',
     screen: '/hero-browser/datatable-ui.png',
     color: '#019f5c',
     tint: 'rgba(1, 159, 92, 0.12)',
@@ -51,7 +51,7 @@ const TABS: Tab[] = [
   {
     key: 'canvas',
     label: 'Canvas',
-    icon: '/Icon/product-docs.svg',
+    icon: '/Icon/product-icons/canvas-fill.svg',
     screen: '/hero-browser/canvas-ui.png',
     color: '#3579fd',
     tint: 'rgba(53, 121, 253, 0.12)',
@@ -59,7 +59,7 @@ const TABS: Tab[] = [
   {
     key: 'paper',
     label: 'Paper',
-    icon: '/Icon/product-classic-doc.svg',
+    icon: '/Icon/product-icons/paper-fill.svg',
     screen: '/hero-browser/paper-ui.png',
     color: '#0d6bde',
     tint: 'rgba(13, 107, 222, 0.12)',
