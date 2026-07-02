@@ -58,14 +58,17 @@ const ROWS: string[][] = [
   ['Network', '24-Port Gigabit Switch', 'Managed, PoE+', '$219.00'],
 ];
 
-// The green "header" row is grid row 0; data rows follow. Cells generate in
-// row-major order, so the flat index for (gridRow, col) drives its stagger.
+// The green "header" row is grid row 0; data rows follow. Every cell (all columns
+// A–H, incl. the empty ones) generates in row-major order, so the flat index for
+// (gridRow, col) drives its stagger. Stride is the full column count; the step is
+// tuned so a row still fills in ~88ms (8 cols × 11ms) — same cadence/total as when
+// only the 4 filled columns animated (4 × 22ms).
 const GRID_ROWS = ROWS.length + 1;
 const CELL_BASE = 880; // ms before the first cell generates
-const CELL_STEP = 22; // ms between successive cells
+const CELL_STEP = 11; // ms between successive cells
 const cellDelay = (gridRow: number, col: number) =>
-  CELL_BASE + (gridRow * FILLED + col) * CELL_STEP;
-const LAST_CELL_DELAY = cellDelay(GRID_ROWS - 1, FILLED - 1);
+  CELL_BASE + (gridRow * COLS.length + col) * CELL_STEP;
+const LAST_CELL_DELAY = cellDelay(GRID_ROWS - 1, COLS.length - 1);
 
 // ---- Right-panel messages (stream in one by one) ---------------------------
 const PANEL_BASE = 360;
@@ -77,6 +80,19 @@ const COLLABS = [
   { name: 'Novak', color: '#AB81FC', row: 2, col: 2 }, // C, "Business Laptop – Standard" spec
   { name: 'Zihao', color: '#16b378', row: 5, col: 1 }, // B, "27" QHD Monitor"
   { name: 'Owen Hale', color: '#f59e0b', row: 8, col: 1 }, // B, "Mechanical Keyboard" (amber — keeps "You" blue distinct)
+];
+
+// Shared top-bar icon source (single set used across all product mockups).
+const II = '/product-suite-assets/icons-interface';
+
+// Top-right presence stack: the collaborators above (ring = their cell-selection
+// colour) followed by the current user ("You", neutral ring). Photos are
+// gender-matched to the names.
+const AVATAR_STACK = [
+  { src: '/avatars/marcus.png', ring: '#AB81FC' }, // Novak
+  { src: '/avatars/Avatar-3.png', ring: '#16b378' }, // Zihao
+  { src: '/avatars/diego.png', ring: '#f59e0b' }, // Owen Hale
+  { src: '/avatars/mei.png', ring: '#94a3b8' }, // You
 ];
 // Delay after which the collaborator + "You" selections fade in — strictly past
 // the last cell's generation transition (start + 240ms) so they land on a
@@ -164,25 +180,31 @@ export function SheetsMockup({ active }: { active: boolean }) {
           {/* Title bar */}
           <div className="shm-titlebar shm-reveal" style={rd(0)}>
             <div className="shm-tb-left">
-              <span className="shm-ic shm-ic--btn"><Ico n="back" /></span>
+              <span className="shm-ic shm-ic--btn"><img src={`${II}/left.svg`} alt="" /></span>
               <span className="shm-doc-title">
                 Office IT Equipment Inventory &amp; Pricing 2026
               </span>
-              <span className="shm-ic shm-tb-caret"><Ico n="chevronDown" /></span>
-              <span className="shm-ic shm-tb-dim"><Ico n="star" /></span>
-              <span className="shm-ic shm-tb-dim"><Ico n="cloud" /></span>
+              <span className="shm-ic shm-tb-caret"><img src={`${II}/chevron-down.svg`} alt="" /></span>
+              <span className="shm-ic shm-tb-dim shm-tb-soft"><img src={`${II}/star.svg`} alt="" /></span>
+              <span className="shm-ic shm-tb-dim shm-tb-soft"><img src={`${II}/Saved.svg`} alt="" /></span>
             </div>
             <div className="shm-tb-right">
-              <img className="shm-tb-avatar" src="/avatars/marcus.png" alt="" />
+              <span className="shm-avatars">
+                {AVATAR_STACK.map((a) => (
+                  <span key={a.src} className="shm-avatar" style={{ background: a.ring }}>
+                    <img src={a.src} alt="" />
+                  </span>
+                ))}
+              </span>
               <span className="shm-share">
-                <Ico n="lock" />
+                <img src={`${II}/lock.svg`} alt="" />
                 Share
               </span>
-              <span className="shm-ic shm-tb-dim"><Ico n="video" /></span>
-              <span className="shm-ic shm-tb-dim"><Ico n="comment" /></span>
+              <span className="shm-ic shm-tb-dim"><img src={`${II}/video-on.svg`} alt="" /></span>
+              <span className="shm-ic shm-tb-dim"><img src={`${II}/Comment.svg`} alt="" /></span>
               <span className="shm-ic shm-tb-dim"><Ico n="branch" /></span>
-              <span className="shm-ic shm-tb-dim"><Ico n="more" /></span>
-              <span className="shm-ic shm-ai-spark"><Ico n="sparkle" /></span>
+              <span className="shm-ic shm-tb-dim"><img src={`${II}/ellipsis.svg`} alt="" /></span>
+              <span className="shm-ic shm-ai-spark"><img src={`${II}/AI%20companion.svg`} alt="AI" /></span>
             </div>
           </div>
 
@@ -194,7 +216,7 @@ export function SheetsMockup({ active }: { active: boolean }) {
               ),
             )}
             <span className="shm-menu-ai">
-              <Ico n="sparkle" />
+              <img src="/Icon/ai-tag.svg" alt="AI" />
               AI
             </span>
           </div>
@@ -422,7 +444,7 @@ export function SheetsMockup({ active }: { active: boolean }) {
 
             <div className="shm-pblock shm-filecard" style={pd(6)}>
               <span className="shm-filecard-ic">
-                <img src="/Icon/product-sheet.svg" alt="" />
+                <img src="/Icon/product-icons/sheets-fill.svg" alt="" />
               </span>
               <span className="shm-filecard-name">Office IT Equipment Inventory…</span>
               <span className="shm-filecard-open">Opened <Ico n="chevronRight" /></span>
@@ -457,7 +479,7 @@ export function AiFormulaTooltip() {
   return (
     <div className="shm-aiformula">
       <div className="shm-aiformula-head">
-        <Ico n="sparkle" />
+        <img src="/Icon/ai-tag.svg" alt="AI" />
         AI formula
       </div>
       <div className="shm-aiformula-body">
@@ -541,13 +563,15 @@ function Cell({
   children: ReactNode;
 }) {
   const empty = colIndex >= FILLED;
-  // Only the filled A–D cells "generate"; the empty E–H cells just hold space.
-  const style: CSSProperties = empty
-    ? { width: col.w }
-    : ({ width: col.w, '--d': `${cellDelay(gridRow, colIndex)}ms` } as CSSProperties);
+  // Every cell generates row-major (incl. empty E–H); empty cells just hold space
+  // and stay non-interactive (no click / selection).
+  const style: CSSProperties = {
+    width: col.w,
+    '--d': `${cellDelay(gridRow, colIndex)}ms`,
+  } as CSSProperties;
   return (
     <span
-      className={`shm-cell${empty ? ' shm-cell--empty' : ' shm-cell-anim shm-cell--click'}${
+      className={`shm-cell shm-cell-anim${empty ? ' shm-cell--empty' : ' shm-cell--click'}${
         header ? ' shm-cell--header' : ''
       }`}
       data-align={col.align === 'right' ? 'right' : 'left'}

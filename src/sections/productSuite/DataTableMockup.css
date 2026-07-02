@@ -1,0 +1,928 @@
+/* =============================================================================
+   Data Table Mockup — live, animated Zoom Table editor (Figma 3320:25919)
+   Replaces the static datatable-ui.png inside ProductSuiteV5's screen card.
+
+   By design brief this component does NOT follow the site style guide: it uses
+   the Figma file's own type system (Inter) and the exact design-token hexes,
+   declared as --dt-* below. The Notes (AI) column shimmer + progress ring mirror
+   Figma 3403:39597.
+   ========================================================================== */
+
+/* Tokens shared with .dtm-floats so the pie card + AI popover (rendered outside
+   .dtm, in ProductSuiteV5's float layers) resolve the same colours + font. */
+.dtm,
+.dtm-floats {
+  --dt-white: #ffffff;
+  --dt-surface: #fafafa; /* color/utility/gray/25 */
+  --dt-subtle: #f1f1f1; /* Actions/Default */
+  --dt-border: #e6e6e6; /* Borders/Default */
+  --dt-border-light: #efefef; /* Borders/Light */
+  --dt-cellborder: #f0f0f0;
+  --dt-text: #1a1a1a; /* text/primary */
+  --dt-text-strong: #222124; /* Grey/Primary */
+  --dt-text-neutral: #5f5f61; /* Grey/Secondary */
+  --dt-text-dim: #a1a0a3; /* Grey/Tertiary */
+  --dt-blue: #0d6bde; /* text/text-primary, toggle fill-active */
+  --dt-brand: #0e72ed; /* text/brand */
+  --dt-blue-wash: #ebf4ff; /* color/blue/20 */
+  --dt-blue-tint: #f2f8ff; /* color/utility/brand/50 */
+
+  --dt-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--dt-font);
+}
+
+.dtm {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--dt-white);
+  color: var(--dt-text);
+  /* The wrapper in ProductSuiteV5 owns the opacity cross-fade. */
+}
+
+/* Fixed design canvas, scaled to fill the screen card by width. */
+.dtm-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1280px;
+  height: 694px;
+  transform-origin: top left;
+  transform: scale(var(--dtm-scale, 1));
+  display: flex;
+  flex-direction: column;
+  background: var(--dt-white);
+}
+
+/* ---- Reveal primitive (gated by the single data-enter flip) --------------- */
+.dtm-reveal {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 460ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--d, 0ms);
+}
+.dtm[data-enter='true'] .dtm-reveal {
+  opacity: 1;
+  transform: none;
+}
+
+/* Row "generation" — each row fades + lifts on its own --d delay. */
+.dtm-row-anim {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--d, 0ms);
+}
+.dtm[data-enter='true'] .dtm-row-anim {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---- Shared icon styling ---- */
+.dtm-ic {
+  display: grid;
+  place-items: center;
+  color: var(--dt-text-neutral);
+}
+.dtm-ic svg,
+.dtm-ic img {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+/* star + cloud: slightly smaller, lighter (colour baked into the SVGs) */
+.dtm-ic.dtm-tb-soft img {
+  width: 14px;
+  height: 14px;
+}
+/* Nav inline glyphs (doc-add) match the dark icons-interface images */
+.dtm-nav .dtm-ic {
+  color: #1a1a1a;
+}
+.dtm-dim {
+  color: var(--dt-text-neutral);
+  width: 28px;
+  height: 28px;
+}
+
+/* =============================================================================
+   Doc navigation
+   ========================================================================== */
+.dtm-nav {
+  flex: 0 0 auto;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--dt-border-light);
+}
+.dtm-nav-left,
+.dtm-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dtm-ic-btn {
+  width: 26px;
+  height: 26px;
+  color: var(--dt-text-strong);
+}
+.dtm-nav-div {
+  width: 1px;
+  height: 20px;
+  background: var(--dt-border);
+  margin: 0 4px;
+}
+.dtm-nav-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--dt-text-strong);
+  white-space: nowrap;
+  margin-left: 2px;
+}
+.dtm-nav-caret svg,
+.dtm-nav-caret img {
+  width: 16px;
+  height: 16px;
+}
+.dtm-avatars {
+  display: flex;
+  align-items: center;
+  margin-right: 2px;
+}
+.dtm-nav-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  padding: 2px;
+  margin-left: -8px;
+}
+.dtm-nav-avatar:first-child {
+  margin-left: 0;
+}
+.dtm-nav-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1.5px solid var(--dt-white);
+  object-fit: cover;
+  display: block;
+}
+.dtm-share {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--dt-border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dt-text-strong);
+}
+.dtm-share svg,
+.dtm-share img {
+  width: 16px;
+  height: 16px;
+}
+.dtm-tableai {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #7a3ff0;
+  background: linear-gradient(90deg, #eef4ff, #f6efff);
+  border: 1px solid #e3e0fb;
+}
+.dtm-tableai svg,
+.dtm-tableai img {
+  width: 16px;
+  height: 16px;
+  color: #7a3ff0;
+}
+
+/* =============================================================================
+   Title
+   ========================================================================== */
+.dtm-title {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 16px 26px 10px;
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--dt-text);
+}
+
+/* =============================================================================
+   View bar
+   ========================================================================== */
+.dtm-viewbar {
+  flex: 0 0 auto;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px;
+}
+.dtm-views {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.dtm-view {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--dt-text-neutral);
+  white-space: nowrap;
+}
+.dtm-view svg {
+  width: 15px;
+  height: 15px;
+  color: var(--dt-text-dim);
+}
+.dtm-view-active {
+  color: var(--dt-blue);
+  font-weight: 600;
+  border: 1px solid var(--dt-border);
+}
+.dtm-view-active svg {
+  color: var(--dt-blue);
+}
+.dtm-tools {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.dtm-tool {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  color: var(--dt-text-neutral);
+}
+.dtm-tool svg {
+  width: 17px;
+  height: 17px;
+}
+.dtm-tool-active {
+  background: var(--dt-subtle);
+  color: var(--dt-text-strong);
+}
+.dtm-addcol {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-left: 6px;
+  border-radius: 7px;
+  background: var(--dt-blue);
+  color: #fff;
+}
+.dtm-addcol svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* =============================================================================
+   Table
+   ========================================================================== */
+.dtm-table {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  border-top: 1px solid var(--dt-border);
+}
+
+.dtm-thead {
+  display: flex;
+  align-items: stretch;
+  height: 40px;
+  background: var(--dt-surface);
+  border-bottom: 1px solid var(--dt-border);
+}
+.dtm-thcell {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  border-right: 1px solid var(--dt-border-light);
+}
+.dtm-th-ic {
+  display: grid;
+  place-items: center;
+  color: var(--dt-text-dim);
+}
+.dtm-th-ic svg {
+  width: 15px;
+  height: 15px;
+}
+.dtm-th-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dt-text-neutral);
+  white-space: nowrap;
+}
+.dtm-th-ai {
+  display: inline-flex;
+  align-items: center;
+}
+.dtm-ai-badge {
+  display: inline-grid;
+  place-items: center;
+  height: 16px;
+}
+.dtm-ai-badge img {
+  height: 16px;
+  width: auto;
+  display: block;
+}
+
+/* Notes-column progress ring (Figma 3403:39597). */
+.dtm-progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.dtm-progress-ring {
+  width: 16px;
+  height: 16px;
+  transform: rotate(-90deg);
+}
+.dtm-progress-track {
+  fill: none;
+  stroke: var(--dt-blue-wash);
+  stroke-width: 3;
+}
+.dtm-progress-fill {
+  fill: none;
+  stroke: var(--dt-blue);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 120ms linear;
+}
+.dtm-progress-pct {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dt-blue);
+}
+
+.dtm-tbody {
+  display: flex;
+  flex-direction: column;
+}
+.dtm-row {
+  display: flex;
+  align-items: stretch;
+  height: 46px;
+}
+.dtm-row:hover .dtm-cell,
+.dtm-row:hover .dtm-gutter {
+  background: #fbfcfe;
+}
+.dtm-cell,
+.dtm-thcell {
+  box-sizing: border-box;
+}
+.dtm-cell {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border-right: 1px solid var(--dt-cellborder);
+  border-bottom: 1px solid var(--dt-cellborder);
+  overflow: hidden;
+}
+
+/* Gutter (row number + checkbox) */
+.dtm-gutter {
+  flex: 0 0 36px;
+  width: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0;
+  border-right: 1px solid var(--dt-cellborder);
+  border-bottom: 1px solid var(--dt-cellborder);
+}
+.dtm-thead .dtm-gutter {
+  border-bottom: none;
+}
+.dtm-rownum {
+  font-size: 11px;
+  color: var(--dt-text-dim);
+}
+.dtm-check {
+  display: none;
+  width: 13px;
+  height: 13px;
+  border: 1.5px solid var(--dt-border);
+  border-radius: 3px;
+}
+.dtm-row:hover .dtm-rownum {
+  display: none;
+}
+.dtm-row:hover .dtm-check {
+  display: block;
+}
+
+/* Cell text */
+.dtm-txt {
+  font-size: 13px;
+  line-height: 17px;
+  color: var(--dt-text);
+  min-width: 0;
+}
+.dtm-mono {
+  font-variant-numeric: tabular-nums;
+  color: var(--dt-text-strong);
+}
+.dtm-dimtxt {
+  color: var(--dt-text-neutral);
+}
+.dtm-clamp2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Created By person cell */
+.dtm-person {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.dtm-avatar {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+}
+.dtm-person .dtm-txt {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Status chips (exact Figma utility-token pairs) */
+.dtm-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.dtm-chip-bug {
+  color: #7a5d02;
+  background: #fffaeb;
+}
+.dtm-chip-application {
+  color: #087443;
+  background: #edfcf2;
+}
+.dtm-chip-inquery {
+  color: #0d67d5;
+  background: #f2f8ff;
+}
+.dtm-chip-support {
+  color: #d92d20;
+  background: #fef3f2;
+}
+.dtm-chip-others {
+  color: #6927da;
+  background: #f5f3ff;
+}
+.dtm-chip-hardware {
+  color: #045f68;
+  background: #ebf6f8;
+}
+.dtm-chip-network {
+  color: #c01048;
+  background: #fff1f3;
+}
+
+/* Add-column trailing cell */
+.dtm-addcell {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-bottom: 1px solid var(--dt-cellborder);
+  color: var(--dt-text-dim);
+}
+.dtm-thead .dtm-addcell {
+  border-bottom: none;
+}
+.dtm-addcell svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* =============================================================================
+   Notes (AI) column — gradient shimmer loading → text (Figma 3403:39597)
+   ========================================================================== */
+.dtm-note-shimmer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+.dtm-shbar {
+  height: 9px;
+  border-radius: 5px;
+  background: linear-gradient(
+    90deg,
+    #eaf1ff 0%,
+    #cfe0ff 25%,
+    #dcd6ff 50%,
+    #cfe0ff 75%,
+    #eaf1ff 100%
+  );
+  background-size: 220% 100%;
+  animation: dtm-shimmer 1.35s ease-in-out infinite;
+}
+.dtm-shbar-short {
+  width: 62%;
+}
+@keyframes dtm-shimmer {
+  0% {
+    background-position: 120% 0;
+  }
+  100% {
+    background-position: -120% 0;
+  }
+}
+/* Note text fades in row by row once the column resolves. */
+.dtm-note-text {
+  opacity: 0;
+  animation: dtm-note-in 380ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes dtm-note-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* =============================================================================
+   Float layers — pop OUTSIDE the clipped card (mirrors .psuite-v5-floats).
+   Each layer keys off data-on (= Data table active) with its own delay so the
+   two elements appear one by one after the Notes column has loaded.
+   ========================================================================== */
+.dtm-floats {
+  position: absolute;
+  inset: 0; /* matches the card box; children spill via offsets */
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(12px) scale(0.98);
+  transform-origin: center;
+  transition:
+    opacity 480ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 480ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.dtm-floats[data-on='true'] {
+  opacity: 1;
+  transform: none;
+}
+/* The pie card enters first, the AI popover second — one by one after the
+   Notes column has finished loading (≈ NOTES_DONE_AT + text stagger). */
+.dtm-floats--pie[data-on='true'] {
+  transition-delay: 4550ms;
+}
+.dtm-floats--ai[data-on='true'] {
+  transition-delay: 4900ms;
+}
+
+/* ---- Pie-chart dashboard summary card (bottom-left) ---- */
+/* Fixed BASE width (≈ the Figma card, 497px) scaled as a whole by --dt-pie-scale
+   (the dialkit size dial) so the interior never reflows; anchored bottom-left so
+   the spill corner stays put as it zooms. Offsets are % of the card, live-tunable.
+   The scale rides the card (not the .dtm-floats layer), so the size dial zooms
+   instantly and doesn't inherit the layer's ~4.5s entrance delay. */
+.dtm-floats--pie .dtm-piecard {
+  position: absolute;
+  left: var(--dt-pie-left, -9%);
+  bottom: var(--dt-pie-bottom, -11.5%);
+  width: 520px;
+  transform: scale(var(--dt-pie-scale, 1));
+  transform-origin: bottom left;
+}
+.dtm-piecard {
+  padding: 16px 16px 14px;
+  background: var(--dt-white);
+  border: 1px solid var(--dt-border-light);
+  border-radius: 16px;
+  box-shadow: 0 18px 44px rgba(20, 28, 40, 0.16);
+}
+.dtm-piecard-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--dt-text);
+  margin-bottom: 10px;
+}
+.dtm-piecard-views {
+  display: flex;
+  flex-wrap: nowrap; /* single row like the Figma card — never wrap/overlap */
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.dtm-piecard-views .dtm-view {
+  flex: 0 0 auto;
+  height: 24px;
+  padding: 0 6px;
+  gap: 4px;
+  font-size: 9.5px;
+  background: var(--dt-subtle);
+  border-radius: 6px;
+}
+.dtm-piecard-views .dtm-view svg {
+  width: 11px;
+  height: 11px;
+}
+.dtm-piecard-views .dtm-view-active {
+  background: var(--dt-blue-tint);
+  border: none;
+}
+.dtm-piecard-spark {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9.5px;
+  color: #7a3ff0;
+  margin-left: auto;
+  white-space: nowrap;
+}
+.dtm-piecard-spark svg,
+.dtm-piecard-spark img {
+  width: 11px;
+  height: 11px;
+}
+.dtm-piecard-add {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  background: var(--dt-blue);
+}
+.dtm-piecard-add svg {
+  width: 13px;
+  height: 13px;
+}
+.dtm-chartcard {
+  border: 1px solid var(--dt-border-light);
+  border-radius: 12px;
+  padding: 12px 14px 10px;
+}
+.dtm-chartcard-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.dtm-chartcard-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dt-text);
+}
+.dtm-chartcard-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--dt-text-dim);
+}
+.dtm-chartcard-tools svg,
+.dtm-chartcard-tools img {
+  width: 14px;
+  height: 14px;
+}
+.dtm-pie {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.dtm-pie-slice {
+  stroke: #fff;
+  stroke-width: 1.5;
+}
+.dtm-pie-leader {
+  fill: none;
+  stroke-width: 1;
+  opacity: 0.6;
+}
+.dtm-pie-label {
+  font-family: var(--dt-font);
+  font-size: 9px;
+  fill: var(--dt-text-neutral);
+}
+.dtm-legend {
+  display: flex;
+  flex-wrap: nowrap; /* single row like the Figma card */
+  justify-content: center;
+  gap: 0 11px;
+  margin-top: 8px;
+}
+.dtm-legend-item {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9.5px;
+  white-space: nowrap;
+  color: var(--dt-text-neutral);
+}
+.dtm-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+/* ---- "Fill column with AI" popover (right) ---- */
+/* Fixed BASE width scaled as a whole by --dt-aipop-scale (dialkit size dial),
+   anchored top-right so its spill corner stays put as it zooms. */
+.dtm-floats--ai .dtm-aipop {
+  position: absolute;
+  right: var(--dt-aipop-right, -4%);
+  top: var(--dt-aipop-top, 26%);
+  width: 300px;
+  transform: scale(var(--dt-aipop-scale, 1));
+  transform-origin: top right;
+}
+.dtm-aipop {
+  padding: 16px;
+  background: var(--dt-white);
+  border: 1px solid var(--dt-border-light);
+  border-radius: 14px;
+  box-shadow: 0 18px 44px rgba(20, 28, 40, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.dtm-aipop-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.dtm-aipop-label {
+  font-size: 12px;
+  color: var(--dt-text-neutral);
+}
+.dtm-aipop-input,
+.dtm-aipop-select {
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--dt-border);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--dt-text);
+}
+.dtm-aipop-select {
+  gap: 8px;
+}
+.dtm-aipop-select-ic {
+  display: grid;
+  place-items: center;
+  color: var(--dt-text-dim);
+}
+.dtm-aipop-select-ic svg {
+  width: 15px;
+  height: 15px;
+}
+.dtm-aipop-select-caret {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  color: var(--dt-text-neutral);
+}
+.dtm-aipop-select-caret svg {
+  width: 15px;
+  height: 15px;
+}
+.dtm-aipop-fill {
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--dt-blue-tint);
+}
+.dtm-aipop-fill-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.dtm-aipop-fill-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dt-blue);
+}
+.dtm-aipop-fill-title svg,
+.dtm-aipop-fill-title img {
+  width: 16px;
+  height: 16px;
+  color: var(--dt-blue);
+}
+.dtm-toggle {
+  width: 34px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--dt-blue);
+  position: relative;
+  transition: background 160ms ease;
+}
+.dtm-toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 16px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+.dtm-aipop-prompt {
+  font-size: 13px;
+  line-height: 22px;
+  color: var(--dt-text);
+}
+.dtm-aipop-token {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--dt-blue);
+  background: #e1edfd;
+  vertical-align: middle;
+}
+.dtm-aipop-token svg {
+  width: 12px;
+  height: 12px;
+}
+.dtm-aipop-foot {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* =============================================================================
+   Reduced motion — snap straight to the finished scene.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .dtm-reveal,
+  .dtm-row-anim,
+  .dtm-floats {
+    transition: none;
+  }
+  .dtm-note-text {
+    animation: none;
+    opacity: 1;
+  }
+  .dtm-shbar {
+    animation: none;
+  }
+}

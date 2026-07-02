@@ -33,10 +33,14 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
+  /* Half-viewport padding beside a step slot so the first and last steps' centered
+     copy blocks can sit on the image's center line (50vh). Tracks the step-height
+     dial via --bd5-step-height. */
+  padding-block: calc((100vh - var(--bd5-step-height, 70vh)) / 2);
 }
 
 .bd5-step {
-  min-height: 70vh;
+  min-height: var(--bd5-step-height, 70vh);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -123,6 +127,7 @@
   }
   .bd5-steps {
     gap: 48px;
+    padding-block: 0;
   }
   .bd5-step {
     min-height: 0;

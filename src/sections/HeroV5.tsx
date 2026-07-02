@@ -32,11 +32,11 @@ const PRODUCTS = [
 // Bottom product-suite badges — the full Zoom suite story (Figma node 3267:6296).
 // Icons come straight from public/Icon.
 const SUITE = [
-  { name: 'Paper', icon: '/Icon/product-classic-doc.svg' },
-  { name: 'Slides', icon: '/Icon/product-slides.svg' },
-  { name: 'Sheets', icon: '/Icon/product-sheet.svg' },
-  { name: 'Canvas', icon: '/Icon/product-docs.svg' },
-  { name: 'Data table', icon: '/Icon/product-datatable.svg' },
+  { name: 'Paper', icon: '/Icon/product-icons/paper-fill.svg' },
+  { name: 'Slides', icon: '/Icon/product-icons/slides-fill.svg' },
+  { name: 'Sheets', icon: '/Icon/product-icons/sheets-fill.svg' },
+  { name: 'Canvas', icon: '/Icon/product-icons/canvas-fill.svg' },
+  { name: 'Data table', icon: '/Icon/product-icons/datatable-fill.svg' },
   { name: 'Hub', icon: '/Icon/Hub.svg' },
   { name: 'Mail', icon: '/Icon/icon_mail.svg' },
   { name: 'Calendar', icon: '/Icon/icon_calendar.svg' },

@@ -119,7 +119,7 @@
 /* ---- Title bar ---- */
 .shm-titlebar {
   flex: 0 0 auto;
-  height: 46px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -136,7 +136,7 @@
   gap: 6px;
 }
 .shm-doc-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--shm-text);
   white-space: nowrap;
@@ -146,31 +146,57 @@
   place-items: center;
   color: var(--shm-text-strong);
 }
-.shm-ic svg {
-  width: 18px;
-  height: 18px;
+.shm-ic svg,
+.shm-ic img {
+  width: 16px;
+  height: 16px;
   display: block;
+}
+/* star + cloud: slightly smaller, lighter (colour baked into the SVGs) */
+.shm-ic.shm-tb-soft img {
+  width: 14px;
+  height: 14px;
+}
+/* Nav inline glyphs (branch) match the dark icons-interface images */
+.shm-titlebar .shm-ic {
+  color: #1a1a1a;
 }
 .shm-ic--btn {
   width: 24px;
   height: 24px;
 }
-.shm-tb-caret svg {
-  width: 14px;
-  height: 14px;
+.shm-tb-caret svg,
+.shm-tb-caret img {
+  width: 16px;
+  height: 16px;
 }
 .shm-tb-dim {
   color: var(--shm-text-neutral);
   width: 28px;
   height: 28px;
 }
-.shm-tb-avatar {
+.shm-avatars {
+  display: flex;
+  align-items: center;
+  margin-right: 2px;
+}
+.shm-avatar {
   width: 28px;
   height: 28px;
   border-radius: 50%;
+  padding: 2px;
+  margin-left: -8px;
+}
+.shm-avatar:first-child {
+  margin-left: 0;
+}
+.shm-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1.5px solid var(--shm-white);
   object-fit: cover;
   display: block;
-  margin-right: 2px;
 }
 .shm-share {
   display: flex;
@@ -184,14 +210,20 @@
   font-weight: 500;
   color: var(--shm-text);
 }
-.shm-share svg {
-  width: 15px;
-  height: 15px;
+.shm-share svg,
+.shm-share img {
+  width: 16px;
+  height: 16px;
 }
 .shm-ai-spark {
   color: var(--shm-blue);
   width: 28px;
   height: 28px;
+}
+.shm-ai-spark img {
+  width: 16px;
+  height: 16px;
+  display: block;
 }
 
 /* ---- Menu bar ---- */
@@ -216,7 +248,8 @@
   font-weight: 500;
   color: var(--shm-blue);
 }
-.shm-menu-ai svg {
+.shm-menu-ai svg,
+.shm-menu-ai img {
   width: 15px;
   height: 15px;
 }
@@ -455,9 +488,7 @@
   height: 232px;
   padding: 12px 14px 6px;
   background: var(--shm-white);
-  border: 1px solid var(--shm-border);
   border-radius: 10px;
-  box-shadow: 0 12px 28px rgba(20, 28, 40, 0.1);
   /* Decorative — sits above the empty grid cells it floats over; clicks pass
      through (no selectable cell lives under it). */
   pointer-events: none;
@@ -519,7 +550,7 @@
   background: var(--shm-white);
   border: 1px solid var(--shm-border);
   border-radius: 12px;
-  box-shadow: 0 12px 28px rgba(20, 28, 40, 0.14);
+  box-shadow: var(--elevation-3);
 }
 
 /* Float layer (sibling of the card in .psuite-v5-screen-wrap) that lets the
@@ -575,7 +606,7 @@
   border-radius: 16px 16px 6px 16px; /* notch at bottom-right */
   padding: 11px 15px;
   backdrop-filter: blur(10px);
-  box-shadow: 0 10px 26px rgba(20, 28, 40, 0.1);
+  box-shadow: var(--elevation-3);
 }
 .shm-ctxchip {
   display: inline-flex;
@@ -626,7 +657,8 @@
   color: var(--shm-text);
   margin-bottom: 8px;
 }
-.shm-aiformula-head svg {
+.shm-aiformula-head svg,
+.shm-aiformula-head img {
   width: 17px;
   height: 17px;
   color: var(--shm-blue);
@@ -897,7 +929,7 @@
   padding: 12px 12px 10px;
   border: 1px solid var(--shm-border);
   border-radius: 14px;
-  box-shadow: 0 2px 6px rgba(20, 28, 40, 0.04);
+  box-shadow: var(--elevation-1);
 }
 .shm-composer-input {
   font-size: 13px;

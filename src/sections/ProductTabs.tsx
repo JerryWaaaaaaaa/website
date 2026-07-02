@@ -6,25 +6,25 @@ const TABS = [
   {
     key: 'slides',
     label: 'AI Slides',
-    icon: '/Icon/product-slides.svg',
+    icon: '/Icon/product-icons/slides-fill.svg',
     body: 'Business proposals, data analysis, investor pitch decks, QBRs. Your conversation becomes the exact doc your workflow demands.',
   },
   {
     key: 'sheets',
     label: 'AI Sheets',
-    icon: '/Icon/product-sheet.svg',
+    icon: '/Icon/product-icons/sheets-fill.svg',
     body: 'Turn meeting outcomes into tracked data — instantly. Pivot, filter, and share with one click.',
   },
   {
     key: 'docs',
     label: 'AI Docs',
-    icon: '/Icon/product-docs.svg',
+    icon: '/Icon/product-icons/canvas-fill.svg',
     body: 'Polished documents drafted from your conversations, in your team\'s formatting and tone.',
   },
   {
     key: 'datatable',
     label: 'AI Data table',
-    icon: '/Icon/product-datatable.svg',
+    icon: '/Icon/product-icons/datatable-fill.svg',
     body: 'Structured records of every meeting decision and action item, ready to query and automate.',
   },
 ];

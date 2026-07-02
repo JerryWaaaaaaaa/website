@@ -12,6 +12,10 @@
   gap: 40px;
   padding: 120px 24px;
   background: var(--bg-accent-light);
+  /* Floats spill past the card by design; clip only what spills past the
+     window so the page never gets a horizontal scrollbar. `clip` (not
+     `hidden`) leaves the vertical axis free for floats that spill above/below. */
+  overflow-x: clip;
 }
 
 .psuite-v5-heading {
@@ -170,7 +174,10 @@ img.psuite-v5-screen-img {
   position: absolute;
   display: block;
   height: auto;
-  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.12));
+  /* Transparent PNGs with baked rounded corners → drop-shadow (follows alpha),
+     layered on the shared --shadow-color to match --elevation-3. */
+  filter: drop-shadow(0 4px 8px rgba(var(--shadow-color), 0.1))
+    drop-shadow(0 12px 28px rgba(var(--shadow-color), 0.12));
 }
 /* Positions/sizes as % of the card so they scale with it. */
 .psuite-v5-float--prompt {
@@ -182,6 +189,22 @@ img.psuite-v5-screen-img {
   bottom: var(--float-notes-bottom, -6.5%);
   left: var(--float-notes-left, 25%);
   width: var(--float-notes-w, 53%);
+  /* Fades in first, once the slide deck finishes generating. */
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 300ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 300ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.psuite-v5-float--notes[data-in='true'] {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .psuite-v5-float--notes {
+    transition: opacity 200ms ease;
+    transform: none;
+  }
 }
 .psuite-v5-float--voice {
   top: var(--float-voice-top, 6%);

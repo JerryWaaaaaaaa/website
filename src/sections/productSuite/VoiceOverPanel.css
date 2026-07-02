@@ -10,6 +10,22 @@
   position: absolute;
   inset: 0;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  /* Fades in (button) once the parent's staged intro reaches the voice-over. */
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 260ms var(--ease-out),
+    transform 260ms var(--ease-out);
+}
+.vo-wrap[data-visible='true'] {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .vo-wrap {
+    transition: opacity 200ms ease;
+    transform: none;
+  }
 }
 
 .vo {
@@ -38,7 +54,7 @@
   width: 100%;
   height: auto;
   border-radius: 22px;
-  filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.12));
+  box-shadow: var(--elevation-4);
 }
 .vo[data-open='true'] .vo-panel {
   opacity: 1;
@@ -69,9 +85,10 @@
   );
   -webkit-backdrop-filter: blur(8.9px);
   backdrop-filter: blur(8.9px);
+  /* Brand-pink glow is a deliberate accent; neutral layer uses --shadow-color. */
   box-shadow:
     0 12px 30px rgba(251, 60, 128, 0.18),
-    0 2px 10px rgba(0, 0, 0, 0.06);
+    0 2px 10px rgba(var(--shadow-color), 0.06);
   cursor: pointer;
   pointer-events: auto; /* parent .psuite-v5-floats is pointer-events:none */
   transition:
@@ -93,7 +110,7 @@
     transform: translateY(-1px);
     box-shadow:
       0 16px 38px rgba(251, 60, 128, 0.26),
-      0 3px 12px rgba(0, 0, 0, 0.08);
+      0 3px 12px rgba(var(--shadow-color), 0.08);
   }
 }
 .vo-btn:active {

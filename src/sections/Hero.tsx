@@ -4,10 +4,10 @@ import { Button } from '../components/Button';
 import RotatingText from '../components/RotatingText';
 
 const PRODUCTS = [
-  { name: 'Slides', color: '#fb327e', icon: '/Icon/product-slides.svg' },
-  { name: 'Sheets', color: '#23a52d', icon: '/Icon/product-sheet.svg' },
-  { name: 'Docs', color: '#0d6bde', icon: '/Icon/product-docs.svg' },
-  { name: 'Data table', color: '#23a52d', icon: '/Icon/product-datatable.svg' },
+  { name: 'Slides', color: '#fb327e', icon: '/Icon/product-icons/slides-fill.svg' },
+  { name: 'Sheets', color: '#23a52d', icon: '/Icon/product-icons/sheets-fill.svg' },
+  { name: 'Docs', color: '#0d6bde', icon: '/Icon/product-icons/canvas-fill.svg' },
+  { name: 'Data table', color: '#23a52d', icon: '/Icon/product-icons/datatable-fill.svg' },
 ];
 
 export function Hero() {

@@ -248,8 +248,8 @@
   left: -96px;
   transform: translateY(-50%);
   z-index: 2;
-  width: 28%;
-  max-width: 60%;
+  width: var(--hero-meeting-w, 28%);
+  max-width: var(--hero-meeting-max-w, 520px);
   border-radius: 10px;
   box-shadow: 0 18px 48px rgba(2, 6, 31, 0.32);
 }

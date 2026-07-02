@@ -8,10 +8,20 @@ import './VoiceOverPanel.css';
 
 const DESIGN_WIDTH = 280;
 
-export function VoiceOverPanel() {
+/* Controlled by the parent: `visible` fades the whole control in (button), `open`
+   expands the dropdown panel. `onToggle` fires on button click so the user can
+   still open/collapse it after the intro sequence. */
+export function VoiceOverPanel({
+  visible = true,
+  open,
+  onToggle,
+}: {
+  visible?: boolean;
+  open: boolean;
+  onToggle: () => void;
+}) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [scale, setScale] = useState(1);
-  const [open, setOpen] = useState(true);
 
   useLayoutEffect(() => {
     const el = wrapRef.current;
@@ -24,7 +34,7 @@ export function VoiceOverPanel() {
   }, []);
 
   return (
-    <div className="vo-wrap" ref={wrapRef}>
+    <div className="vo-wrap" ref={wrapRef} data-visible={visible ? 'true' : 'false'}>
       <div className="vo" data-open={open} style={{ '--vo-scale': scale } as CSSProperties}>
         <div className="vo-panel">
           <img src="/slides-mockup/voiceover/panel.png" alt="Voice-over options" />
@@ -33,7 +43,7 @@ export function VoiceOverPanel() {
           type="button"
           className="vo-btn"
           aria-expanded={open}
-          onClick={() => setOpen((o) => !o)}
+          onClick={onToggle}
         >
           <span className="vo-btn-label">Select Voice-over</span>
         </button>

@@ -36,7 +36,7 @@ const PRODUCTS: Product[] = [
   {
     key: 'canvas',
     label: 'Canvas',
-    icon: '/Icon/product-docs.svg',
+    icon: '/Icon/product-icons/canvas-fill.svg',
     screen: '/product-suite-assets/canvas-ui.png',
     color: '#3579fd',
     // Canvas renders as a live, animated DOM mockup (see CanvasMockup).
@@ -44,7 +44,7 @@ const PRODUCTS: Product[] = [
   {
     key: 'slides',
     label: 'Slides',
-    icon: '/Icon/product-slides.svg',
+    icon: '/Icon/product-icons/slides-fill.svg',
     screen: '/product-suite-assets/slides-UI.png',
     color: '#fb327e',
     // Slides renders as a live, animated DOM mockup (see SlidesMockup).
@@ -52,7 +52,7 @@ const PRODUCTS: Product[] = [
   {
     key: 'sheets',
     label: 'Sheets',
-    icon: '/Icon/product-sheet.svg',
+    icon: '/Icon/product-icons/sheets-fill.svg',
     screen: '/product-suite-assets/sheets.png',
     color: '#019f5c',
     // Sheets renders as a live, animated DOM mockup (see SheetsMockup).
@@ -60,14 +60,14 @@ const PRODUCTS: Product[] = [
   {
     key: 'paper',
     label: 'Paper',
-    icon: '/Icon/product-classic-doc.svg',
+    icon: '/Icon/product-icons/paper-fill.svg',
     screen: '/product-suite-assets/paper-ui.png',
     color: '#0d6bde',
   },
   {
     key: 'datatable',
     label: 'Data table',
-    icon: '/Icon/product-datatable.svg',
+    icon: '/Icon/product-icons/datatable-fill.svg',
     screen: '/product-suite-assets/datatable-ui.png',
     color: '#019f5c',
   },

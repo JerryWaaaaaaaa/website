@@ -28,6 +28,9 @@
 }
 
 .uc5-folder {
+  /* Shared by the sliding fill (UseCaseV5B.css) and the panel corner below so
+     their transitions stay in sync — change here to retime both together. */
+  --uc5-slide-duration: 360ms;
   position: relative;
   z-index: 0;
   display: flex;
@@ -122,6 +125,10 @@
   padding: 48px 64px 48px 48px;
   background: var(--bg-accent-light);
   border-radius: var(--uc5-panel-r);
+  /* Ease the top corner between rounded and square as the active tab changes,
+     in sync with the sliding fill (UseCaseV5B.css). */
+  transition: border-top-left-radius var(--uc5-slide-duration) var(--ease-emphasized),
+    border-top-right-radius var(--uc5-slide-duration) var(--ease-emphasized);
 }
 
 .uc5-panel.is-active-first {
@@ -429,6 +436,9 @@
 @media (prefers-reduced-motion: reduce) {
   .uc5-tabs {
     scroll-behavior: auto;
+  }
+  .uc5-panel {
+    transition: none;
   }
   .uc5-headline {
     animation: none;
