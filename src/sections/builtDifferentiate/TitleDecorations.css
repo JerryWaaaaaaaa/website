@@ -10,6 +10,7 @@
   display: block;
   width: fit-content;
   margin-bottom: 0.16em;
+  margin-left: var(--kp-badge-shift, 0em);
   padding: 0.43em 0.85em;
   border-radius: 999px;
   background: var(--bg-accent-light);

@@ -53,6 +53,7 @@ const HERO_BASE: DialConfig = {
 // between titles. Drives .bd5-step min-height via --bd5-step-height.
 const BUILTDIFF_BASE: DialConfig = {
   stepHeight: [36, 20, 120, 1],
+  badgeShift: [0, -2, 2, 0.01], // .kp-badge margin-left (em) — align the label to the title's left edge
 };
 
 // Variant-scoped Product Suite controls, grouped in the "Product Suite" panel so
@@ -195,6 +196,7 @@ interface HeroValues {
 
 interface BuiltDiffValues {
   stepHeight: number;
+  badgeShift: number;
 }
 
 interface CarouselValues {
@@ -344,6 +346,12 @@ export function V5Tuning() {
   useEffect(() => {
     document.documentElement.style.setProperty('--bd5-step-height', `${builtDiff.stepHeight}vh`);
   }, [builtDiff.stepHeight]);
+
+  // --kp-badge-shift: horizontal offset (em) of the .kp-badge label, used to align
+  // it to the title's left edge against the pill's own left padding.
+  useEffect(() => {
+    document.documentElement.style.setProperty('--kp-badge-shift', `${builtDiff.badgeShift}em`);
+  }, [builtDiff.badgeShift]);
 
   // --psuite-stage-height: live height of the Carousel (ProductSuiteV5) arc stage.
   useEffect(() => {

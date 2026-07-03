@@ -24,7 +24,7 @@
 .openplat5-title {
   margin: 0;
   font-family: 'General Sans', sans-serif;
-  font-size: 44px;
+  font-size: clamp(28px, 1.9vw + 21.1px, 44px);
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.02em;
@@ -122,9 +122,6 @@
   .openplat5 {
     padding: 96px 32px;
   }
-  .openplat5-title {
-    font-size: 36px;
-  }
 }
 
 @media (max-width: 899px) {
@@ -140,8 +137,5 @@
 @media (max-width: 639px) {
   .openplat5 {
     padding: 72px 20px;
-  }
-  .openplat5-title {
-    font-size: 28px;
   }
 }

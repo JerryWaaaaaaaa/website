@@ -1,52 +1,49 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'motion/react';
 import s from './Nav.module.css';
 
 type Panel = 'products' | 'features' | 'explore' | null;
 
-const SPRING = { type: 'spring' as const, damping: 25, stiffness: 300 };
-
 const PRODUCT_CARDS = [
   {
-    key: 'docs',
-    name: 'AI Docs',
-    desc: 'Automatically transforms your meetings into polished documents',
-    icon: '/Icon/product-icons/canvas-fill.svg',
-    cls: s.productCardDocs,
-  },
-  {
     key: 'slides',
-    name: 'AI Slides',
-    desc: 'Meeting to deck, voice-ready presentation',
+    name: 'Slides',
+    desc: 'Ideas to presentations',
     icon: '/Icon/product-icons/slides-fill.svg',
     cls: s.productCardSlides,
   },
   {
     key: 'sheets',
-    name: 'AI Sheets',
-    desc: 'Meetings to data, automates workflows',
+    name: 'Sheets',
+    desc: 'Spreadsheets, automated',
     icon: '/Icon/product-icons/sheets-fill.svg',
     cls: s.productCardSheets,
   },
   {
-    key: 'datatable',
-    name: 'AI Data table',
-    desc: 'Organize, analyze, and act on your data with flexible views',
-    icon: '/Icon/product-icons/datatable-fill.svg',
-    cls: s.productCardDatatable,
-  },
-  {
-    key: 'classicdocs',
-    name: 'AI Classic Docs',
-    desc: 'Precise formatting, Word compatibility, and real-time editing.',
+    key: 'paper',
+    name: 'Paper',
+    desc: 'Professional writing, refined',
     icon: '/Icon/product-icons/paper-fill.svg',
     cls: s.productCardClassicdocs,
   },
   {
+    key: 'canvas',
+    name: 'Canvas',
+    desc: 'Think. Write. Refine.',
+    icon: '/Icon/product-icons/canvas-fill.svg',
+    cls: s.productCardDocs,
+  },
+  {
+    key: 'datatable',
+    name: 'Data tables',
+    desc: 'From data to insight',
+    icon: '/Icon/product-icons/datatable-fill.svg',
+    cls: s.productCardDatatable,
+  },
+  {
     key: 'hub',
     name: 'Hub',
-    desc: 'Manage all your meetings and documents all in one place',
+    desc: 'The drive for your Zoom assets',
     icon: '/Icon/Hub.svg',
     cls: s.productCardHub,
   },
@@ -72,7 +69,12 @@ function Chevron() {
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [openPanel, setOpenPanel] = useState<Panel>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -81,13 +83,33 @@ export function Nav() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Track the mobile breakpoint (matches the CSS hamburger switch at 900px).
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 900px)');
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
+  // Growing past mobile: close the drawer and reset the accordion.
+  useEffect(() => {
+    if (!isMobile) {
+      setDrawerOpen(false);
+      setOpenPanel(null);
+    }
+  }, [isMobile]);
+
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
       if (!navRef.current) return;
       if (!navRef.current.contains(e.target as Node)) setOpenPanel(null);
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpenPanel(null);
+      if (e.key === 'Escape') {
+        setOpenPanel(null);
+        setDrawerOpen(false);
+      }
     };
     document.addEventListener('click', onDocClick);
     document.addEventListener('keydown', onKey);
@@ -97,15 +119,56 @@ export function Nav() {
     };
   }, []);
 
+  // Lock body scroll while the drawer is open; restore on close/unmount.
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [drawerOpen]);
+
+  // Focus the close button on open, trap Tab within the dialog, and return
+  // focus to the hamburger on close.
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const drawer = drawerRef.current;
+    if (!drawer) return;
+    closeBtnRef.current?.focus();
+    const onTrap = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      const focusables = drawer.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focusables.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    drawer.addEventListener('keydown', onTrap);
+    return () => {
+      drawer.removeEventListener('keydown', onTrap);
+      hamburgerRef.current?.focus();
+    };
+  }, [drawerOpen]);
+
   const toggle = (panel: Exclude<Panel, null>) =>
     setOpenPanel((p) => (p === panel ? null : panel));
 
   const wrapClass = [s.navWrap, scrolled ? s.isScrolled : ''].filter(Boolean).join(' ');
   const barClass = [
     s.navBar,
-    openPanel === 'products' ? s.productsOpen : '',
-    openPanel === 'features' ? s.featuresOpen : '',
-    openPanel === 'explore' ? s.exploreOpen : '',
+    // Desktop-only expanding panels; on mobile the drawer owns the accordion.
+    !isMobile && openPanel === 'products' ? s.productsOpen : '',
+    !isMobile && openPanel === 'features' ? s.featuresOpen : '',
+    !isMobile && openPanel === 'explore' ? s.exploreOpen : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -113,34 +176,9 @@ export function Nav() {
   const triggerClass = (panel: Exclude<Panel, null>) =>
     [s.navTrigger, openPanel === panel ? s.isOpen : ''].filter(Boolean).join(' ');
 
-  const wrapStyle = { padding: scrolled ? '20px 24px 0' : 0 };
-  const barStyle = {
-    maxWidth: scrolled ? 1024 : '100%',
-    borderRadius: scrolled
-      ? openPanel
-        ? '32px 32px 32px 32px'
-        : 32
-      : openPanel
-        ? '0 0 32px 32px'
-        : 0,
-  };
-
   return (
-    <motion.header
-      layout
-      transition={SPRING}
-      className={wrapClass}
-      style={wrapStyle}
-      ref={navRef}
-    >
-      <motion.nav
-        layout
-        transition={SPRING}
-        className={barClass}
-        style={barStyle}
-        role="navigation"
-        aria-label="Main navigation"
-      >
+    <header className={wrapClass} ref={navRef}>
+      <nav className={barClass} role="navigation" aria-label="Main navigation">
         <div className={s.navRow}>
           <Link to="/" className={s.navLogo} aria-label="Zoom AI Create — home">
             <img src="/zm-prod-suite-stacked-color01.svg" alt="Zoom AI Create" height={36} />
@@ -198,6 +236,24 @@ export function Nav() {
             <button className="btn btn-secondary">Sign in</button>
             <button className="btn btn-primary">Get started today</button>
           </div>
+
+          <button
+            ref={hamburgerRef}
+            className={[s.navHamburger, drawerOpen ? s.isOpen : ''].filter(Boolean).join(' ')}
+            aria-label="Menu"
+            aria-expanded={drawerOpen}
+            aria-controls="mobile-drawer"
+            onClick={(e) => {
+              e.stopPropagation();
+              setDrawerOpen((o) => !o);
+            }}
+          >
+            <span className={s.navHamburgerBox} aria-hidden="true">
+              <span className={s.navHamburgerLine} />
+              <span className={s.navHamburgerLine} />
+              <span className={s.navHamburgerLine} />
+            </span>
+          </button>
         </div>
 
         <div
@@ -259,7 +315,143 @@ export function Nav() {
             </div>
           </div>
         </div>
-      </motion.nav>
-    </motion.header>
+      </nav>
+
+      {/* Mobile drawer — sibling of <nav> so the scrolled-pill overflow/clip
+          never touches it. Owns its own accordion (reusing openPanel). */}
+      <div
+        className={[s.mobileDrawer, drawerOpen ? s.isOpen : ''].filter(Boolean).join(' ')}
+      >
+        <div className={s.mobileScrim} onClick={() => setDrawerOpen(false)} />
+        <div
+          className={s.mobilePanel}
+          id="mobile-drawer"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Menu"
+          ref={drawerRef}
+        >
+          <div className={s.mobilePanelHead}>
+            <Link
+              to="/"
+              className={s.navLogo}
+              aria-label="Zoom AI Create — home"
+              onClick={() => setDrawerOpen(false)}
+            >
+              <img src="/zm-prod-suite-stacked-color01.svg" alt="Zoom AI Create" height={32} />
+            </Link>
+            <button
+              ref={closeBtnRef}
+              className={s.mobileClose}
+              aria-label="Close menu"
+              onClick={() => setDrawerOpen(false)}
+            >
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
+                <path
+                  d="M6 6L18 18M18 6L6 18"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <div className={s.mobilePanelBody}>
+            {/* Products */}
+            <div
+              className={[s.mDrawerSection, openPanel === 'products' ? s.isExpanded : '']
+                .filter(Boolean)
+                .join(' ')}
+            >
+              <button
+                className={s.mDrawerTrigger}
+                aria-expanded={openPanel === 'products'}
+                onClick={() => toggle('products')}
+              >
+                Products
+                <Chevron />
+              </button>
+              <div className={s.mDrawerBody}>
+                <div className={s.mDrawerBodyInner}>
+                  <div className={s.mDrawerProducts}>
+                    {PRODUCT_CARDS.map((p) => (
+                      <a key={p.key} className={`${s.productCard} ${p.cls}`} href="#">
+                        <div className={s.productIcon}>
+                          <img src={p.icon} width={32} height={32} alt="" />
+                        </div>
+                        <div className={s.productText}>
+                          <span className={s.productName}>{p.name}</span>
+                          <span className={s.productDesc}>{p.desc}</span>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Features */}
+            <div
+              className={[s.mDrawerSection, openPanel === 'features' ? s.isExpanded : '']
+                .filter(Boolean)
+                .join(' ')}
+            >
+              <button
+                className={s.mDrawerTrigger}
+                aria-expanded={openPanel === 'features'}
+                onClick={() => toggle('features')}
+              >
+                Features
+                <Chevron />
+              </button>
+              <div className={s.mDrawerBody}>
+                <div className={s.mDrawerBodyInner}>
+                  <div className={s.mDrawerLinks}>
+                    {FEATURE_PILLS.map((label) => (
+                      <a key={label} className={s.mDrawerLink} href="#">
+                        {label}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Explore */}
+            <div
+              className={[s.mDrawerSection, openPanel === 'explore' ? s.isExpanded : '']
+                .filter(Boolean)
+                .join(' ')}
+            >
+              <button
+                className={s.mDrawerTrigger}
+                aria-expanded={openPanel === 'explore'}
+                onClick={() => toggle('explore')}
+              >
+                Explore
+                <Chevron />
+              </button>
+              <div className={s.mDrawerBody}>
+                <div className={s.mDrawerBodyInner}>
+                  <div className={s.mDrawerLinks}>
+                    {EXPLORE_PILLS.map((label) => (
+                      <a key={label} className={s.mDrawerLink} href="#">
+                        {label}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={s.mobilePanelCta}>
+            <button className="btn btn-secondary">Sign in</button>
+            <button className="btn btn-primary">Get started today</button>
+          </div>
+        </div>
+      </div>
+    </header>
   );
 }

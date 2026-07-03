@@ -62,6 +62,14 @@
      softer at the start for entrances that travel a longer distance. */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+  /* iOS-style drawer curve (Emil) — matches the tuple used in Nav.tsx's EASE
+     so the mobile drawer feels cohesive with the nav's layout motion. */
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* Fluid layout rhythm — one source of truth for the section block/gutter so
+     spacing interpolates smoothly between mobile and desktop (see .section). */
+  --section-block: clamp(56px, 4.76vw + 38.9px, 96px);
+  --gutter: clamp(20px, 2.38vw + 11.4px, 40px);
 
   /* Elevation — one cool near-black light source; contact + ambient layers.
      Reference these instead of bespoke per-component box-shadows so co-visible
@@ -112,6 +120,14 @@
 html {
   scroll-behavior: smooth;
   scroll-snap-type: y proximity;
+}
+
+/* Guard against horizontal scroll from full-bleed/absolute decorations on
+   narrow viewports. `clip` (not `hidden`) keeps position: sticky/fixed working
+   for the nav, .bd5-media-col, and .bu-float. */
+html,
+body {
+  overflow-x: clip;
 }
 
 body {
@@ -208,12 +224,12 @@ body {
   width: 100%;
   max-width: var(--page-max-width);
   margin: 0 auto;
-  padding: 96px 40px;
+  padding: var(--section-block) var(--gutter);
 }
 
 .section-full {
   width: 100%;
-  padding: 96px 40px;
+  padding: var(--section-block) var(--gutter);
 }
 
 .section-eyebrow {
@@ -223,7 +239,7 @@ body {
 .section h2,
 .section-full h2 {
   font-family: 'General Sans', sans-serif;
-  font-size: 44px;
+  font-size: clamp(28px, 1.9vw + 21.1px, 44px);
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.02em;
@@ -234,7 +250,7 @@ body {
 .section h3,
 .section-full h3 {
   font-family: 'General Sans', sans-serif;
-  font-size: 22px;
+  font-size: clamp(18px, 0.48vw + 16.3px, 22px);
   font-weight: 500;
   line-height: 1.1;
   letter-spacing: -0.01em;
@@ -256,7 +272,7 @@ body {
 /* H1 — only used in the hero */
 .h1 {
   font-family: 'General Sans', sans-serif;
-  font-size: 60px;
+  font-size: clamp(36px, 2.86vw + 25.7px, 60px);
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.01em;
@@ -264,26 +280,9 @@ body {
   margin: 0 0 24px;
 }
 
-/* Responsive type ramp — matches DESIGN.md */
-@media (max-width: 1199px) {
-  .h1 { font-size: 48px; }
-  .section h2,
-  .section-full h2 { font-size: 36px; }
-  .section h3,
-  .section-full h3 { font-size: 20px; }
-  .section,
-  .section-full { padding: 72px 32px; }
-}
-
-@media (max-width: 639px) {
-  .h1 { font-size: 36px; }
-  .section h2,
-  .section-full h2 { font-size: 28px; }
-  .section h3,
-  .section-full h3 { font-size: 18px; }
-  .section,
-  .section-full { padding: 56px 20px; }
-}
+/* Type ramp + section rhythm are now fluid (clamp) on the base rules above,
+   interpolating 360px → 1200px so the tablet band is covered without steps.
+   See --section-block / --gutter in :root. */
 
 /* =============================================================================
    Animated gradient — subtle drifting background

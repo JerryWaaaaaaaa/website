@@ -155,7 +155,7 @@
 .uc5-headline {
   margin: 0;
   font-family: 'General Sans', sans-serif;
-  font-size: 44px;
+  font-size: clamp(28px, 1.9vw + 21.1px, 44px);
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.02em;
@@ -376,9 +376,6 @@
     padding: 40px;
     gap: 32px;
   }
-  .uc5-headline {
-    font-size: 36px;
-  }
 }
 
 @media (max-width: 899px) {
@@ -417,15 +414,19 @@
   .uc5-section {
     padding: 72px 16px;
   }
-  .uc5-section::before {
+  /* The accent band lives on .uc5-folder::before (not .uc5-section) — target
+     the right selector so the 1200px band actually shrinks on phones. */
+  .uc5-folder::before {
     height: 300px;
   }
   .uc5-panel {
     padding: 28px;
     --uc5-panel-r: 20px;
   }
-  .uc5-headline {
-    font-size: 28px;
+  /* Pack the tabs together instead of spreading edge-to-edge (space-between). */
+  .uc5-tabs {
+    justify-content: flex-start;
+    gap: 8px;
   }
   .uc5-tab {
     font-size: 16px;
