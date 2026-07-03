@@ -119,7 +119,9 @@
     gap: 48px;
   }
   .bd5-scroll {
-    flex-direction: column;
+    /* .bd5-scroll is a grid, so flex-direction is inert here — collapse the
+       two columns to one so the steps fill the full width. */
+    grid-template-columns: 1fr;
     gap: 0;
   }
   .bd5-media-col {

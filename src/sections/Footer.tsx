@@ -27,7 +27,9 @@ export function Footer() {
           maxWidth: 1024,
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: '2fr repeat(3, 1fr)',
+          // auto-fit lets the columns collapse (4 → 2 → 1) as width shrinks,
+          // so the footer never cramps on phones.
+          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
           gap: 32,
           marginBottom: 48,
         }}

@@ -639,80 +639,13 @@
   transform: scale(var(--dt-pie-scale, 1));
   transform-origin: bottom left;
 }
+/* The float is now just the chart panel itself (no outer dashboard wrapper). */
 .dtm-piecard {
-  padding: 16px 16px 14px;
+  padding: 14px 16px 12px;
   background: var(--dt-white);
   border: 1px solid var(--dt-border-light);
-  border-radius: 16px;
+  border-radius: 14px;
   box-shadow: 0 18px 44px rgba(20, 28, 40, 0.16);
-}
-.dtm-piecard-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--dt-text);
-  margin-bottom: 10px;
-}
-.dtm-piecard-views {
-  display: flex;
-  flex-wrap: nowrap; /* single row like the Figma card — never wrap/overlap */
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 12px;
-}
-.dtm-piecard-views .dtm-view {
-  flex: 0 0 auto;
-  height: 24px;
-  padding: 0 6px;
-  gap: 4px;
-  font-size: 9.5px;
-  background: var(--dt-subtle);
-  border-radius: 6px;
-}
-.dtm-piecard-views .dtm-view svg {
-  width: 11px;
-  height: 11px;
-}
-.dtm-piecard-views .dtm-view-active {
-  background: var(--dt-blue-tint);
-  border: none;
-}
-.dtm-piecard-spark {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 9.5px;
-  color: #7a3ff0;
-  margin-left: auto;
-  white-space: nowrap;
-}
-.dtm-piecard-spark svg,
-.dtm-piecard-spark img {
-  width: 11px;
-  height: 11px;
-}
-.dtm-piecard-add {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  height: 24px;
-  padding: 0 8px;
-  border-radius: 6px;
-  font-size: 9.5px;
-  font-weight: 600;
-  color: #fff;
-  white-space: nowrap;
-  background: var(--dt-blue);
-}
-.dtm-piecard-add svg {
-  width: 13px;
-  height: 13px;
-}
-.dtm-chartcard {
-  border: 1px solid var(--dt-border-light);
-  border-radius: 12px;
-  padding: 12px 14px 10px;
 }
 .dtm-chartcard-head {
   display: flex;

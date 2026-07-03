@@ -26,7 +26,7 @@
 
 .pr5-title {
   font-family: 'General Sans', sans-serif;
-  font-size: 44px;
+  font-size: clamp(28px, 1.9vw + 21.1px, 44px);
   font-weight: 500;
   line-height: 1.05;
   letter-spacing: -0.02em;
@@ -283,7 +283,6 @@
 /* Pricing V5 — tablet */
 @media (max-width: 1199px) {
   .pr5-section { padding: 72px 32px; }
-  .pr5-title { font-size: 36px; }
   .pr5-head { margin-bottom: 40px; }
   .pr5-grid { gap: 16px; }
   .pr5-card { padding: 24px; }
@@ -292,7 +291,6 @@
 /* Pricing V5 — mobile (cards stack to one column) */
 @media (max-width: 639px) {
   .pr5-section { padding: 56px 20px; }
-  .pr5-title { font-size: 28px; }
   .pr5-grid { grid-template-columns: 1fr; gap: 20px; }
   .pr5-badge { left: 24px; }
 }

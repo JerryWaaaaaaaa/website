@@ -296,8 +296,6 @@ export function DataTableMockup({ active }: { active: boolean }) {
         <div className="dtm-nav dtm-reveal" style={rd(0)}>
           <div className="dtm-nav-left">
             <span className="dtm-ic dtm-ic-btn"><img src={`${II}/left.svg`} alt="" /></span>
-            <span className="dtm-nav-div" />
-            <span className="dtm-ic"><Ico n="docAdd" /></span>
             <span className="dtm-nav-title">IT Ticket Management</span>
             <span className="dtm-ic dtm-nav-caret"><img src={`${II}/chevron-down.svg`} alt="" /></span>
             <span className="dtm-ic dtm-dim dtm-tb-soft"><img src={`${II}/star.svg`} alt="" /></span>
@@ -530,33 +528,23 @@ const PIE_SEGMENTS = [
 export function DataTablePieCard() {
   return (
     <div className="dtm-piecard">
-      <div className="dtm-piecard-title">IT Ticket Management</div>
-      <div className="dtm-piecard-views">
-        <span className="dtm-view"><Ico n="grid" />Ticket Submission Form</span>
-        <span className="dtm-view"><Ico n="grid" />All Tickets</span>
-        <span className="dtm-view dtm-view-active"><Ico n="chart" />Dashboard</span>
-        <span className="dtm-piecard-spark"><img src="/Icon/ai-tag.svg" alt="AI" />Dashboard analysis</span>
-        <span className="dtm-piecard-add"><Ico n="plus" />Add chart</span>
+      <div className="dtm-chartcard-head">
+        <span className="dtm-chartcard-title">IT ticket management chart</span>
+        <span className="dtm-chartcard-tools">
+          <img src="/Icon/ai-tag.svg" alt="AI" />
+          <Ico n="filter" />
+          <Ico n="settings" />
+          <Ico n="more" />
+        </span>
       </div>
-      <div className="dtm-chartcard">
-        <div className="dtm-chartcard-head">
-          <span className="dtm-chartcard-title">IT ticket management chart</span>
-          <span className="dtm-chartcard-tools">
-            <img src="/Icon/ai-tag.svg" alt="AI" />
-            <Ico n="filter" />
-            <Ico n="settings" />
-            <Ico n="more" />
+      <Pie />
+      <div className="dtm-legend">
+        {PIE_SEGMENTS.map((s) => (
+          <span key={s.label} className="dtm-legend-item">
+            <span className="dtm-legend-dot" style={{ background: s.color }} />
+            {s.label}
           </span>
-        </div>
-        <Pie />
-        <div className="dtm-legend">
-          {PIE_SEGMENTS.map((s) => (
-            <span key={s.label} className="dtm-legend-item">
-              <span className="dtm-legend-dot" style={{ background: s.color }} />
-              {s.label}
-            </span>
-          ))}
-        </div>
+        ))}
       </div>
     </div>
   );

@@ -90,6 +90,13 @@
   }
 }
 
+/* Mobile — enlarge tab hit area to a comfortable touch target. */
+@media (max-width: 639px) {
+  .psuite-v5d-tab {
+    padding: 10px 12px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   /* No countdown/auto-advance: the active underline just shows filled. Because
      there is no animation, animationend never fires, so advance() is never
