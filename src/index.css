@@ -15,6 +15,7 @@
   --color-gray: #4c4c4c;
   --color-gray-light: #999999;
   --color-blue-inactive: #a3b9dd;
+  --color-icon-brand: #0d6bde;
 
   /* Semantic: Backgrounds */
   --bg-neutral: var(--color-white);

@@ -193,7 +193,7 @@
 .productCardSheets      { background: rgba(35, 165, 45, 0.06); }
 .productCardDatatable   { background: rgba(36, 127, 64, 0.06); }
 .productCardClassicdocs { background: rgba(32, 87, 177, 0.06); }
-.productCardHub         { background: rgba(12, 92, 255, 0.06); }
+.productCardHub         { background: rgba(13, 107, 222, 0.06); }
 
 .productIcon {
   width: 62px;
@@ -210,7 +210,7 @@
 .productCardSheets      .productIcon { background: rgba(35, 165, 45, 0.06); }
 .productCardDatatable   .productIcon { background: rgba(36, 127, 64, 0.06); }
 .productCardClassicdocs .productIcon { background: rgba(32, 87, 177, 0.06); }
-.productCardHub         .productIcon { background: rgba(12, 92, 255, 0.06); }
+.productCardHub         .productIcon { background: rgba(13, 107, 222, 0.06); }
 
 .productText {
   display: flex;

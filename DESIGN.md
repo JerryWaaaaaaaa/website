@@ -19,6 +19,7 @@ tokens:
       shade-dark: '#D2DEF2'
       blue: '#0C5CFF'
       blue-inactive: '#A3B9DD'
+      icon-brand: '#0D6BDE'
       pink: '#E0D5FF'
       black: '#000000'
       gray: '#4C4C4C'
@@ -158,6 +159,11 @@ high-contrast surfaces.
 use `--text-contrast` (white) and `--text-contrast-secondary` (light gray).
 `--text-inactive` marks disabled/inactive controls.
 
+**Icons** use `--color-icon-brand` (`#0D6BDE`) as the fill for brand
+product-icon SVG assets (Hub, Mail, Calendar, Meeting). It is a slightly deeper
+blue than `--color-blue`, which stays reserved for UI accents, links, and CTA
+bands. The value is baked into the icon SVG files under `public/Icon/`.
+
 **Lines** use `--stroke` for borders, dividers, and card outlines.
 `--border-subtle` and `--border-white` are reserved for the frosted-glass
 surface treatment.
@@ -172,6 +178,7 @@ surface treatment.
 | `--color-shade-dark` | `#D2DEF2` |
 | `--color-blue` | `#0C5CFF` |
 | `--color-blue-inactive` | `#A3B9DD` |
+| `--color-icon-brand` | `#0D6BDE` |
 | `--color-pink` | `#E0D5FF` |
 | `--color-black` | `#000000` |
 | `--color-gray` | `#4C4C4C` |
