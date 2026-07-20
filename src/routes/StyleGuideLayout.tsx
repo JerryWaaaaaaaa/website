@@ -1,39 +1,35 @@
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { useEffect, useMemo, useState } from 'react';
-import { markdown as rulesRaw } from '../../design-system/DESIGN_RULES.md';
+import { useEffect, useState } from 'react';
 import './styleguide.css';
 
 type SidebarLink = { label: string; to: string };
 type SidebarSection = { title: string; links: SidebarLink[] };
 
 /**
- * Parse design-system/DESIGN_RULES.md into the sidebar tree.
- * Recognizes "## Section" headings and "- [Label](path/to/file.md)" links.
- * Routes are derived from the .md path: `colors.md` -> `/style-guide/colors`,
- * `components/button.md` -> `/style-guide/components/button`.
+ * Sidebar tree for the style guide. All content is rendered from the single
+ * source of truth, `/DESIGN.md` (see src/lib/designDoc.ts); these routes each
+ * surface one slice of it alongside live component previews.
  */
-function parseSidebar(md: string): SidebarSection[] {
-  const sections: SidebarSection[] = [];
-  let current: SidebarSection | null = null;
-
-  for (const line of md.split('\n')) {
-    const sectionMatch = line.match(/^## (.+)$/);
-    if (sectionMatch) {
-      current = { title: sectionMatch[1].trim(), links: [] };
-      sections.push(current);
-      continue;
-    }
-    const linkMatch = line.match(/^- \[(.+?)\]\((.+?)\.md(?:#.*)?\)/);
-    if (linkMatch && current) {
-      const [, label, mdPath] = linkMatch;
-      current.links.push({ label, to: `/style-guide/${mdPath}` });
-    }
-  }
-  return sections.filter((s) => s.links.length > 0);
-}
+const SECTIONS: SidebarSection[] = [
+  {
+    title: 'Foundations',
+    links: [
+      { label: 'Color Tokens', to: '/style-guide/colors' },
+      { label: 'Typography', to: '/style-guide/typography' },
+    ],
+  },
+  {
+    title: 'Components',
+    links: [
+      { label: 'Chip / Label Tag', to: '/style-guide/components/chip' },
+      { label: 'Button', to: '/style-guide/components/button' },
+      { label: 'Navigation Bar', to: '/style-guide/components/nav-bar' },
+    ],
+  },
+];
 
 export function StyleGuideLayout() {
-  const sections = useMemo(() => parseSidebar(rulesRaw), []);
+  const sections = SECTIONS;
   const [open, setOpen] = useState(false);
   const location = useLocation();
 

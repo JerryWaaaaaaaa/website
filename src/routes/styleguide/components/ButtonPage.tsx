@@ -1,4 +1,4 @@
-import { html as buttonHtml } from '../../../../design-system/components/button.md';
+import { sectionHtml } from '../../../lib/designDoc';
 import { Markdown } from '../../../lib/Markdown';
 import { ComponentPreview } from '../../../lib/ComponentPreview';
 import { Button } from '../../../components/Button';
@@ -38,7 +38,7 @@ export function ButtonPage() {
         </Button>
       </ComponentPreview>
 
-      <Markdown html={buttonHtml} />
+      <Markdown html={sectionHtml('Button')} />
     </article>
   );
 }

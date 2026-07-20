@@ -1,4 +1,4 @@
-import { html as colorsHtml } from '../../../design-system/colors.md';
+import { sectionHtml } from '../../lib/designDoc';
 import { Markdown } from '../../lib/Markdown';
 import { ComponentPreview } from '../../lib/ComponentPreview';
 
@@ -55,7 +55,7 @@ export function Colors() {
         </div>
       </ComponentPreview>
 
-      <Markdown html={colorsHtml} />
+      <Markdown html={sectionHtml('Colors')} />
     </article>
   );
 }

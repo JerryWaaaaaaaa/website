@@ -1,4 +1,4 @@
-import { html as typographyHtml } from '../../../design-system/typography.md';
+import { sectionHtml } from '../../lib/designDoc';
 import { Markdown } from '../../lib/Markdown';
 import { ComponentPreview } from '../../lib/ComponentPreview';
 
@@ -53,7 +53,7 @@ export function Typography() {
         </div>
       </ComponentPreview>
 
-      <Markdown html={typographyHtml} />
+      <Markdown html={sectionHtml('Typography')} />
     </article>
   );
 }

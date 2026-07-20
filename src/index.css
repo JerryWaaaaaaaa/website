@@ -54,6 +54,16 @@
   --glass-blur: 16px;
   --glass-border: 1px solid var(--border-subtle);
 
+  /* Radius scale — climbs with surface size. Mirrors DESIGN.md → Shapes.
+     --radius-pill (999px) lives in the @theme bridge below so it also
+     resolves as the `rounded-pill` utility class. */
+  --rounded-sm: 8px;
+  --rounded-md: 12px;
+  --rounded-lg: 16px;
+  --rounded-xl: 20px;
+  --rounded-2xl: 24px;
+  --rounded-3xl: 32px;
+
   /* Layout — controlled live by the Section Variant Dial */
   --page-max-width: 1200px;
 
@@ -65,6 +75,14 @@
   /* iOS-style drawer curve (Emil) — matches the tuple used in Nav.tsx's EASE
      so the mobile drawer feels cohesive with the nav's layout motion. */
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* Motion durations — 150ms tap/press feedback, 200ms small appearance
+     transitions (dropdown fade), 250ms the nav pill state change, 350ms
+     larger reveals. Mirrors DESIGN.md → Motion. */
+  --duration-feedback: 150ms;
+  --duration-fast: 200ms;
+  --duration-base: 250ms;
+  --duration-slow: 350ms;
 
   /* Fluid layout rhythm — one source of truth for the section block/gutter so
      spacing interpolates smoothly between mobile and desktop (see .section). */
@@ -142,7 +160,7 @@ body {
 
 /* =============================================================================
    Button — pill-shaped CTA (primary + secondary)
-   See: design-system/components/button.md
+   See: DESIGN.md → Components → Button
    ========================================================================== */
 .btn {
   display: inline-flex;
@@ -198,7 +216,7 @@ body {
 
 /* =============================================================================
    Chip — uppercase pill label above section headings
-   See: design-system/components/chip.md
+   See: DESIGN.md → Components → Chip / Label Tag
    ========================================================================== */
 .chip {
   display: inline-flex;
