@@ -136,7 +136,7 @@
 }
 
 /* =============================================================================
-   Markdown prose — rendered docs from design-system/*.md
+   Markdown prose — rendered sections of DESIGN.md (see src/lib/designDoc.ts)
    ========================================================================== */
 
 .sg-prose {

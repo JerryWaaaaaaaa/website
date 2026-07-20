@@ -1,4 +1,4 @@
-import { html as chipHtml } from '../../../../design-system/components/chip.md';
+import { sectionHtml } from '../../../lib/designDoc';
 import { Markdown } from '../../../lib/Markdown';
 import { ComponentPreview } from '../../../lib/ComponentPreview';
 import { Chip } from '../../../components/Chip';
@@ -29,7 +29,7 @@ export function ChipPage() {
         </div>
       </ComponentPreview>
 
-      <Markdown html={chipHtml} />
+      <Markdown html={sectionHtml('Chip / Label Tag')} />
     </article>
   );
 }

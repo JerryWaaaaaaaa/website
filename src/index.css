@@ -142,7 +142,7 @@ body {
 
 /* =============================================================================
    Button — pill-shaped CTA (primary + secondary)
-   See: design-system/components/button.md
+   See: DESIGN.md → Components → Button
    ========================================================================== */
 .btn {
   display: inline-flex;
@@ -198,7 +198,7 @@ body {
 
 /* =============================================================================
    Chip — uppercase pill label above section headings
-   See: design-system/components/chip.md
+   See: DESIGN.md → Components → Chip / Label Tag
    ========================================================================== */
 .chip {
   display: inline-flex;

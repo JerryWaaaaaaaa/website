@@ -1,4 +1,4 @@
-import { html as navHtml } from '../../../../design-system/components/nav-bar.md';
+import { sectionHtml } from '../../../lib/designDoc';
 import { Markdown } from '../../../lib/Markdown';
 import { ComponentPreview } from '../../../lib/ComponentPreview';
 
@@ -30,7 +30,7 @@ export function NavBarPage() {
         </p>
       </ComponentPreview>
 
-      <Markdown html={navHtml} />
+      <Markdown html={sectionHtml('Navigation Bar')} />
     </article>
   );
 }

@@ -185,7 +185,7 @@ function buildPrompt({ commits, stat, diff, range, baseShort, tipShort, now }) {
 
   return `You are writing a handoff note for engineer Curry, who will rebuild this UI in production. Be concrete and skimmable. Do NOT include any preamble, explanation, or trailing chatter — output only the markdown section in the exact format below.
 
-Repo context: a Vite + React + TypeScript prototype for Zoom's AI productivity microsite. The design source-of-truth is DESIGN.md (color tokens, type scale, component specs). Component patterns live in design-system/. Section components live in src/sections/. Reusable UI primitives live in src/components/.
+Repo context: a Vite + React + TypeScript prototype for Zoom's AI productivity microsite. The design source-of-truth is DESIGN.md (color/type/spacing/elevation/motion tokens plus component specs); its tokens are mirrored by the CSS custom properties in src/index.css. Section components live in src/sections/. Reusable UI primitives live in src/components/.
 
 This is a handoff for a SINGLE PUSH containing ${commits.length} commit${commits.length === 1 ? "" : "s"} (range ${range}). Aggregate the work into one cohesive spec — describe the end-state of the changes, not a per-commit log. If multiple commits touched the same area, summarize the final result.
 
