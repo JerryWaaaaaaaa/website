@@ -39,7 +39,7 @@ export const SECTION_VARIANT_GROUPS: SectionVariantGroup[] = [
   {
     id: 'hero',
     label: 'Hero',
-    defaultId: 'b',
+    defaultId: 'a',
     appliesTo: ['v5'],
     variants: [
       { id: 'a', label: 'Flat', render: () => <HeroV5 /> },

@@ -315,7 +315,7 @@ export function PaperMockup({ active }: { active: boolean }) {
           <div className="ppm-panel">
             <div className="ppm-panel-head ppm-reveal" style={rd(40)}>
               <span className="ppm-ic ppm-panel-edit"><Ico n="edit" /></span>
-              <span className="ppm-panel-title">AI Companion</span>
+              <span className="ppm-panel-title">Ask AI</span>
               <span className="ppm-ic ppm-panel-close"><Ico n="close" /></span>
             </div>
 
