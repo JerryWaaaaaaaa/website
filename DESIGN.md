@@ -352,6 +352,16 @@ their footprint.
 Components are built exclusively from the tokens above. The three canonical
 primitives are Button, Chip, and Navigation Bar.
 
+This section is the source of truth for each component's **design intent** —
+its variants, specs, and usage rules. It is deliberately not the source of
+truth for *implementation*: the actual CSS/JSX lives in the code and must not
+be duplicated here (that would drift). See:
+
+- **Button** — [`src/components/Button.tsx`](src/components/Button.tsx) + `.btn` rules in [`src/index.css`](src/index.css)
+- **Chip** — [`src/components/Chip.tsx`](src/components/Chip.tsx) + `.chip` rules in `src/index.css`
+- **Navigation Bar** — [`src/components/Nav.tsx`](src/components/Nav.tsx) + [`Nav.module.css`](src/components/Nav.module.css)
+- Live, rendered previews of all three at the `/style-guide` route.
+
 ### Button
 
 A pill-shaped action trigger for CTAs and navigation actions. Two variants.
@@ -373,36 +383,8 @@ A pill-shaped action trigger for CTAs and navigation actions. Two variants.
 | Active | `transform: scale(0.97)` | `transform: scale(0.97)` |
 
 Hover states are gated behind `@media (hover: hover) and (pointer: fine)` so
-touch taps don't leave a stuck hover.
-
-```css
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 46px;
-  padding: 0 20px;
-  font-family: "General Sans", sans-serif;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-  border-radius: 999px;
-  border: none;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: opacity 150ms ease, background 150ms ease,
-    transform 160ms var(--ease-out);
-}
-.btn:active { transform: scale(0.97); }
-.btn-primary { background: var(--bg-contrast); color: var(--text-contrast); }
-.btn-secondary { background: var(--bg-accent-light); color: var(--text-secondary); }
-
-@media (hover: hover) and (pointer: fine) {
-  .btn-primary:hover { opacity: 0.85; }
-  .btn-secondary:hover { background: var(--bg-accent-medium); }
-}
-```
+touch taps don't leave a stuck hover, and press feedback (`scale(0.97)`) is
+disabled under `prefers-reduced-motion`.
 
 **Rules**
 
@@ -423,24 +405,6 @@ A single-line uppercase pill label placed above a section heading.
 | Padding | `6px 12px` |
 | Height | `24px` |
 | Radius | `999px` |
-
-```css
-.chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 12px;
-  background: var(--bg-accent-light);
-  color: var(--text-highlight);
-  font-family: "General Sans", sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
-  border-radius: 999px;
-  white-space: nowrap;
-}
-```
 
 **Rules**
 
