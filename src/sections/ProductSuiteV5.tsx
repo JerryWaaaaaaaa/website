@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import './ProductSuiteV5.css';
 import { SlidesMockup } from './productSuite/SlidesMockup';
 import { VoiceOverPanel } from './productSuite/VoiceOverPanel';
+import { useFloatScale } from './productSuite/useFloatScale';
 import {
   SheetsMockup,
   AiFormulaTooltip,
@@ -122,6 +123,7 @@ export function ProductSuiteV5() {
   const [noteIn, setNoteIn] = useState(false);
   const [voiceIn, setVoiceIn] = useState(false);
   const [voiceOpen, setVoiceOpen] = useState(false);
+  const screenWrapRef = useFloatScale<HTMLDivElement>();
 
   useEffect(() => {
     if (active !== 'slides' || !slidesReady) {
@@ -262,7 +264,7 @@ export function ProductSuiteV5() {
           })}
         </div>
 
-        <div className="psuite-v5-screen-wrap">
+        <div className="psuite-v5-screen-wrap" ref={screenWrapRef}>
         <div className="psuite-v5-screen">
           {PRODUCTS.map((product) => {
             if (product.key === 'slides') {

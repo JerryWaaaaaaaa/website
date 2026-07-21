@@ -5,6 +5,7 @@ import './ProductSuiteV5.css';
 import './ProductSuiteV5C.css';
 import { SlidesMockup } from './productSuite/SlidesMockup';
 import { VoiceOverPanel } from './productSuite/VoiceOverPanel';
+import { useFloatScale } from './productSuite/useFloatScale';
 import {
   SheetsMockup,
   AiFormulaTooltip,
@@ -80,6 +81,7 @@ export function ProductSuiteV5C() {
   // Bumped on every segment click so the fill remounts and the countdown replays
   // from the start — even when the clicked bar is already the active one.
   const [runId, setRunId] = useState(0);
+  const screenWrapRef = useFloatScale<HTMLDivElement>();
   const activeIndex = PRODUCTS.findIndex((p) => p.key === active);
 
   // Pause autoplay while the tab is hidden so it doesn't burst-catch-up on return.
@@ -140,7 +142,7 @@ export function ProductSuiteV5C() {
           })}
         </div>
 
-        <div className="psuite-v5-screen-wrap">
+        <div className="psuite-v5-screen-wrap" ref={screenWrapRef}>
           <div className="psuite-v5-screen">
             {PRODUCTS.map((product) => {
               if (product.key === 'slides') {

@@ -580,6 +580,9 @@
   left: var(--sheet-aif-left, 24%);
   bottom: var(--sheet-aif-bottom, -7%);
   width: var(--sheet-aif-w, 286px);
+  /* Track the main screen card as it shrinks (see --psuite-float-scale). */
+  transform: scale(var(--psuite-float-scale, 1));
+  transform-origin: bottom left;
 }
 
 /* Context float — the AI prompt card at the top-left. Reuses the .shm-floats
@@ -593,6 +596,8 @@
   top: var(--sheet-ctx-top, 21%);
   left: var(--sheet-ctx-left, 1%);
   width: var(--sheet-ctx-w, 332px);
+  transform: scale(var(--psuite-float-scale, 1));
+  transform-origin: top left;
 }
 
 /* The procurement-context card itself (Figma 3374:85152). Inline flow so the

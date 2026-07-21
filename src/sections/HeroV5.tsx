@@ -108,11 +108,6 @@ export function HeroV5() {
               never changes; only the content inside rotates + skeleton-loads. */}
           <div className="hero-v5-browser">
             <div className="hero-v5-browser-nav">
-              <div className="hero-v5-traffic" aria-hidden="true">
-                <span className="dot dot-close" />
-                <span className="dot dot-min" />
-                <span className="dot dot-zoom" />
-              </div>
               <div className="hero-v5-url">
                 <span className="hero-v5-url-text" key={activeIndex}>
                   {PRODUCTS[activeIndex].url}

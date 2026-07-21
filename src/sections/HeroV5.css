@@ -149,41 +149,13 @@
   padding: 0 20px;
 }
 
-.hero-v5-traffic {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.hero-v5-traffic .dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-}
-.hero-v5-traffic .dot-close {
-  background: #ed6a5e;
-}
-.hero-v5-traffic .dot-min {
-  background: #f4bd50;
-}
-.hero-v5-traffic .dot-zoom {
-  background: #61c454;
-}
-
-/* Centered URL pill */
+/* Full-width mobile-style address bar (no desktop traffic-light dots). */
 .hero-v5-url {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  flex: 1;
   display: flex;
   align-items: center;
   gap: 8px;
   height: 28px;
-  min-width: 280px;
-  max-width: 46%;
   padding: 0 12px;
   background: #f3f5f9;
   border: 1px solid rgba(2, 6, 31, 0.06);

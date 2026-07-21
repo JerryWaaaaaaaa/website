@@ -816,14 +816,18 @@
    tokens (V5Tuning.tsx) so they can be fine-tuned live. */
 .ppm-floats > * {
   opacity: 0;
-  transform: translateY(8px);
+  /* Entrance rise uses the `translate` property so the persistent `transform`
+     can carry --psuite-float-scale (keeps floats proportional to the card)
+     without the two clobbering each other. */
+  translate: 0 8px;
+  transform: scale(var(--psuite-float-scale, 1));
   transition:
     opacity var(--paper-dur, 420ms) cubic-bezier(0.22, 1, 0.36, 1),
-    transform var(--paper-dur, 420ms) cubic-bezier(0.22, 1, 0.36, 1);
+    translate var(--paper-dur, 420ms) cubic-bezier(0.22, 1, 0.36, 1);
 }
 .ppm-floats[data-on='true'] > * {
   opacity: 1;
-  transform: none;
+  translate: 0 0;
 }
 /* Stagger: comments first, then suggestions, then history. */
 .ppm-floats[data-on='true'] .ppm-comments {
@@ -842,12 +846,14 @@
   left: var(--paper-cmt-left, -11%);
   top: var(--paper-cmt-top, 31%);
   width: 300px;
+  transform-origin: top left;
 }
 .ppm-floats .ppm-suggestions {
   position: absolute;
   left: var(--paper-sug-left, 30%);
   bottom: var(--paper-sug-bottom, -7%);
   width: 222px;
+  transform-origin: bottom left;
 }
 .ppm-floats .ppm-history {
   position: absolute;
@@ -855,6 +861,7 @@
   top: var(--paper-hist-top, 27%);
   width: 304px;
   height: 348px;
+  transform-origin: top right;
 }
 
 /* ---- comments (left) ---- */

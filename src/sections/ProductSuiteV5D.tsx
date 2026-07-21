@@ -1,4 +1,5 @@
 import { useEffect, useState, type CSSProperties } from 'react';
+import { useFloatScale } from './productSuite/useFloatScale';
 // Reuse the V5 section/screen/float layout wholesale; this file only adds the
 // horizontal tab-row navigation styles (see the Figma "Tab bar" design).
 import './ProductSuiteV5.css';
@@ -86,6 +87,9 @@ export function ProductSuiteV5D() {
   // from the start — even when the clicked tab is already the active one.
   const [runId, setRunId] = useState(0);
   const activeIndex = PRODUCTS.findIndex((p) => p.key === active);
+
+  // Scale the spill-floats in proportion to the main screen card (see hook).
+  const screenWrapRef = useFloatScale<HTMLDivElement>();
 
   // Staged reveal of the spilling Slides floats once the deck finishes
   // generating: speaker note → voice-over button → voice-over dropdown opens.
@@ -200,7 +204,7 @@ export function ProductSuiteV5D() {
           })}
         </div>
 
-        <div className="psuite-v5-screen-wrap">
+        <div className="psuite-v5-screen-wrap" ref={screenWrapRef}>
           <div className="psuite-v5-screen">
             {PRODUCTS.map((product) => {
               if (product.key === 'slides') {
