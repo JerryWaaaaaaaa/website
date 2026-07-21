@@ -102,7 +102,11 @@
   max-width: 421px;
 }
 
-/* Right stage — right-aligns the product; its height is driven by the product */
+/* Right stage — right-aligns the product; its height is driven by the product.
+   Acts as the query container so the browser frame's corner radius can scale in
+   proportion to the card width (the browser is width:100% of the stage). cqw is
+   resolved against an ANCESTOR container, so it lives here, not on the browser
+   itself. 3.8cqw ≈ 24px at the ~632px desktop card, shrinking on mobile. */
 .hero-v5-stage {
   position: relative;
   flex: 1 1 0;
@@ -110,6 +114,8 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  container-type: inline-size;
+  --browser-radius: clamp(10px, 3.8cqw, 24px);
 }
 
 /* Persistent browser window (Figma node 3208:9370) — in-flow, scales with
@@ -123,7 +129,7 @@
   max-width: 1100px;
   background: #ffffff;
   border: 1px solid rgba(2, 6, 31, 0.08);
-  border-radius: 24px;
+  border-radius: var(--browser-radius, 24px);
   box-shadow: 0 24px 64px rgba(12, 92, 255, 0.14);
 }
 
@@ -132,7 +138,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 24px;
+  border-radius: var(--browser-radius, 24px);
   background-image: url('/hero-browser/texture-overlay.png');
   background-size: cover;
   opacity: 0.89;
@@ -140,16 +146,17 @@
   z-index: 0;
 }
 
-/* Content area — 12px inset all around, rounded clip that holds the rotating
-   images. (The browser nav/URL bar was removed — just the UI in the frame.) */
+/* Content area — thin 4px inset, rounded clip that holds the rotating images.
+   (The browser nav/URL bar was removed — just the UI in the frame.) */
 .hero-v5-browser-content {
   position: relative;
   z-index: 1;
   aspect-ratio: 2352 / 1514;
-  margin: 12px;
+  margin: 4px;
   background: #ffffff;
   border: 1px solid #e3edfc;
-  border-radius: 20px;
+  /* Concentric with the frame: card radius minus the 4px inset. */
+  border-radius: calc(var(--browser-radius, 24px) - 4px);
   overflow: hidden;
 }
 
@@ -163,11 +170,13 @@
   will-change: opacity;
 }
 
-/* Floating meeting window — overlays the product window's left edge */
+/* Floating meeting window — overhangs the product window's left edge. Uses a
+   %-of-card offset so it overlaps by the same proportion across desktop widths;
+   most of the tile sits outside the frame so it covers little of the UI. */
 .hero-v5-meeting {
   position: absolute;
   top: 50%;
-  left: -96px;
+  left: -17%;
   transform: translateY(-50%);
   z-index: 2;
   width: var(--hero-meeting-w, 28%);
@@ -205,7 +214,8 @@
 
 .hero-v5-suite-caption {
   margin: 0;
-  font-size: 18px;
+  /* Caption above the logo row — intentionally smaller than body copy. */
+  font-size: 14px;
   line-height: 1.4;
   color: var(--text-secondary);
   text-align: center;

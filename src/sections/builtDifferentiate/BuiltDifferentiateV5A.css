@@ -145,7 +145,8 @@
     aspect-ratio: 5 / 4;
     border-radius: 12px;
     overflow: hidden;
-    margin-top: 24px;
+    /* No extra top margin: the step's 20px flex gap already sits between body
+       and image, matching the title→body spacing. */
   }
 }
 
