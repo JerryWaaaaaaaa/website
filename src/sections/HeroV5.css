@@ -93,7 +93,9 @@
 }
 
 .hero-v5-subtitle {
-  font-size: 18px;
+  /* Body ramp: 18px desktop → 16px mobile (DESIGN.md), fluid like the other
+     v5 body copy (e.g. OpenPlatformV5's lede). */
+  font-size: clamp(16px, 0.5vw + 14px, 18px);
   line-height: 1.4;
   color: var(--text-secondary);
   margin: 0;
@@ -138,65 +140,13 @@
   z-index: 0;
 }
 
-/* Navigation bar — traffic lights, centered URL pill */
-.hero-v5-browser-nav {
-  position: relative;
-  z-index: 1;
-  flex: none;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-}
-
-/* Full-width mobile-style address bar (no desktop traffic-light dots). */
-.hero-v5-url {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 28px;
-  padding: 0 12px;
-  background: #f3f5f9;
-  border: 1px solid rgba(2, 6, 31, 0.06);
-  border-radius: 999px;
-}
-
-.hero-v5-url-text {
-  flex: 1;
-  text-align: center;
-  font-size: 14px;
-  line-height: 16.8px;
-  font-weight: 500;
-  color: #4c4c4c;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  animation: hero-v5-url-fade 600ms ease;
-}
-
-.hero-v5-url-refresh {
-  flex: none;
-  width: 13px;
-  height: 14px;
-  opacity: 0.6;
-}
-
-@keyframes hero-v5-url-fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Content area — 12px padding, rounded clip that holds the rotating images */
+/* Content area — 12px inset all around, rounded clip that holds the rotating
+   images. (The browser nav/URL bar was removed — just the UI in the frame.) */
 .hero-v5-browser-content {
   position: relative;
   z-index: 1;
   aspect-ratio: 2352 / 1514;
-  margin: 0 12px 12px;
+  margin: 12px;
   background: #ffffff;
   border: 1px solid #e3edfc;
   border-radius: 20px;
@@ -230,8 +180,10 @@
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 10px;
-  border: 2px solid rgba(0, 0, 0, 1);
+  /* The video is full-bleed (no baked-in margins), so the container already
+     fits it exactly. Inherit the container's radius and drop the hard 2px black
+     border so the shadow hugs the video edge with no framed gap. */
+  border-radius: inherit;
 }
 
 @media (prefers-reduced-motion: reduce) {
