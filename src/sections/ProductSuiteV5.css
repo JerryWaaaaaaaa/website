@@ -9,8 +9,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 40px;
-  padding: 120px 24px;
+  gap: clamp(24px, 3vw, 40px);
+  /* Match the site-wide section rhythm (--section-block / --gutter) instead of
+     the old fixed 120px/56px steps that read as off from the rest of the page. */
+  padding: var(--section-block) var(--gutter);
   background: var(--bg-accent-light);
   /* Floats spill past the card by design; clip only what spills past the
      window so the page never gets a horizontal scrollbar. `clip` (not
@@ -22,12 +24,15 @@
   max-width: 550px;
   margin: 0;
   font-family: 'General Sans', sans-serif;
-  font-size: 44px;
+  /* Fluid H2 (44 → 28) so the heading tracks the type ramp smoothly rather
+     than stepping at the off-system 900/560 breakpoints. */
+  font-size: clamp(28px, 2.2vw + 18px, 44px);
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.02em;
   color: var(--text-primary);
   text-align: center;
+  text-wrap: balance;
 }
 
 .psuite-v5-body {
@@ -218,14 +223,10 @@ img.psuite-v5-screen-img {
 }
 
 /* --- Responsive -------------------------------------------------------- */
+/* Section padding + heading now flow via tokens/clamp above; these blocks only
+   keep the arc-carousel variant's stage sizing (ProductSuiteV5, not the default
+   V5D tab bar, which has no .psuite-v5-stage). */
 @media (max-width: 900px) {
-  .psuite-v5 {
-    gap: 32px;
-    padding: 56px 24px;
-  }
-  .psuite-v5-heading {
-    font-size: 34px;
-  }
   .psuite-v5-stage {
     height: 220px;
     transform: scale(0.82);
@@ -236,9 +237,6 @@ img.psuite-v5-screen-img {
 }
 
 @media (max-width: 560px) {
-  .psuite-v5-heading {
-    font-size: 28px;
-  }
   .psuite-v5-stage {
     transform: scale(0.62);
   }

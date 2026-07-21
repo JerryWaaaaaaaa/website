@@ -8,8 +8,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 56px;
-  padding: 120px 24px;
+  gap: clamp(32px, 3vw, 56px);
+  /* Match the site-wide section rhythm (see --section-block / --gutter in
+     index.css) instead of the old fixed 120px/96px/72px steps. */
+  padding: var(--section-block) var(--gutter);
 }
 
 .openplat5-header {
@@ -29,32 +31,37 @@
   line-height: 1;
   letter-spacing: -0.02em;
   color: var(--text-primary);
+  text-wrap: balance;
 }
 
 .openplat5-lede {
   margin: 0;
   font-family: 'General Sans', sans-serif;
-  font-size: 18px;
+  font-size: clamp(16px, 0.5vw + 14px, 18px);
   font-weight: 400;
   line-height: 1.4;
   color: var(--text-secondary);
+  text-wrap: balance;
 }
 
 /* --- Card grid -------------------------------------------------------- */
+/* Flex (not grid) so the odd card on the last row auto-centers via
+   justify-content when the row count drops to 2-up on tablet. */
 .openplat5-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 16px;
   width: 100%;
   max-width: var(--page-max-width);
 }
 
 .openplat5-card {
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 32px;
-  min-height: 361px;
+  gap: 20px;
   padding: 32px;
   background: var(--bg-accent-light);
   border-radius: 24px;
@@ -85,7 +92,7 @@
 .openplat5-card-title {
   margin: 0;
   font-family: 'General Sans', sans-serif;
-  font-size: 32px;
+  font-size: clamp(22px, 1vw + 18px, 32px);
   font-weight: 500;
   line-height: 1.1;
   letter-spacing: -0.01em;
@@ -95,20 +102,25 @@
 .openplat5-card-body {
   margin: 0;
   font-family: 'General Sans', sans-serif;
-  font-size: 18px;
+  font-size: clamp(16px, 0.5vw + 14px, 18px);
   font-weight: 400;
   line-height: 1.4;
   color: var(--text-secondary);
 }
 
+/* margin-top: auto keeps the CTA / logos pinned to the card bottom so footers
+   line up across the row — without the old min-height:361px that punched a
+   hollow void into every card. */
 .openplat5-card-cta {
   align-self: flex-start;
+  margin-top: auto;
 }
 
 .openplat5-logos {
   display: flex;
   align-items: center;
   gap: 16px;
+  margin-top: auto;
 }
 
 .openplat5-logo {
@@ -118,24 +130,17 @@
 }
 
 /* --- Responsive ------------------------------------------------------- */
-@media (max-width: 1199px) {
-  .openplat5 {
-    padding: 96px 32px;
-  }
-}
-
+/* Tablet: two cards per row. The third wraps to a second row and centers
+   itself (flex-wrap + justify-content: center on .openplat5-cards). */
 @media (max-width: 899px) {
-  .openplat5-cards {
-    grid-template-columns: 1fr;
-    max-width: 485px;
-  }
   .openplat5-card {
-    min-height: 0;
+    flex: 0 1 calc((100% - 16px) / 2);
   }
 }
 
+/* Mobile: one card per row, full width within the section gutter. */
 @media (max-width: 639px) {
-  .openplat5 {
-    padding: 72px 20px;
+  .openplat5-card {
+    flex: 1 1 100%;
   }
 }
