@@ -1,53 +1,71 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { useDialKit } from 'dialkit';
+import { useDialUrlSync } from './dialUrlSync';
 import s from './Nav.module.css';
 
 type Panel = 'products' | 'features' | 'explore' | null;
 
+// Each card carries its own brand color as an "R, G, B" triplet, exposed as the
+// --card-rgb CSS var on the card. The navbar style variants below apply their own
+// alpha to it per state (subtle at rest, stronger on hover) so the hover change
+// reads clearly even for the blue-family cards. Mirrors the --shadow-color pattern.
 const PRODUCT_CARDS = [
   {
     key: 'slides',
     name: 'Slides',
     desc: 'Ideas to presentations',
     icon: '/Icon/product-icons/slides-fill.svg',
-    cls: s.productCardSlides,
+    tint: '240, 68, 56',
   },
   {
     key: 'sheets',
     name: 'Sheets',
     desc: 'Spreadsheets, automated',
     icon: '/Icon/product-icons/sheets-fill.svg',
-    cls: s.productCardSheets,
+    tint: '35, 165, 45',
   },
   {
     key: 'paper',
     name: 'Paper',
     desc: 'Professional writing, refined',
     icon: '/Icon/product-icons/paper-fill.svg',
-    cls: s.productCardClassicdocs,
+    tint: '32, 87, 177',
   },
   {
     key: 'canvas',
     name: 'Canvas',
     desc: 'Think. Write. Refine.',
     icon: '/Icon/product-icons/canvas-fill.svg',
-    cls: s.productCardDocs,
+    tint: '14, 114, 237',
   },
   {
     key: 'datatable',
     name: 'Data tables',
     desc: 'From data to insight',
     icon: '/Icon/product-icons/datatable-fill.svg',
-    cls: s.productCardDatatable,
+    tint: '36, 127, 64',
   },
   {
     key: 'hub',
     name: 'Hub',
     desc: 'The drive for your Zoom assets',
     icon: '/Icon/Hub.svg',
-    cls: s.productCardHub,
+    tint: '13, 107, 222',
   },
 ];
+
+// Navbar product-card background styles, switchable live from the dial "Navbar"
+// panel. Drives the `data-nav-variant` attribute on <header>; see Nav.module.css.
+//  - accent:  each card shows its brand tint (the original look)
+//  - neutral: neutral-gray card + white chip; brand tint on hover
+//  - ghost:   transparent card; brand tint only on hover
+const NAV_VARIANTS = [
+  { id: 'accent', label: 'Accent' },
+  { id: 'neutral', label: 'Neutral' },
+  { id: 'ghost', label: 'Ghost' },
+];
+const DEFAULT_NAV_VARIANT = 'neutral';
 
 const FEATURE_PILLS = ['AI Auto Writing', 'AI Templates', 'Knowledge Base', 'Sites'];
 const EXPLORE_PILLS = ['Use Cases', 'Templates', 'Help center'];
@@ -75,6 +93,29 @@ export function Nav() {
   const drawerRef = useRef<HTMLDivElement>(null);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
+
+  // Navbar style variant, registered as its own dialkit "Navbar" panel (Nav is
+  // global chrome outside <V5VariantProvider>, so it can't use the section-variant
+  // context — but it is inside the router, so useSearchParams + a self-registered
+  // panel work). Seeded from ?nav on mount to avoid a flash, then mirrored back.
+  const [params] = useSearchParams();
+  const initialParams = useRef(params).current;
+  const fromUrl = initialParams.get('nav');
+  const seededVariant = NAV_VARIANTS.some((v) => v.id === fromUrl)
+    ? (fromUrl as string)
+    : DEFAULT_NAV_VARIANT;
+  const { variant: navVariant } = useDialKit('Navbar', {
+    variant: {
+      type: 'select',
+      options: NAV_VARIANTS.map((v) => ({ value: v.id, label: v.label })),
+      default: seededVariant,
+    },
+  }) as { variant: string };
+  useDialUrlSync({
+    keys: ['nav'],
+    target: navVariant !== DEFAULT_NAV_VARIANT ? { nav: navVariant } : {},
+    immediate: true,
+  });
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -177,7 +218,7 @@ export function Nav() {
     [s.navTrigger, openPanel === panel ? s.isOpen : ''].filter(Boolean).join(' ');
 
   return (
-    <header className={wrapClass} ref={navRef}>
+    <header className={wrapClass} ref={navRef} data-nav-variant={navVariant}>
       <nav className={barClass} role="navigation" aria-label="Main navigation">
         <div className={s.navRow}>
           <Link to="/" className={s.navLogo} aria-label="Zoom AI Create — home">
@@ -266,7 +307,12 @@ export function Nav() {
           <div className={s.productsPanelInner}>
             <div className={s.productGrid}>
               {PRODUCT_CARDS.map((p) => (
-                <a key={p.key} className={`${s.productCard} ${p.cls}`} href="#">
+                <a
+                  key={p.key}
+                  className={s.productCard}
+                  href="#"
+                  style={{ '--card-rgb': p.tint } as CSSProperties}
+                >
                   <div className={s.productIcon}>
                     <img src={p.icon} width={32} height={32} alt="" />
                   </div>
@@ -376,7 +422,12 @@ export function Nav() {
                 <div className={s.mDrawerBodyInner}>
                   <div className={s.mDrawerProducts}>
                     {PRODUCT_CARDS.map((p) => (
-                      <a key={p.key} className={`${s.productCard} ${p.cls}`} href="#">
+                      <a
+                        key={p.key}
+                        className={s.productCard}
+                        href="#"
+                        style={{ '--card-rgb': p.tint } as CSSProperties}
+                      >
                         <div className={s.productIcon}>
                           <img src={p.icon} width={32} height={32} alt="" />
                         </div>

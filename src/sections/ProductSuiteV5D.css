@@ -2,10 +2,11 @@
    Product Suite V5D — horizontal tab-row navigation (Figma "Tab bar")
    Reuses the V5 section/screen/float layout (see ProductSuiteV5.css); this file
    replaces the navigation with a centered row of icon+label tabs. The active tab
-   gets a tinted pill in its brand color plus an accent underline that doubles as
-   the auto-advance progress bar: it fills left->right over one cycle, then
-   advances to the next product (driven by the underline's animationend — see
-   ProductSuiteV5D.tsx). Each tab exposes its brand color via the --pc var.
+   gets a tinted pill in its brand color; a deeper tint of that color grows
+   left->right *within* the pill as the auto-advance progress fill: it sweeps
+   across over one cycle, then advances to the next product (driven by the fill's
+   animationend — see ProductSuiteV5D.tsx). Each tab exposes its brand color via
+   the --pc var.
    ========================================================================== */
 
 .psuite-v5d-tabs {
@@ -21,6 +22,8 @@
 
 .psuite-v5d-tab {
   position: relative;
+  /* Clip the growing progress fill to the pill's rounded corners. */
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -42,6 +45,9 @@
 }
 
 .psuite-v5d-tab-icon {
+  /* Sit above the progress fill (see .psuite-v5d-fill). */
+  position: relative;
+  z-index: 1;
   width: 16px;
   height: 16px;
 }
@@ -58,35 +64,39 @@
 }
 
 .psuite-v5d-tab-label {
+  /* Sit above the progress fill (see .psuite-v5d-fill). */
+  position: relative;
+  z-index: 1;
   white-space: nowrap;
 }
 
-.psuite-v5d-underline {
+.psuite-v5d-fill {
   position: absolute;
-  /* Accent/progress bar sits above the active tab (Figma 3403-45548). */
-  top: -8px;
-  left: 10px;
-  /* Grows from the left inset to the right inset (Figma: 10px insets). */
+  /* Progress fill grows left->right *inside* the pill, behind the icon/label. */
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
   width: 0;
-  height: 4px;
-  border-radius: 12px;
-  background: var(--pc);
+  border-radius: inherit;
+  /* A deeper tint of the brand color over the pill's ~18% track — kept light
+     enough that the brand-color label stays legible over the filled region. */
+  background: color-mix(in srgb, var(--pc) 26%, transparent);
   /* One cycle per screen; the fill and the auto-advance share it.
      --psuite-v5c-cycle is set on :root by the dialkit "suiteCycle" dial (see
      V5Tuning.tsx); falls back to 6000ms when that isn't mounted. */
-  animation: psuite-v5d-underline var(--psuite-v5c-cycle, 6000ms) linear forwards;
+  animation: psuite-v5d-fill var(--psuite-v5c-cycle, 6000ms) linear forwards;
 }
 
-.psuite-v5d-underline[data-paused='true'] {
+.psuite-v5d-fill[data-paused='true'] {
   animation-play-state: paused;
 }
 
-@keyframes psuite-v5d-underline {
+@keyframes psuite-v5d-fill {
   from {
     width: 0;
   }
   to {
-    width: calc(100% - 20px);
+    width: 100%;
   }
 }
 
@@ -98,11 +108,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* No countdown/auto-advance: the active underline just shows filled. Because
+  /* No countdown/auto-advance: the active pill just shows fully filled. Because
      there is no animation, animationend never fires, so advance() is never
      called — tabs remain click-to-switch. */
-  .psuite-v5d-underline {
-    width: calc(100% - 20px);
+  .psuite-v5d-fill {
+    width: 100%;
     animation: none;
   }
 }

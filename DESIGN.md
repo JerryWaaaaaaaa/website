@@ -49,6 +49,8 @@ tokens:
       glass-bg: 'rgba(252, 253, 255, 0.80)'
       glass-blur: '16px'
       glass-border: '1px solid var(--border-subtle)'
+      glass-fill: 'rgba(12, 92, 255, 0.05)'
+      glass-fill-hover: 'rgba(12, 92, 255, 0.12)'
   typography:
     family:
       sans: '"General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
@@ -151,7 +153,8 @@ and light sections; `--bg-accent-medium` for hover/medium surfaces;
 `--bg-accent-dark` for pressed/darker surfaces. `--bg-highlight-blue` is the
 saturated brand blue for CTA bands and dark card halves; `--bg-highlight-pink`
 is a soft accent; `--bg-contrast` (black) fills primary buttons and
-high-contrast surfaces.
+high-contrast surfaces. For translucent fills that sit on the frosted glass, see the
+**Glass material fill** under Frosted glass surface below.
 
 **Text** defaults to `--text-primary` (black) for headings and body, with
 `--text-secondary` (gray) for descriptions and muted copy. `--text-highlight`
@@ -310,6 +313,14 @@ transparency to read).
   border: var(--glass-border);           /* 1px solid var(--border-subtle) */
 }
 ```
+
+**Glass material fill.** Interactive surfaces that sit *on* the glass — the nav
+product cards, the nav links (hover + selected), and the secondary (Sign-in) CTA —
+share one material, `--glass-fill` (`rgba(12, 92, 255, 0.05)`): a low-alpha brand-blue
+fill so they read as a single family and let the frosted backdrop show through instead
+of stacking opaque blocks. `--glass-fill-hover` (`rgba(12, 92, 255, 0.12)`) is the
+hover / press step. Over white `--glass-fill` composites to ≈ `--bg-accent-light`, but
+always reference the token (not the solid) wherever the surface can overlap glass.
 
 ## Motion
 

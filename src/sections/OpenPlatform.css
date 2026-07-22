@@ -101,20 +101,17 @@
   color: var(--text-secondary);
 }
 
-.openplat-card-cta {
+/* The card shares the secondary button's default tint, so bump the CTA one
+   shade darker here to keep the pill readable against the card. */
+.openplat-card-cta.btn-secondary {
   align-self: flex-start;
+  background: var(--bg-accent-medium);
 }
 
-.openplat-logos {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.openplat-logo {
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
+@media (hover: hover) and (pointer: fine) {
+  .openplat-card-cta.btn-secondary:hover {
+    background: var(--bg-accent-dark);
+  }
 }
 
 /* --- Responsive ------------------------------------------------------- */

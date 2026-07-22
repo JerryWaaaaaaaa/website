@@ -11,7 +11,9 @@
   align-items: center;
   gap: 40px;
   padding: 120px 24px;
-  background: var(--bg-accent-light);
+  /* Section color is painted by the fixed scroll backdrop (ScrollBackground.tsx)
+     so it can fade between sections; keep this transparent to let it show. */
+  background: transparent;
   /* Floats spill past the card by design; clip only what spills past the
      window so the page never gets a horizontal scrollbar. `clip` (not
      `hidden`) leaves the vertical axis free for floats that spill above/below. */

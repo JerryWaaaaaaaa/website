@@ -54,6 +54,12 @@
   --glass-bg: rgba(252, 253, 255, 0.8);
   --glass-blur: 16px;
   --glass-border: 1px solid var(--border-subtle);
+  /* Glass material fill — low-alpha brand-blue fill for interactive surfaces that
+     sit ON the glass (nav product cards, nav links, the secondary CTA) so they read
+     as one family and let the frosted backdrop show through. --glass-fill-hover is
+     the hover/press step. Over white --glass-fill composites to ≈ --bg-accent-light. */
+  --glass-fill: rgba(12, 92, 255, 0.05);
+  --glass-fill-hover: rgba(12, 92, 255, 0.12);
 
   /* Radius scale — climbs with surface size. Mirrors DESIGN.md → Shapes.
      --radius-pill (999px) lives in the @theme bridge below so it also
@@ -157,6 +163,30 @@ body {
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* =============================================================================
+   Scroll backdrop — one fixed layer behind the whole page whose color fades as
+   each section takes over the fold. Sections that opt in are made transparent so
+   this shows through; the active color is written to --scroll-bg-color by
+   ScrollBackground.tsx (driven by an IntersectionObserver). The fade is this
+   transition — a timed, trigger-based recolor, not a scroll-linked gradient.
+   Marketing color morph, so it runs longer than the 300ms UI cap; ease-in-out
+   for a natural on-screen change (never ease-in).
+   ========================================================================== */
+.scroll-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--scroll-bg-color, var(--bg-accent-light));
+  transition: background-color 600ms cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Keep the color change (it aids comprehension) but drop the animation. */
+  .scroll-bg {
+    transition-duration: 1ms;
+  }
 }
 
 /* =============================================================================

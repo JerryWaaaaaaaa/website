@@ -2,6 +2,7 @@ import { useSearchParams } from 'react-router-dom';
 import { DialRoot } from 'dialkit';
 import 'dialkit/styles.css';
 import { Nav } from '../components/Nav';
+import { ScrollBackground } from '../components/ScrollBackground';
 import { HeroVariantToggle } from '../components/HeroVariantToggle';
 import { V5Tuning } from '../components/V5Tuning';
 import { V5VariantProvider } from '../components/V5VariantContext';
@@ -17,6 +18,7 @@ export function Marketing() {
 
   return (
     <>
+      <ScrollBackground />
       <Nav />
       <V5VariantProvider>
         <main>{version.render()}</main>
