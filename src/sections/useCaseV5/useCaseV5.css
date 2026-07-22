@@ -12,7 +12,8 @@
   position: relative;
   display: flex;
   justify-content: center;
-  padding: 120px 24px;
+  /* Horizontal gutter matches every other section (--gutter). */
+  padding: 120px var(--gutter);
   background: var(--bg-neutral);
   overflow: hidden;
 }
@@ -366,7 +367,7 @@
 /* --- Responsive --------------------------------------------------------- */
 @media (max-width: 1199px) {
   .uc5-section {
-    padding: 96px 32px;
+    padding: 96px var(--gutter);
   }
   .uc5-tab {
     font-size: 18px;
@@ -412,7 +413,7 @@
 
 @media (max-width: 639px) {
   .uc5-section {
-    padding: 72px 16px;
+    padding: 72px var(--gutter);
   }
   /* The accent band lives on .uc5-folder::before (not .uc5-section) — target
      the right selector so the 1200px band actually shrinks on phones. */

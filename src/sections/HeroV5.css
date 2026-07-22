@@ -172,26 +172,29 @@
 
 /* Floating meeting window — overhangs the product window's left edge. Uses a
    %-of-card offset so it overlaps by the same proportion across desktop widths;
-   most of the tile sits outside the frame so it covers little of the UI. */
+   most of the tile sits outside the frame so it covers little of the UI.
+   Sized at ~half its former footprint. The container carries the video's exact
+   aspect-ratio and the video `cover`s it, so the box hugs the video with no gap
+   below it (a plain height:auto video can leave slack depending on load state). */
 .hero-v5-meeting {
   position: absolute;
   top: 50%;
-  left: -17%;
+  left: -10%;
   transform: translateY(-50%);
   z-index: 2;
-  width: var(--hero-meeting-w, 28%);
-  max-width: var(--hero-meeting-max-w, 520px);
+  width: var(--hero-meeting-w, 15%);
+  max-width: var(--hero-meeting-max-w, 110px);
+  aspect-ratio: 1276 / 2160;
   border-radius: 10px;
+  overflow: hidden;
   box-shadow: 0 18px 48px rgba(2, 6, 31, 0.32);
 }
 
 .hero-v5-meeting video {
   display: block;
   width: 100%;
-  height: auto;
-  /* The video is full-bleed (no baked-in margins), so the container already
-     fits it exactly. Inherit the container's radius and drop the hard 2px black
-     border so the shadow hugs the video edge with no framed gap. */
+  height: 100%;
+  object-fit: cover;
   border-radius: inherit;
 }
 
@@ -284,7 +287,7 @@
     bottom: -6%;
     left: -4%;
     transform: none;
-    width: 26%;
+    width: 13%;
   }
 }
 
@@ -299,7 +302,7 @@
   .hero-v5-meeting {
     top: 12%;
     left: 4%;
-    width: 34%;
+    width: 17%;
   }
   .hero-v5-suite-row {
     gap: 8px;

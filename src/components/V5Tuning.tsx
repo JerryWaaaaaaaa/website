@@ -43,8 +43,8 @@ const HERO_BASE: DialConfig = {
   // container; consumed via --hero-meeting-w / --hero-meeting-max-w.
   meeting: {
     _collapsed: true,
-    width: [30, 15, 50, 0.5], // % of hero container — fluid proportional size
-    maxWidth: [220, 200, 800, 10], // px — absolute ceiling, only clamps when the % width would exceed it
+    width: [15, 8, 50, 0.5], // % of hero container — fluid proportional size (~half the former 30%)
+    maxWidth: [110, 80, 800, 10], // px — absolute ceiling, only clamps when the % width would exceed it
   },
 };
 
