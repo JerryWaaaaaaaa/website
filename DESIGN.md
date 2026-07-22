@@ -70,8 +70,8 @@ tokens:
   spacing:
     base: '4px'
     scale: ['4px', '8px', '12px', '16px', '20px', '24px', '32px', '48px']
-    section-block: 'clamp(56px, 4.76vw + 38.9px, 96px)'
-    gutter: 'clamp(20px, 2.38vw + 11.4px, 40px)'
+    section-block: '96px / 80px / 56px (desktop / tablet / mobile)'
+    gutter: '40px / 32px / 20px (desktop / tablet / mobile)'
     page-max-width: '1200px'
   breakpoints:
     tablet: '1199px'
@@ -268,9 +268,9 @@ Role guidance:
 - **Base unit:** `4px`. All spacing is a multiple of it.
 - **Spacing scale:** `4, 8, 12, 16, 20, 24, 32, 48px`.
 - **Section rhythm:** vertical block padding is `--section-block`
-  (`clamp(56px, 4.76vw + 38.9px, 96px)`) and horizontal gutter is `--gutter`
-  (`clamp(20px, 2.38vw + 11.4px, 40px)`), so section spacing interpolates
-  smoothly between mobile and desktop.
+  (`96 / 80 / 56px`) and horizontal gutter is `--gutter` (`40 / 32 / 20px`),
+  stepped at the two breakpoints (desktop / tablet / mobile). Integer values
+  only — no fluid sub-pixel padding.
 - **Container:** centered, `max-width: var(--page-max-width)` = `1200px`.
 - **Breakpoints:** `1199px` (tablet) and `639px` (mobile). Layout collapses at
   these two thresholds only.
