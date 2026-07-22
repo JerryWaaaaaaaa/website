@@ -14,21 +14,24 @@ const CARDS: Card[] = [
     overline: 'For engineers',
     title: 'Open API',
     body: 'Build custom integrations and automate document workflows programmatically.',
-    cta: { label: 'View docs', href: '#' },
+    cta: { label: 'View docs', href: 'https://developers.zoom.us/docs/canvas/' },
   },
   {
     key: 'mcp',
     overline: 'For AI natives',
     title: 'MCP',
     body: 'Let AI assistants like Claude and ChatGPT read, write, and act on your content.',
-    cta: { label: 'View docs', href: '#' },
+    cta: { label: 'View docs', href: 'https://developers.zoom.us/docs/mcp/' },
   },
   {
     key: 'zapier',
     overline: 'For everyone',
     title: 'Zapier',
     body: 'Connect to 1,500+ apps with no-code workflows — no engineering needed.',
-    cta: { label: 'View integrations', href: '#' },
+    cta: {
+      label: 'View integrations',
+      href: 'https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0085149',
+    },
   },
 ];
 

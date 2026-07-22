@@ -1,10 +1,5 @@
 import type { ReactNode } from 'react';
-import {
-  Highlight,
-  ScreenshareChip,
-  TitleBadge,
-  Underline,
-} from './TitleDecorations';
+import { Highlight, ScreenshareChip, Underline } from './TitleDecorations';
 
 export type Media =
   | { kind: 'image'; src: string }
@@ -37,8 +32,7 @@ export const KEY_POINTS: KeyPoint[] = [
     title: 'Fully editable AI outputs',
     titleNode: (
       <>
-        <TitleBadge>missing from most AI slide tools</TitleBadge>
-        <Underline>Fully editable</Underline> AI outputs
+        <Underline>Fully editable</Underline> AI slides
       </>
     ),
     body: "Every AI output is fully editable — refine, rewrite, or reshape until it's exactly what you need.",
