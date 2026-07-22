@@ -22,6 +22,21 @@ import { UseCase } from './sections/UseCase';
 // import { Templates } from './sections/Templates';
 // import { FinalCTA } from './sections/FinalCTA';
 
+/**
+ * Wraps a section so the fixed scroll backdrop (see ScrollBackground.tsx) knows
+ * which color to fade to while that section owns the fold. The wrapper is a plain
+ * full-width block, so it doesn't affect layout or the sections' sticky/overflow
+ * behavior. Keeping the color config here (not on each section) means it survives
+ * variant switches, since it wraps the slot rather than the variant.
+ */
+const BgZone = ({
+  color,
+  children,
+}: {
+  color: string;
+  children: ReactNode;
+}) => <div data-scroll-bg={color}>{children}</div>;
+
 export type VersionId = 'v1' | 'v2' | 'v3' | 'v4' | 'v5';
 
 export interface PageVersion {
@@ -99,11 +114,21 @@ export const PAGE_VERSIONS: PageVersion[] = [
     render: () => (
       <>
         <SectionVariantSlot groupId="hero" />
-        <SectionVariantSlot groupId="productSuite" />
-        <SectionVariantSlot groupId="builtDifferentiate" />
-        <OpenPlatformV5 />
-        <UseCaseV5B />
-        <PricingV5 />
+        <BgZone color="var(--bg-accent-light)">
+          <SectionVariantSlot groupId="productSuite" />
+        </BgZone>
+        <BgZone color="var(--bg-accent-light)">
+          <SectionVariantSlot groupId="builtDifferentiate" />
+        </BgZone>
+        <BgZone color="var(--bg-accent-medium)">
+          <OpenPlatformV5 />
+        </BgZone>
+        <BgZone color="var(--bg-accent-medium)">
+          <UseCaseV5B />
+        </BgZone>
+        <BgZone color="var(--bg-accent-light)">
+          <PricingV5 />
+        </BgZone>
       </>
     ),
   },

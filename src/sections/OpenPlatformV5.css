@@ -12,15 +12,103 @@
   /* Match the site-wide section rhythm (see --section-block / --gutter in
      index.css) instead of the old fixed 120px/96px/72px steps. */
   padding: var(--section-block) var(--gutter);
+  /* Own stacking context so the dot-grid ::before (z-index:-1) sits behind the
+     header/cards but still above the fixed scroll backdrop. */
+  position: relative;
+  isolation: isolate;
+}
+
+/* Brand-shade dot grid, scoped to this section so it appears as the fixed scroll
+   backdrop fades to white here (see ScrollBackground.tsx). Behind the cards,
+   above the backdrop. Masked top/bottom so the grid emerges with the scroll
+   transition instead of hard-cutting into the neighboring (blue) sections. */
+.openplat5::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle at center,
+    var(--color-shade-dark) 1.5px,
+    transparent 1.75px
+  );
+  background-size: 24px 24px;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 18%,
+    #000 82%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 18%,
+    #000 82%,
+    transparent 100%
+  );
 }
 
 .openplat5-header {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
   max-width: 485px;
   text-align: center;
+}
+
+/* Registered so the wash's core color can animate — a plain custom property
+   can't be interpolated, but a typed @property color can. */
+@property --openplat-wash-core {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: transparent;
+}
+
+/* Soft radial wash behind the title + lede so the text doesn't sit hard on top
+   of the dot grid: it clears the dots directly behind the text and feathers to
+   transparent so the grid returns around it. Sits above the dot grid but behind
+   the text (see the section stacking context on .openplat5).
+
+   Its core color matches the PREVIOUS section by default, then recolors to this
+   section's color when it takes over the fold — in lockstep with the fixed
+   backdrop's recolor ([data-active] is set on the BgZone by ScrollBackground.tsx,
+   and the timing/easing mirror the .scroll-bg transition). So the wash always
+   sits at the current backdrop tone (previous -> new) and never flashes a
+   mismatched halo. */
+.openplat5-header::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  width: 720px;
+  max-width: 92vw;
+  height: 340px;
+  pointer-events: none;
+  --openplat-wash-core: var(--bg-accent-light); /* previous section color */
+  transition: --openplat-wash-core 600ms cubic-bezier(0.77, 0, 0.175, 1);
+  background: radial-gradient(
+    ellipse at center,
+    var(--openplat-wash-core) 0%,
+    var(--openplat-wash-core) 45%,
+    transparent 78%
+  );
+}
+
+[data-active] .openplat5-header::before {
+  --openplat-wash-core: var(--bg-accent-medium); /* this section's color */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Keep it in sync with the near-instant reduced-motion backdrop recolor. */
+  .openplat5-header::before {
+    transition-duration: 1ms;
+  }
 }
 
 .openplat5-title {
@@ -108,25 +196,19 @@
   color: var(--text-secondary);
 }
 
-/* margin-top: auto keeps the CTA / logos pinned to the card bottom so footers
-   line up across the row — without the old min-height:361px that punched a
-   hollow void into every card. */
-.openplat5-card-cta {
+/* Main's secondary-button CTA, one shade darker so the pill reads on the card.
+   margin-top: auto pins it to the card bottom so CTAs line up across the row
+   (my responsive fix that dropped the old min-height:361px void). */
+.openplat5-card-cta.btn-secondary {
   align-self: flex-start;
   margin-top: auto;
+  background: var(--bg-accent-medium);
 }
 
-.openplat5-logos {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-top: auto;
-}
-
-.openplat5-logo {
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
+@media (hover: hover) and (pointer: fine) {
+  .openplat5-card-cta.btn-secondary:hover {
+    background: var(--bg-accent-dark);
+  }
 }
 
 /* --- Responsive ------------------------------------------------------- */

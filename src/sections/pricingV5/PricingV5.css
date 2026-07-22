@@ -6,7 +6,9 @@
   width: 100%;
   /* Horizontal gutter matches every other section (--gutter). */
   padding: 120px var(--gutter);
-  background: var(--bg-accent-light);
+  /* Section color is painted by the fixed scroll backdrop (ScrollBackground.tsx)
+     so it can fade between sections; keep this transparent to let it show. */
+  background: transparent;
 }
 
 .pr5-inner {

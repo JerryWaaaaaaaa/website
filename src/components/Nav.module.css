@@ -117,11 +117,11 @@
   white-space: nowrap;
   transition: background 150ms ease, color 150ms ease;
 }
-.navLink:hover {
-  background: rgba(0, 0, 0, 0.04);
-}
+.navLink:hover,
 .navTrigger.isOpen .navLink {
-  background: rgba(0, 0, 0, 0.06);
+  /* Same glass material fill as the product cards, so hovered + selected links read
+     as one family with the tiles and the secondary CTA. */
+  background: var(--glass-fill);
 }
 
 .navChevron {
@@ -141,6 +141,19 @@
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
+}
+
+/* Sign-in (secondary CTA): use the glass material fill — the same shade as the
+   product cards and nav links — instead of the solid --bg-accent-light, so it
+   matches and lets the glass show through on the scrolled bar. Scoped to the nav's
+   own CTA containers so secondary buttons elsewhere keep their solid fill. */
+.navCta :global(.btn-secondary),
+.mobilePanelCta :global(.btn-secondary) {
+  background: var(--glass-fill);
+}
+.navCta :global(.btn-secondary):hover,
+.mobilePanelCta :global(.btn-secondary):hover {
+  background: var(--glass-fill-hover);
 }
 
 /* Products panel */
@@ -176,24 +189,17 @@
 .productCard {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
   padding: 12px;
   border-radius: 20px;
   text-decoration: none;
   cursor: pointer;
-  transition: opacity 150ms ease;
+  transition: background 150ms ease, opacity 150ms ease;
+  /* Base = Neutral variant: the glass material fill, only the SVG icon is colored.
+     The Accent/Ghost variants below override this via [data-nav-variant]. */
+  background: var(--glass-fill);
 }
-.productCard:hover {
-  opacity: 0.8;
-}
-
-.productCardDocs        { background: rgba(14, 114, 237, 0.06); }
-.productCardSlides      { background: rgba(240, 68, 56, 0.06); }
-.productCardSheets      { background: rgba(35, 165, 45, 0.06); }
-.productCardDatatable   { background: rgba(36, 127, 64, 0.06); }
-.productCardClassicdocs { background: rgba(32, 87, 177, 0.06); }
-.productCardHub         { background: rgba(13, 107, 222, 0.06); }
 
 .productIcon {
   width: 62px;
@@ -204,13 +210,51 @@
   justify-content: center;
   border-radius: 12px;
   padding: 16px;
+  transition: background 150ms ease;
+  /* Base = Neutral variant: translucent white chip — reads a touch lighter than the
+     card for subtle depth, while staying glassy over the scrolled nav. */
+  background: rgba(255, 255, 255, 0.6);
 }
-.productCardDocs        .productIcon { background: rgba(14, 114, 237, 0.06); }
-.productCardSlides      .productIcon { background: rgba(240, 68, 56, 0.06); }
-.productCardSheets      .productIcon { background: rgba(35, 165, 45, 0.06); }
-.productCardDatatable   .productIcon { background: rgba(36, 127, 64, 0.06); }
-.productCardClassicdocs .productIcon { background: rgba(32, 87, 177, 0.06); }
-.productCardHub         .productIcon { background: rgba(13, 107, 222, 0.06); }
+
+/* Navbar background variants — switched live from the dial "Navbar" panel, which
+   sets data-nav-variant on <header>. Each card exposes its brand color as an RGB
+   triplet in --card-rgb (set inline in Nav.tsx); each state applies its own alpha.
+   Resting tint is 0.06; the hover tint jumps to 0.12 so the change reads clearly
+   against the ~0.05 glass fill even for the blue-family cards (Paper, Canvas, Hub). */
+
+/* Accent — each card shows its brand tint (the original look); dim on hover. */
+.navWrap[data-nav-variant='accent'] .productCard {
+  background: rgba(var(--card-rgb), 0.06);
+}
+.navWrap[data-nav-variant='accent'] .productIcon {
+  background: rgba(var(--card-rgb), 0.06);
+}
+.navWrap[data-nav-variant='accent'] .productCard:hover {
+  opacity: 0.8;
+}
+
+/* Neutral — glass fill by default (base above); a stronger brand tint (0.12) fills
+   the card on hover so every card shows a clear, cohesive change. */
+.navWrap[data-nav-variant='neutral'] .productCard:hover {
+  background: rgba(var(--card-rgb), 0.12);
+}
+.navWrap[data-nav-variant='neutral'] .productCard:hover .productIcon {
+  background: rgba(var(--card-rgb), 0.12);
+}
+
+/* Ghost — transparent default; brand tint only on hover. */
+.navWrap[data-nav-variant='ghost'] .productCard {
+  background: transparent;
+}
+.navWrap[data-nav-variant='ghost'] .productIcon {
+  background: transparent;
+}
+.navWrap[data-nav-variant='ghost'] .productCard:hover {
+  background: rgba(var(--card-rgb), 0.12);
+}
+.navWrap[data-nav-variant='ghost'] .productCard:hover .productIcon {
+  background: rgba(var(--card-rgb), 0.12);
+}
 
 .productText {
   display: flex;

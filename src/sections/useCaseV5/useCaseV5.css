@@ -14,7 +14,9 @@
   justify-content: center;
   /* Horizontal gutter matches every other section (--gutter). */
   padding: 120px var(--gutter);
-  background: var(--bg-neutral);
+  /* Section color is painted by the fixed scroll backdrop (ScrollBackground.tsx)
+     so it can fade between sections; keep this transparent to let it show. */
+  background: transparent;
   overflow: hidden;
 }
 
@@ -39,21 +41,10 @@
   width: 100%;
 }
 
-/* Accent band — mirrors the absolute #e3edfc rectangle in the design, whose
-   top edge passes through the middle of the folder. Anchored to the folder's
-   vertical midpoint and clipped to the section bottom by .uc5-section's
-   overflow: hidden. */
-.uc5-folder::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100vw;
-  height: 1200px;
-  background: var(--bg-accent-medium);
-}
+/* The old two-tone look (white section + a #e3edfc accent band across the lower
+   half) is now handled by the fixed scroll backdrop, which fades the whole
+   section to --bg-accent-medium as it takes over the fold (see
+   ScrollBackground.tsx + pageVersions.tsx). No local band needed. */
 
 /* --- Tabs --------------------------------------------------------------- */
 .uc5-tabs {
@@ -414,11 +405,6 @@
 @media (max-width: 639px) {
   .uc5-section {
     padding: 72px var(--gutter);
-  }
-  /* The accent band lives on .uc5-folder::before (not .uc5-section) — target
-     the right selector so the 1200px band actually shrinks on phones. */
-  .uc5-folder::before {
-    height: 300px;
   }
   .uc5-panel {
     padding: 28px;

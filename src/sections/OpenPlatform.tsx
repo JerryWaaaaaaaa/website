@@ -6,7 +6,6 @@ type Card = {
   title: string;
   body: string;
   cta?: { label: string; href: string };
-  logos?: { src: string; alt: string }[];
 };
 
 const CARDS: Card[] = [
@@ -22,10 +21,7 @@ const CARDS: Card[] = [
     overline: 'For AI natives',
     title: 'MCP',
     body: 'Let AI assistants like Claude and ChatGPT read, write, and act on your content.',
-    logos: [
-      { src: '/integration-logos/claude.png', alt: 'Claude by Anthropic' },
-      { src: '/integration-logos/openai.png', alt: 'OpenAI ChatGPT' },
-    ],
+    cta: { label: 'View docs', href: '#' },
   },
   {
     key: 'zapier',
@@ -59,24 +55,9 @@ export function OpenPlatform() {
             </div>
 
             {card.cta && (
-              <a className="btn btn-primary openplat-card-cta" href={card.cta.href}>
+              <a className="btn btn-secondary openplat-card-cta" href={card.cta.href}>
                 {card.cta.label}
               </a>
-            )}
-
-            {card.logos && (
-              <div className="openplat-logos">
-                {card.logos.map((logo) => (
-                  <img
-                    key={logo.src}
-                    className="openplat-logo"
-                    src={logo.src}
-                    alt={logo.alt}
-                    width={48}
-                    height={48}
-                  />
-                ))}
-              </div>
             )}
           </article>
         ))}

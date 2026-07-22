@@ -168,6 +168,17 @@ export function ProductSuiteV5D() {
                 style={{ '--pc': product.color } as CSSProperties}
                 onClick={() => select(product.key)}
               >
+                {isActive && (
+                  // Progress fill: grows left->right behind the icon/label; its
+                  // animationend drives advance(). Remounts on tab change / click
+                  // (key) so the sweep replays from 0.
+                  <span
+                    key={`${active}-${runId}`}
+                    className="psuite-v5d-fill"
+                    data-paused={paused ? 'true' : undefined}
+                    onAnimationEnd={advance}
+                  />
+                )}
                 {isActive ? (
                   // Active: full-color icon (the -fill svg has white marks that a
                   // CSS mask can't knock out, so render it as a real image).
@@ -191,14 +202,6 @@ export function ProductSuiteV5D() {
                   />
                 )}
                 <span className="psuite-v5d-tab-label">{product.label}</span>
-                {isActive && (
-                  <span
-                    key={`${active}-${runId}`}
-                    className="psuite-v5d-underline"
-                    data-paused={paused ? 'true' : undefined}
-                    onAnimationEnd={advance}
-                  />
-                )}
               </button>
             );
           })}
