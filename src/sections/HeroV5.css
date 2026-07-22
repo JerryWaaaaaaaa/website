@@ -172,18 +172,19 @@
 
 /* Floating meeting window — overhangs the product window's left edge. Uses a
    %-of-card offset so it overlaps by the same proportion across desktop widths;
-   most of the tile sits outside the frame so it covers little of the UI.
-   Sized at ~half its former footprint. The container carries the video's exact
-   aspect-ratio and the video `cover`s it, so the box hugs the video with no gap
-   below it (a plain height:auto video can leave slack depending on load state). */
+   most of the tile sits outside the frame so it covers little of the UI. It is
+   halved only on the mobile breakpoint (see the 639px block); tablet/desktop
+   keep the fuller size. The container carries the video's exact aspect-ratio and
+   the video `cover`s it, so the box hugs the video with no gap below it (a plain
+   height:auto video can leave slack depending on load state). */
 .hero-v5-meeting {
   position: absolute;
   top: 50%;
-  left: -10%;
+  left: -17%;
   transform: translateY(-50%);
   z-index: 2;
-  width: var(--hero-meeting-w, 15%);
-  max-width: var(--hero-meeting-max-w, 110px);
+  width: var(--hero-meeting-w, 30%);
+  max-width: var(--hero-meeting-max-w, 220px);
   aspect-ratio: 1276 / 2160;
   border-radius: 10px;
   overflow: hidden;
@@ -287,7 +288,7 @@
     bottom: -6%;
     left: -4%;
     transform: none;
-    width: 13%;
+    width: 26%;
   }
 }
 
@@ -299,6 +300,7 @@
   .hero-v5-copy .btn {
     width: 100%;
   }
+  /* Mobile only: half the tablet size so the tile stays unobtrusive on phones. */
   .hero-v5-meeting {
     top: 12%;
     left: 4%;
