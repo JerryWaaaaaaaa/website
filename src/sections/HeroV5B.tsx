@@ -181,25 +181,6 @@ export function HeroV5B() {
           {/* Persistent browser-window chrome (Figma node 3208:9370). The frame
               never changes; only the content inside rotates + skeleton-loads. */}
           <div className="hero-v5-browser">
-            <div className="hero-v5-browser-nav">
-              <div className="hero-v5-traffic" aria-hidden="true">
-                <span className="dot dot-close" />
-                <span className="dot dot-min" />
-                <span className="dot dot-zoom" />
-              </div>
-              <div className="hero-v5-url">
-                <span className="hero-v5-url-text" key={activeIndex}>
-                  {PRODUCTS[activeIndex].url}
-                </span>
-                <img
-                  src="/hero-browser/refresh.svg"
-                  alt=""
-                  className="hero-v5-url-refresh"
-                  aria-hidden="true"
-                />
-              </div>
-            </div>
-
             <div className="hero-v5-browser-content">
               {PRODUCTS.map((p, i) => (
                 <img

@@ -35,6 +35,8 @@
   font-size: 14px;
   line-height: 16px;
   cursor: pointer;
+  /* Kill the 300ms double-tap zoom delay on the auto-advancing tabs. */
+  touch-action: manipulation;
   transition: background 250ms ease, color 250ms ease;
 }
 

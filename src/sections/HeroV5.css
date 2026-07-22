@@ -93,14 +93,20 @@
 }
 
 .hero-v5-subtitle {
-  font-size: 18px;
+  /* Body ramp: 18px desktop → 16px mobile (DESIGN.md), fluid like the other
+     v5 body copy (e.g. OpenPlatformV5's lede). */
+  font-size: clamp(16px, 0.5vw + 14px, 18px);
   line-height: 1.4;
   color: var(--text-secondary);
   margin: 0;
   max-width: 421px;
 }
 
-/* Right stage — right-aligns the product; its height is driven by the product */
+/* Right stage — right-aligns the product; its height is driven by the product.
+   Acts as the query container so the browser frame's corner radius can scale in
+   proportion to the card width (the browser is width:100% of the stage). cqw is
+   resolved against an ANCESTOR container, so it lives here, not on the browser
+   itself. 3.8cqw ≈ 24px at the ~632px desktop card, shrinking on mobile. */
 .hero-v5-stage {
   position: relative;
   flex: 1 1 0;
@@ -108,6 +114,8 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  container-type: inline-size;
+  --browser-radius: clamp(10px, 3.8cqw, 24px);
 }
 
 /* Persistent browser window (Figma node 3208:9370) — in-flow, scales with
@@ -121,7 +129,7 @@
   max-width: 1100px;
   background: #ffffff;
   border: 1px solid rgba(2, 6, 31, 0.08);
-  border-radius: 24px;
+  border-radius: var(--browser-radius, 24px);
   box-shadow: 0 24px 64px rgba(12, 92, 255, 0.14);
 }
 
@@ -130,7 +138,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 24px;
+  border-radius: var(--browser-radius, 24px);
   background-image: url('/hero-browser/texture-overlay.png');
   background-size: cover;
   opacity: 0.89;
@@ -138,96 +146,17 @@
   z-index: 0;
 }
 
-/* Navigation bar — traffic lights, centered URL pill */
-.hero-v5-browser-nav {
-  position: relative;
-  z-index: 1;
-  flex: none;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-}
-
-.hero-v5-traffic {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.hero-v5-traffic .dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-}
-.hero-v5-traffic .dot-close {
-  background: #ed6a5e;
-}
-.hero-v5-traffic .dot-min {
-  background: #f4bd50;
-}
-.hero-v5-traffic .dot-zoom {
-  background: #61c454;
-}
-
-/* Centered URL pill */
-.hero-v5-url {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 28px;
-  min-width: 280px;
-  max-width: 46%;
-  padding: 0 12px;
-  background: #f3f5f9;
-  border: 1px solid rgba(2, 6, 31, 0.06);
-  border-radius: 999px;
-}
-
-.hero-v5-url-text {
-  flex: 1;
-  text-align: center;
-  font-size: 14px;
-  line-height: 16.8px;
-  font-weight: 500;
-  color: #4c4c4c;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  animation: hero-v5-url-fade 600ms ease;
-}
-
-.hero-v5-url-refresh {
-  flex: none;
-  width: 13px;
-  height: 14px;
-  opacity: 0.6;
-}
-
-@keyframes hero-v5-url-fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Content area — 12px padding, rounded clip that holds the rotating images */
+/* Content area — thin 4px inset, rounded clip that holds the rotating images.
+   (The browser nav/URL bar was removed — just the UI in the frame.) */
 .hero-v5-browser-content {
   position: relative;
   z-index: 1;
   aspect-ratio: 2352 / 1514;
-  margin: 0 12px 12px;
+  margin: 4px;
   background: #ffffff;
   border: 1px solid #e3edfc;
-  border-radius: 20px;
+  /* Concentric with the frame: card radius minus the 4px inset. */
+  border-radius: calc(var(--browser-radius, 24px) - 4px);
   overflow: hidden;
 }
 
@@ -241,25 +170,33 @@
   will-change: opacity;
 }
 
-/* Floating meeting window — overlays the product window's left edge */
+/* Floating meeting window — overhangs the product window's left edge. Uses a
+   %-of-card offset so it overlaps by the same proportion across desktop widths;
+   most of the tile sits outside the frame so it covers little of the UI. It is
+   halved only on the mobile breakpoint (see the 639px block); tablet/desktop
+   keep the fuller size. The container carries the video's exact aspect-ratio and
+   the video `cover`s it, so the box hugs the video with no gap below it (a plain
+   height:auto video can leave slack depending on load state). */
 .hero-v5-meeting {
   position: absolute;
   top: 50%;
-  left: -96px;
+  left: -17%;
   transform: translateY(-50%);
   z-index: 2;
-  width: var(--hero-meeting-w, 28%);
-  max-width: var(--hero-meeting-max-w, 520px);
+  width: var(--hero-meeting-w, 30%);
+  max-width: var(--hero-meeting-max-w, 220px);
+  aspect-ratio: 1276 / 2160;
   border-radius: 10px;
+  overflow: hidden;
   box-shadow: 0 18px 48px rgba(2, 6, 31, 0.32);
 }
 
 .hero-v5-meeting video {
   display: block;
   width: 100%;
-  height: auto;
-  border-radius: 10px;
-  border: 2px solid rgba(0, 0, 0, 1);
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -281,7 +218,8 @@
 
 .hero-v5-suite-caption {
   margin: 0;
-  font-size: 18px;
+  /* Caption above the logo row — intentionally smaller than body copy. */
+  font-size: 14px;
   line-height: 1.4;
   color: var(--text-secondary);
   text-align: center;
@@ -362,10 +300,11 @@
   .hero-v5-copy .btn {
     width: 100%;
   }
+  /* Mobile only: half the tablet size so the tile stays unobtrusive on phones. */
   .hero-v5-meeting {
     top: 12%;
     left: 4%;
-    width: 34%;
+    width: 17%;
   }
   .hero-v5-suite-row {
     gap: 8px;

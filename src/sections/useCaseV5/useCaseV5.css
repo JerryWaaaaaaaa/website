@@ -12,7 +12,8 @@
   position: relative;
   display: flex;
   justify-content: center;
-  padding: 120px 24px;
+  /* Horizontal gutter matches every other section (--gutter). */
+  padding: 120px var(--gutter);
   /* Section color is painted by the fixed scroll backdrop (ScrollBackground.tsx)
      so it can fade between sections; keep this transparent to let it show. */
   background: transparent;
@@ -357,7 +358,7 @@
 /* --- Responsive --------------------------------------------------------- */
 @media (max-width: 1199px) {
   .uc5-section {
-    padding: 96px 32px;
+    padding: 96px var(--gutter);
   }
   .uc5-tab {
     font-size: 18px;
@@ -403,7 +404,7 @@
 
 @media (max-width: 639px) {
   .uc5-section {
-    padding: 72px 16px;
+    padding: 72px var(--gutter);
   }
   .uc5-panel {
     padding: 28px;

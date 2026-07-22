@@ -12,7 +12,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 120px 24px;
+  /* Horizontal gutter matches every other section (--gutter) for consistent
+     left/right padding down the page. */
+  padding: 120px var(--gutter);
 }
 
 .bd5-inner {
@@ -115,7 +117,7 @@
 
 @media (max-width: 900px) {
   .bd5-section {
-    padding: 80px 20px;
+    padding: 80px var(--gutter);
   }
   .bd5-inner {
     gap: 48px;
@@ -147,13 +149,14 @@
     aspect-ratio: 5 / 4;
     border-radius: 12px;
     overflow: hidden;
-    margin-top: 24px;
+    /* No extra top margin: the step's 20px flex gap already sits between body
+       and image, matching the title→body spacing. */
   }
 }
 
 @media (max-width: 560px) {
   .bd5-section {
-    padding: 64px 16px;
+    padding: 64px var(--gutter);
   }
   .bd5-step-title {
     font-size: 28px;

@@ -636,7 +636,9 @@
   left: var(--dt-pie-left, -9%);
   bottom: var(--dt-pie-bottom, -11.5%);
   width: 520px;
-  transform: scale(var(--dt-pie-scale, 1));
+  /* --psuite-float-scale (set on .psuite-v5-screen-wrap) keeps the float in
+     proportion to the main screen card as it shrinks on tablet/mobile. */
+  transform: scale(calc(var(--dt-pie-scale, 1) * var(--psuite-float-scale, 1)));
   transform-origin: bottom left;
 }
 /* The float is now just the chart panel itself (no outer dashboard wrapper). */
@@ -718,7 +720,7 @@
   right: var(--dt-aipop-right, -4%);
   top: var(--dt-aipop-top, 26%);
   width: 300px;
-  transform: scale(var(--dt-aipop-scale, 1));
+  transform: scale(calc(var(--dt-aipop-scale, 1) * var(--psuite-float-scale, 1)));
   transform-origin: top right;
 }
 .dtm-aipop {

@@ -9,8 +9,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 40px;
-  padding: 120px 24px;
+  gap: clamp(24px, 3vw, 40px);
+  /* Match the site-wide section rhythm (--section-block / --gutter) instead of
+     the old fixed 120px/56px steps that read as off from the rest of the page. */
+  padding: var(--section-block) var(--gutter);
   /* Section color is painted by the fixed scroll backdrop (ScrollBackground.tsx)
      so it can fade between sections; keep this transparent to let it show. */
   background: transparent;
@@ -24,12 +26,15 @@
   max-width: 550px;
   margin: 0;
   font-family: 'General Sans', sans-serif;
-  font-size: 44px;
+  /* Fluid H2 (44 → 28) so the heading tracks the type ramp smoothly rather
+     than stepping at the off-system 900/560 breakpoints. */
+  font-size: clamp(28px, 2.2vw + 18px, 44px);
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.02em;
   color: var(--text-primary);
   text-align: center;
+  text-wrap: balance;
 }
 
 .psuite-v5-body {
@@ -130,7 +135,10 @@
      the slide gets equal padding on all sides. Videos are object-fit: cover, so
      they fill this card; static images use object-fit: contain (see below). */
   aspect-ratio: 1280 / 694;
-  border-radius: 28px;
+  /* Scale the corner radius in proportion to the card, matching how the mockup
+     content and floats scale (--psuite-float-scale = min(1, cardWidth/1200),
+     set on .psuite-v5-screen-wrap). 28px on desktop → smaller on mobile. */
+  border-radius: calc(28px * var(--psuite-float-scale, 1));
   overflow: hidden;
 }
 
@@ -220,27 +228,17 @@ img.psuite-v5-screen-img {
 }
 
 /* --- Responsive -------------------------------------------------------- */
+/* Section padding + heading now flow via tokens/clamp above; these blocks only
+   keep the arc-carousel variant's stage sizing (ProductSuiteV5, not the default
+   V5D tab bar, which has no .psuite-v5-stage). */
 @media (max-width: 900px) {
-  .psuite-v5 {
-    gap: 32px;
-    padding: 56px 24px;
-  }
-  .psuite-v5-heading {
-    font-size: 34px;
-  }
   .psuite-v5-stage {
     height: 220px;
     transform: scale(0.82);
   }
-  .psuite-v5-screen {
-    border-radius: 20px;
-  }
 }
 
 @media (max-width: 560px) {
-  .psuite-v5-heading {
-    font-size: 28px;
-  }
   .psuite-v5-stage {
     transform: scale(0.62);
   }

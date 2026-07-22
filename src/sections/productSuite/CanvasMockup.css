@@ -557,7 +557,8 @@
 .cnv-floats > * {
   opacity: 0;
   translate: 0 10px;
-  transform: scale(var(--cnv-fscale, 1));
+  /* --psuite-float-scale keeps floats proportional to the shrinking card. */
+  transform: scale(calc(var(--cnv-fscale, 1) * var(--psuite-float-scale, 1)));
   transition-property: opacity, translate, transform;
   transition-duration: 460ms, 460ms, 200ms;
   transition-timing-function:
