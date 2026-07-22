@@ -408,7 +408,13 @@
   }
   .uc5-panel {
     padding: 28px;
-    --uc5-panel-r: 20px;
+    /* Nested-radius rule (mobile only): illustration 12 + 28px padding = 40, so
+       the wrapper's corners sit concentric with the illustration. Desktop keeps
+       the original 24/24. */
+    --uc5-panel-r: 40px;
+  }
+  .uc5-panel-img {
+    border-radius: 12px;
   }
   /* Pack the tabs together instead of spreading edge-to-edge (space-between). */
   .uc5-tabs {
