@@ -31,11 +31,18 @@ import { UseCase } from './sections/UseCase';
  */
 const BgZone = ({
   color,
+  hero,
   children,
 }: {
   color: string;
+  /** Marks the hero zone so ScrollBackground shows/crossfades its radial layer. */
+  hero?: boolean;
   children: ReactNode;
-}) => <div data-scroll-bg={color}>{children}</div>;
+}) => (
+  <div data-scroll-bg={color} data-hero={hero ? '' : undefined}>
+    {children}
+  </div>
+);
 
 export type VersionId = 'v1' | 'v2' | 'v3' | 'v4' | 'v5';
 
@@ -113,7 +120,9 @@ export const PAGE_VERSIONS: PageVersion[] = [
     // v5 is a full independent duplicate of v4 with its own section copies.
     render: () => (
       <>
-        <SectionVariantSlot groupId="hero" />
+        <BgZone color="var(--bg-accent-light)" hero>
+          <SectionVariantSlot groupId="hero" />
+        </BgZone>
         <BgZone color="var(--bg-accent-light)">
           <SectionVariantSlot groupId="productSuite" />
         </BgZone>

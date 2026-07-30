@@ -8,7 +8,10 @@
 
 .hero-v5 {
   position: relative;
-  background-image: var(--gradient-accent);
+  /* The radial gradient now lives on the fixed .scroll-bg-hero layer so it can
+     crossfade into the product-suite backdrop on scroll (see ScrollBackground.tsx).
+     Keep the section transparent to let that layer show through. */
+  background: transparent;
   /* Clear the fixed nav, then stack the hero row + suite row centered. */
   padding: 120px 64px;
   overflow: hidden;
