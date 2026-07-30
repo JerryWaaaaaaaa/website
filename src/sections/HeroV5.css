@@ -297,7 +297,9 @@
 
 @media (max-width: 639px) {
   .hero-v5 {
-    padding: 120px 16px 64px;
+    /* Match the section gutter so the hero content lines up with the nav and the
+       sections below it (was a narrower fixed 16px). */
+    padding: 120px var(--gutter) 64px;
     gap: 48px;
   }
   .hero-v5-copy .btn {

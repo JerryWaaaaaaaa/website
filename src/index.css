@@ -91,10 +91,11 @@
   --duration-base: 250ms;
   --duration-slow: 350ms;
 
-  /* Fluid layout rhythm — one source of truth for the section block/gutter so
-     spacing interpolates smoothly between mobile and desktop (see .section). */
-  --section-block: clamp(56px, 4.76vw + 38.9px, 96px);
-  --gutter: clamp(20px, 2.38vw + 11.4px, 40px);
+  /* Layout rhythm — one source of truth for the section block/gutter. Stepped at
+     the two canonical breakpoints with integer values only (no fluid sub-pixel
+     padding). Overrides live just below :root. See .section / DESIGN.md → Layout. */
+  --section-block: 96px;
+  --gutter: 40px;
 
   /* Elevation — one cool near-black light source; contact + ambient layers.
      Reference these instead of bespoke per-component box-shadows so co-visible
@@ -104,6 +105,21 @@
   --elevation-2: 0 2px 4px rgba(var(--shadow-color), 0.06), 0 6px 14px rgba(var(--shadow-color), 0.08); /* raised: active items inside a panel */
   --elevation-3: 0 4px 8px rgba(var(--shadow-color), 0.07), 0 12px 28px rgba(var(--shadow-color), 0.1); /* floating widgets: context cards, AI bars, tooltips */
   --elevation-4: 0 2px 4px rgba(var(--shadow-color), 0.06), 0 8px 16px rgba(var(--shadow-color), 0.08), 0 24px 48px rgba(var(--shadow-color), 0.12); /* overlay panels: comments/history/suggestions */
+}
+
+/* Section rhythm steps down at the two canonical breakpoints — integer values
+   only, so section left/right (and top/bottom) padding never has decimals. */
+@media (max-width: 1199px) {
+  :root {
+    --section-block: 80px;
+    --gutter: 32px;
+  }
+}
+@media (max-width: 639px) {
+  :root {
+    --section-block: 56px;
+    --gutter: 20px;
+  }
 }
 
 /* Tailwind v4 theme bridge — makes tokens available as utility classes

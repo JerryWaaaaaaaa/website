@@ -575,6 +575,14 @@
     max-width: 100%;
     border-radius: 0;
   }
+
+  /* Align the nav content (logo + hamburger) with the section gutter so it lines
+     up with the content below, instead of the wider fixed 24px inset. */
+  .navRow,
+  .navWrap.isScrolled .navRow {
+    padding-left: var(--gutter);
+    padding-right: var(--gutter);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

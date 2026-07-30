@@ -95,11 +95,12 @@ export function HeroV5() {
           </h1>
 
           <p className="hero-v5-subtitle">
-            Zoom AI Productivity Suite captures every conversation and turns it
-            into a deliverable — so your work is ready when the meeting ends.
+            Turn meeting conversations into work deliverables with Zoom AI
+            Productivity Suite — streamlining your workflow once the meeting
+            ends.
           </p>
 
-          <Button variant="primary">Get started for free</Button>
+          <Button variant="primary">Get started</Button>
         </div>
 
         {/* Right product stage + persistent browser window */}
@@ -137,7 +138,8 @@ export function HeroV5() {
       {/* Bottom product suite story */}
       <div className="hero-v5-suite">
         <p className="hero-v5-suite-caption">
-          Get maximum productivity with the whole Zoom products
+          Maximize your productivity and explore the complete suite of Zoom
+          collaboration tools
         </p>
         <div className="hero-v5-suite-row">
           {SUITE.map((product) => (
