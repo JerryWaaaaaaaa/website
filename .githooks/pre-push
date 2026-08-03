@@ -58,12 +58,24 @@ while read -r local_ref local_sha remote_ref remote_sha; do
   echo "[handoff] Generating handoff doc for ${NON_HANDOFF} commit(s) in ${RANGE}..."
   echo "[handoff] This may take 30-60 seconds."
 
+  HEAD_BEFORE="$(git rev-parse HEAD)"
+
   if ! node "$REPO_ROOT/scripts/generate-handoff.mjs" "$RANGE"; then
     echo ""
     echo "[handoff] ERROR: doc generation failed (see output above)."
     echo "[handoff] To push without a handoff doc this once:"
     echo "[handoff]   SKIP_HANDOFF=1 git push"
     exit 1
+  fi
+
+  # The generator exits 0 even when it skips (range only touches ignored
+  # paths, empty diff, etc.), creating no commit. If HEAD didn't move, there's
+  # nothing new to include — let the push through instead of aborting into an
+  # unwinnable loop where every retry re-skips the identical range.
+  if [ "$(git rev-parse HEAD)" = "$HEAD_BEFORE" ]; then
+    echo ""
+    echo "[handoff] No handoff doc needed for this range; allowing push."
+    continue
   fi
 
   echo ""
