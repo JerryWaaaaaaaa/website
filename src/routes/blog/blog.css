@@ -1,0 +1,316 @@
+/* =============================================================================
+   Blog — homepage + detail (prototype). Uses the global design tokens from
+   src/index.css (--bg-*, --text-*, --stroke, --rounded-*, --page-max-width,
+   --gutter, --section-block) and the global .chip / .btn classes.
+   ============================================================================= */
+
+/* ── Page shell (clears the fixed nav) ──────────────────────────────────────── */
+.blog-page {
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  padding: 128px var(--gutter) var(--section-block);
+}
+
+.blog-masthead {
+  margin-bottom: 48px;
+}
+
+.blog-masthead-sub {
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 560px;
+}
+
+/* ── Generated cover (gradient + grain + title) ─────────────────────────────── */
+.bc {
+  container-type: inline-size;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--rounded-lg);
+  background-color: var(--bg-accent-light);
+  isolation: isolate;
+}
+
+.bc-grain,
+.bc-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bc-grain {
+  background-size: 160px 160px;
+  mix-blend-mode: overlay;
+  opacity: 0.5;
+}
+
+/* Cool dark vignette so white text reads on the paler brand gradients. */
+.bc-scrim {
+  background: radial-gradient(
+    ellipse 82% 74% at 50% 50%,
+    rgba(4, 8, 30, 0.3),
+    rgba(4, 8, 30, 0.08) 72%
+  );
+}
+
+.bc-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8%;
+  text-align: center;
+  color: #fff;
+  font-family: 'General Sans', sans-serif;
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: -0.01em;
+  font-size: clamp(20px, 8cqi, 84px);
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.28), 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.bc--card { aspect-ratio: 3 / 2; }
+.bc--featured { aspect-ratio: 16 / 9; }
+.bc--hero { aspect-ratio: 16 / 9; margin: 8px 0 40px; }
+
+/* Covers scale up slightly on card/featured hover (transition lives on .bc). */
+.bc { transition: transform 450ms var(--ease-out); }
+
+/* ── Featured ───────────────────────────────────────────────────────────────── */
+.blog-featured {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 44px;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  margin-bottom: 44px;
+}
+
+.blog-featured-body { min-width: 0; }
+
+.blog-featured-title {
+  font-size: clamp(26px, 2.2vw + 12px, 36px);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin: 18px 0 14px;
+  transition: color 150ms ease;
+}
+
+.blog-featured-excerpt {
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0 0 20px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .blog-featured:hover .bc { transform: scale(1.02); }
+  .blog-featured:hover .blog-featured-title { color: var(--text-highlight); }
+}
+
+/* ── Divider before the grid ────────────────────────────────────────────────── */
+.blog-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 8px 0 32px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  opacity: 0.65;
+}
+.blog-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--stroke);
+}
+
+/* ── Grid + cards ───────────────────────────────────────────────────────────── */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 28px;
+  row-gap: 52px;
+}
+
+.blog-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+}
+
+.blog-card-body { padding-top: 18px; }
+
+.blog-card-title {
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0 0 12px;
+  transition: color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .blog-card:hover .bc { transform: scale(1.03); }
+  .blog-card:hover .blog-card-title { color: var(--text-highlight); }
+}
+
+/* ── Meta row ───────────────────────────────────────────────────────────────── */
+.blog-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.blog-cat { color: var(--text-primary); font-weight: 500; }
+
+.blog-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.5;
+}
+
+/* ── Pagination ─────────────────────────────────────────────────────────────── */
+.blog-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 72px;
+}
+
+.blog-page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-pill, 999px);
+  background: var(--bg-neutral);
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .blog-page-btn:hover {
+    background: var(--bg-accent-light);
+    border-color: var(--bg-accent-medium);
+  }
+}
+
+.blog-page-btn.is-active {
+  background: var(--bg-contrast);
+  border-color: var(--bg-contrast);
+  color: var(--text-contrast);
+}
+
+.blog-page-btn.is-disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ── Detail page ────────────────────────────────────────────────────────────── */
+.post {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 128px var(--gutter) 40px;
+}
+
+.post-back {
+  display: inline-block;
+  margin-bottom: 28px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.post-back:hover { color: var(--text-highlight); }
+
+.post .blog-meta { margin-bottom: 18px; }
+
+.post-title {
+  font-size: clamp(30px, 3vw + 14px, 46px);
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  margin: 0 0 20px;
+}
+
+.post-lede {
+  font-size: 20px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Rendered article body */
+.post-body { font-size: 18px; line-height: 1.7; color: var(--text-secondary); }
+.post-body > *:first-child { margin-top: 0; }
+.post-body p { margin: 0 0 22px; }
+.post-body strong { color: var(--text-primary); font-weight: 500; }
+
+.post-body h2 {
+  font-size: 27px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin: 44px 0 16px;
+}
+
+.post-body blockquote {
+  margin: 32px 0;
+  padding: 4px 0 4px 24px;
+  border-left: 3px solid var(--text-highlight);
+  font-size: 22px;
+  line-height: 1.4;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+/* Read next */
+.post-readnext {
+  max-width: var(--page-max-width);
+  margin: 88px auto 0;
+  padding: 48px var(--gutter) 0;
+  border-top: 1px solid var(--stroke);
+}
+
+.post-readnext-title {
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 0 0 32px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .blog-grid { grid-template-columns: repeat(2, 1fr); column-gap: 24px; row-gap: 44px; }
+  .blog-featured { grid-template-columns: 1fr; gap: 20px; }
+  .blog-featured-title { margin-top: 4px; }
+}
+
+@media (max-width: 560px) {
+  .blog-page { padding-top: 104px; }
+  .blog-grid { grid-template-columns: 1fr; row-gap: 40px; }
+  .post { padding-top: 100px; }
+}
