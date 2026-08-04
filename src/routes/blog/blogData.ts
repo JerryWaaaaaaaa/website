@@ -14,6 +14,8 @@ export type BlogPost = {
   excerpt: string;
   /** Short punchy line rendered on the generated cover; falls back to `title`. */
   coverText?: string;
+  /** Optional; falls back to a deterministic mock author (see authorFor). */
+  author?: string;
   body: string;
 };
 
@@ -196,4 +198,24 @@ export function formatDate(iso: string): string {
 /** Newest-first. */
 export function sortedPosts(): BlogPost[] {
   return [...POSTS].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+}
+
+const AUTHORS = ['Elena Ross', 'Marcus Lee', 'Priya Nair', 'Sam Ito', 'Dana Kim', 'Aisha Khan'];
+
+/** Deterministic mock author for a post (prototype; swap for a real `author` field later). */
+export function authorFor(post: BlogPost): string {
+  if (post.author) return post.author;
+  let h = 5381;
+  for (let i = 0; i < post.slug.length; i++) h = (h * 33 + post.slug.charCodeAt(i)) & 0x7fffffff;
+  return AUTHORS[h % AUTHORS.length];
+}
+
+/** Two-letter initials for an author name (for the card avatar). */
+export function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
 }

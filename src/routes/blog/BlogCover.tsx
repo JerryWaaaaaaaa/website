@@ -1,21 +1,27 @@
+import type { ReactNode } from 'react';
 import { MeshCanvas } from '../gradient-generator/MeshCanvas';
 import { DEFAULT_PALETTE } from '../gradient-generator/presets';
 import { GRAIN_DATA_URI, meshFor } from './cover';
 
 /**
  * A generated blog cover: a mesh gradient (reused from the gradient generator)
- * + grain/dither texture + title overlay. Deterministic per `slug`. Aspect
- * comes from `className` (bc--card / bc--featured / bc--hero); `size` is the
- * canvas render resolution (square; CSS scales it to fit).
+ * + grain/dither texture. Deterministic per `slug`. Aspect comes from
+ * `className` (bc--card / bc--featured / bc--hero); `size` is the canvas render
+ * resolution (square; CSS scales it to fit).
+ *
+ * Pass `children` to overlay custom content (e.g. the card's title + hover
+ * reveal); otherwise it renders a centered `text` label (featured/hero).
  */
 export function BlogCover({
   slug,
   text,
+  children,
   className = '',
   size = 320,
 }: {
   slug: string;
-  text: string;
+  text?: string;
+  children?: ReactNode;
   className?: string;
   size?: number;
 }) {
@@ -33,8 +39,12 @@ export function BlogCover({
         style={{ backgroundImage: `url("${GRAIN_DATA_URI}")` }}
         aria-hidden="true"
       />
-      <span className="bc-scrim" aria-hidden="true" />
-      <span className="bc-text">{text}</span>
+      {children ?? (
+        <>
+          <span className="bc-scrim" aria-hidden="true" />
+          <span className="bc-text">{text}</span>
+        </>
+      )}
     </div>
   );
 }
