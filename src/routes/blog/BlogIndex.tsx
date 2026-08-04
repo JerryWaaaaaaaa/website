@@ -26,9 +26,10 @@ export function BlogIndex() {
   return (
     <>
       <Nav />
-      <main className="blog-page">
-        <header className="blog-masthead">
-          <h1 className="h1">Blog</h1>
+      <div className="blog-root">
+        <main className="blog-page">
+          <header className="blog-masthead">
+            <h1 className="h1">Updates on AI Productivity Suite</h1>
           <p className="blog-masthead-sub">
             Product news, engineering deep-dives, and stories from the teams building the agentic
             workspace.
@@ -37,23 +38,20 @@ export function BlogIndex() {
 
         {page === 1 && featured && (
           <Link to={`/blog/${featured.slug}`} className="blog-featured">
-            <BlogCover
-              slug={featured.slug}
-              text={featured.coverText ?? featured.title}
-              className="bc--featured"
-            />
             <div className="blog-featured-body">
               <Chip>Featured</Chip>
               <h2 className="blog-featured-title">{featured.title}</h2>
               <p className="blog-featured-excerpt">{featured.excerpt}</p>
               <PostMeta post={featured} showReadTime />
             </div>
+            <BlogCover
+              slug={featured.slug}
+              text={featured.coverText ?? featured.title}
+              className="bc--featured"
+              size={480}
+            />
           </Link>
         )}
-
-        <div className="blog-divider">
-          <span>Latest</span>
-        </div>
 
         <div className="blog-grid">
           {slice.map((post) => (
@@ -70,7 +68,8 @@ export function BlogIndex() {
             <PageLink page={page + 1} disabled={page >= totalPages} label="Next ›" />
           </nav>
         )}
-      </main>
+        </main>
+      </div>
       <Footer />
     </>
   );

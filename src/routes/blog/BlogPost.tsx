@@ -29,6 +29,7 @@ export function BlogPost() {
   return (
     <>
       <Nav />
+      <div className="blog-root">
       <article className="post">
         <Link to="/blog" className="post-back">
           ‹ All posts
@@ -36,7 +37,7 @@ export function BlogPost() {
         <PostMeta post={post} showReadTime />
         <h1 className="post-title">{post.title}</h1>
         <p className="post-lede">{post.excerpt}</p>
-        <BlogCover slug={post.slug} text={post.coverText ?? post.title} className="bc--hero" />
+        <BlogCover slug={post.slug} text={post.coverText ?? post.title} className="bc--hero" size={560} />
         {/* Mock body is trusted, authored content (prototype only). */}
         <div className="post-body" dangerouslySetInnerHTML={{ __html: post.body }} />
       </article>
@@ -51,6 +52,7 @@ export function BlogPost() {
           </div>
         </section>
       )}
+      </div>
       <Footer />
     </>
   );

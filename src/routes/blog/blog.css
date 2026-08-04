@@ -4,7 +4,12 @@
    --gutter, --section-block) and the global .chip / .btn classes.
    ============================================================================= */
 
-/* ── Page shell (clears the fixed nav) ──────────────────────────────────────── */
+/* ── Page shell (light-blue page bg + clears the fixed nav) ─────────────────── */
+.blog-root {
+  background: var(--bg-accent-medium);
+  min-height: 100vh;
+}
+
 .blog-page {
   max-width: var(--page-max-width);
   margin: 0 auto;
@@ -41,9 +46,9 @@
 }
 
 .bc-grain {
-  background-size: 160px 160px;
+  background-size: 140px 140px;
   mix-blend-mode: overlay;
-  opacity: 0.5;
+  opacity: 0.9;
 }
 
 /* Soft light lift behind the text so the dark title reads on any preset. */
@@ -73,25 +78,41 @@
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.45);
 }
 
-.bc--card { aspect-ratio: 3 / 2; }
-.bc--featured { aspect-ratio: 16 / 9; }
-.bc--hero { aspect-ratio: 16 / 9; margin: 8px 0 40px; }
+.bc--card { aspect-ratio: 1 / 1; }
+.bc--featured { aspect-ratio: 1 / 1; border-radius: var(--rounded-2xl); }
+.bc--hero { aspect-ratio: 1 / 1; margin: 8px 0 40px; }
 
 /* Covers scale up slightly on card/featured hover (transition lives on .bc). */
 .bc { transition: transform 450ms var(--ease-out); }
 
-/* ── Featured ───────────────────────────────────────────────────────────────── */
+/* ── Featured (card: text left, square cover right) ─────────────────────────── */
 .blog-featured {
   display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 44px;
+  grid-template-columns: 1fr minmax(0, 44%);
+  gap: 12px;
   align-items: center;
   text-decoration: none;
   color: inherit;
-  margin-bottom: 44px;
+  margin-bottom: 56px;
+  padding: 20px;
+  background: var(--color-white);
+  border: 1px solid var(--stroke);
+  border-radius: var(--rounded-3xl);
 }
 
-.blog-featured-body { min-width: 0; }
+.blog-featured-body {
+  min-width: 0;
+  padding: 16px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Keep the pill at its content width (flex-column would stretch it full-width). */
+.blog-featured-body .chip {
+  align-self: flex-start;
+  margin-bottom: 18px;
+}
 
 .blog-featured-title {
   font-size: clamp(26px, 2.2vw + 12px, 36px);
@@ -112,26 +133,6 @@
 @media (hover: hover) and (pointer: fine) {
   .blog-featured:hover .bc { transform: scale(1.02); }
   .blog-featured:hover .blog-featured-title { color: var(--text-highlight); }
-}
-
-/* ── Divider before the grid ────────────────────────────────────────────────── */
-.blog-divider {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin: 8px 0 32px;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  opacity: 0.65;
-}
-.blog-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--stroke);
 }
 
 /* ── Grid + cards ───────────────────────────────────────────────────────────── */
@@ -306,7 +307,9 @@
 /* ── Responsive ─────────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .blog-grid { grid-template-columns: repeat(2, 1fr); column-gap: 24px; row-gap: 44px; }
-  .blog-featured { grid-template-columns: 1fr; gap: 20px; }
+  .blog-featured { grid-template-columns: 1fr; }
+  .blog-featured .bc--featured { order: -1; }
+  .blog-featured-body { padding: 28px; }
   .blog-featured-title { margin-top: 4px; }
 }
 

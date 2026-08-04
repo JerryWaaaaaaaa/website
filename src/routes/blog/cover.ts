@@ -1,16 +1,14 @@
 /**
- * Automatic blog-cover backgrounds.
+ * Automatic blog-cover helpers.
  *
- * Reuses the existing gradient generator (src/routes/gradient-generator) — its
- * `buildBackgroundCss` turns a preset + palette into a pure-CSS layered
- * radial-gradient, so every cover is cheap (no WebGL) and on-brand. We add a
- * grain/dither texture and a title overlay on top in <BlogCover>.
+ * Covers reuse the gradient generator's **mesh** presets (point-based Gaussian
+ * blends, rendered by <MeshCanvas>) with the generator's default palette;
+ * <BlogCover> layers a grain/dither texture and a title overlay on top.
  *
- * The result is DETERMINISTIC per seed (a small string hash picks the preset and
- * palette), so a post's cover is stable across reloads.
+ * Deterministic per seed: a small string hash picks the mesh preset, so a
+ * post's cover is stable across reloads.
  */
-import { buildBackgroundCss } from '../gradient-generator/buildCss';
-import { DEFAULT_PALETTE, DEFAULT_PRESETS } from '../gradient-generator/presets';
+import { DEFAULT_MESH_PRESETS, type MeshPreset } from '../gradient-generator/mesh';
 
 function hash(str: string): number {
   let h = 5381;
@@ -18,29 +16,21 @@ function hash(str: string): number {
   return h;
 }
 
-/**
- * Layered radial-gradient CSS `background` for a seed (e.g. slug), using the
- * Gradient Generator's own default palette (the four brand gradient stops).
- * Only the preset (composition) varies per seed, so every cover stays in one
- * cohesive, on-brand family — the same look the generator ships with. To
- * restyle, swap DEFAULT_PALETTE for a saved palette from the generator.
- */
-export function coverBackground(seed: string): string {
-  const preset = DEFAULT_PRESETS[hash(seed) % DEFAULT_PRESETS.length];
-  return buildBackgroundCss(DEFAULT_PALETTE, preset);
+/** Deterministically pick a mesh preset for a seed (e.g. slug). */
+export function meshFor(seed: string): MeshPreset {
+  return DEFAULT_MESH_PRESETS[hash(seed) % DEFAULT_MESH_PRESETS.length];
 }
 
 /**
- * Static grayscale film-grain as an SVG data URI (fractalNoise → desaturated),
- * tiled and blended over the gradient for the "shader-like" texture. One shared
- * constant for every cover.
+ * Grayscale film-grain as an SVG data URI (fractalNoise → desaturated), tiled
+ * and blended over the gradient for the "shader-like" texture.
  */
 export const GRAIN_DATA_URI =
   'data:image/svg+xml,' +
   encodeURIComponent(
-    "<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'>" +
+    "<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'>" +
       "<filter id='n'>" +
-      "<feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/>" +
+      "<feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/>" +
       "<feColorMatrix type='saturate' values='0'/>" +
       '</filter>' +
       "<rect width='100%' height='100%' filter='url(#n)'/>" +
