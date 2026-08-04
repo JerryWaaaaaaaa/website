@@ -10,21 +10,7 @@
  * palette), so a post's cover is stable across reloads.
  */
 import { buildBackgroundCss } from '../gradient-generator/buildCss';
-import { DEFAULT_PRESETS, type Palette } from '../gradient-generator/presets';
-
-/**
- * On-brand palette variants, all mapped to existing design tokens (see
- * gradient-generator/tokens.ts). Blue/purple/lavender family with enough depth
- * that white overlay text stays legible. Tune here to restyle every cover.
- */
-const PALETTES: Palette[] = [
-  { c1: 'gradient-stop-1', c2: 'gradient-stop-2', c3: 'gradient-stop-3', c4: 'gradient-stop-4' },
-  { c1: 'gradient-stop-3', c2: 'gradient-stop-4', c3: 'blue', c4: 'gradient-stop-2' },
-  { c1: 'pink', c2: 'gradient-stop-3', c3: 'gradient-stop-4', c4: 'blue' },
-  { c1: 'gradient-stop-1', c2: 'pink', c3: 'gradient-stop-4', c4: 'blue' },
-  { c1: 'gradient-stop-4', c2: 'blue', c3: 'gradient-stop-3', c4: 'pink' },
-  { c1: 'shade-medium', c2: 'gradient-stop-3', c3: 'gradient-stop-4', c4: 'shade-dark' },
-];
+import { DEFAULT_PALETTE, DEFAULT_PRESETS } from '../gradient-generator/presets';
 
 function hash(str: string): number {
   let h = 5381;
@@ -32,12 +18,16 @@ function hash(str: string): number {
   return h;
 }
 
-/** Layered radial-gradient CSS `background` value for a given seed (e.g. slug). */
+/**
+ * Layered radial-gradient CSS `background` for a seed (e.g. slug), using the
+ * Gradient Generator's own default palette (the four brand gradient stops).
+ * Only the preset (composition) varies per seed, so every cover stays in one
+ * cohesive, on-brand family — the same look the generator ships with. To
+ * restyle, swap DEFAULT_PALETTE for a saved palette from the generator.
+ */
 export function coverBackground(seed: string): string {
-  const h = hash(seed);
-  const preset = DEFAULT_PRESETS[h % DEFAULT_PRESETS.length];
-  const palette = PALETTES[(h >> 8) % PALETTES.length];
-  return buildBackgroundCss(palette, preset);
+  const preset = DEFAULT_PRESETS[hash(seed) % DEFAULT_PRESETS.length];
+  return buildBackgroundCss(DEFAULT_PALETTE, preset);
 }
 
 /**

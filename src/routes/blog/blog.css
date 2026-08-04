@@ -46,12 +46,12 @@
   opacity: 0.5;
 }
 
-/* Cool dark vignette so white text reads on the paler brand gradients. */
+/* Soft light lift behind the text so the dark title reads on any preset. */
 .bc-scrim {
   background: radial-gradient(
     ellipse 82% 74% at 50% 50%,
-    rgba(4, 8, 30, 0.3),
-    rgba(4, 8, 30, 0.08) 72%
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0) 72%
   );
 }
 
@@ -63,13 +63,14 @@
   justify-content: center;
   padding: 8%;
   text-align: center;
-  color: #fff;
+  /* Deep brand navy — legible on the pale gradient-stop palette the generator uses. */
+  color: #0f1836;
   font-family: 'General Sans', sans-serif;
   font-weight: 500;
   line-height: 1.06;
   letter-spacing: -0.01em;
   font-size: clamp(20px, 8cqi, 84px);
-  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.28), 0 1px 2px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.45);
 }
 
 .bc--card { aspect-ratio: 3 / 2; }
