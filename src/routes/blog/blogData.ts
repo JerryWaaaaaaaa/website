@@ -200,11 +200,20 @@ export function sortedPosts(): BlogPost[] {
   return [...POSTS].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 }
 
-const AUTHORS = ['Elena Ross', 'Marcus Lee', 'Priya Nair', 'Sam Ito', 'Dana Kim', 'Aisha Khan'];
+export type Author = { name: string; role: string };
+
+const AUTHORS: Author[] = [
+  { name: 'Elena Ross', role: 'Chief Product Officer' },
+  { name: 'Marcus Lee', role: 'Product Lead' },
+  { name: 'Priya Nair', role: 'Head of International' },
+  { name: 'Sam Ito', role: 'Staff Engineer' },
+  { name: 'Dana Kim', role: 'Product Marketing' },
+  { name: 'Aisha Khan', role: 'Head of Trust & Safety' },
+];
 
 /** Deterministic mock author for a post (prototype; swap for a real `author` field later). */
-export function authorFor(post: BlogPost): string {
-  if (post.author) return post.author;
+export function authorFor(post: BlogPost): Author {
+  if (post.author) return { name: post.author, role: 'Contributor' };
   let h = 5381;
   for (let i = 0; i < post.slug.length; i++) h = (h * 33 + post.slug.charCodeAt(i)) & 0x7fffffff;
   return AUTHORS[h % AUTHORS.length];
@@ -218,4 +227,11 @@ export function initials(name: string): string {
     .slice(0, 2)
     .join('')
     .toUpperCase();
+}
+
+/** Short 'D Month' date (e.g. '28 July') for card eyebrows. */
+export function shortDate(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  if (!y || !m || !d) return iso;
+  return `${d} ${MONTHS[m - 1]}`;
 }

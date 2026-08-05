@@ -2,9 +2,8 @@ import { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Nav } from '../../components/Nav';
 import { Footer } from '../../sections/Footer';
-import { Chip } from '../../components/Chip';
 import { BlogCover } from './BlogCover';
-import { PostCard, PostMeta } from './PostCard';
+import { CardText, PostCard } from './PostCard';
 import { sortedPosts } from './blogData';
 import './blog.css';
 
@@ -38,18 +37,10 @@ export function BlogIndex() {
 
         {page === 1 && featured && (
           <Link to={`/blog/${featured.slug}`} className="blog-featured">
-            <div className="blog-featured-body">
-              <Chip>Featured</Chip>
-              <h2 className="blog-featured-title">{featured.title}</h2>
-              <p className="blog-featured-excerpt">{featured.excerpt}</p>
-              <PostMeta post={featured} showReadTime />
+            <div className="card-body blog-featured-body">
+              <CardText post={featured} />
             </div>
-            <BlogCover
-              slug={featured.slug}
-              text={featured.coverText ?? featured.title}
-              className="bc--featured"
-              size={480}
-            />
+            <BlogCover slug={featured.slug} className="bc--featured" size={560} />
           </Link>
         )}
 

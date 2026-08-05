@@ -39,12 +39,13 @@ export function BlogCover({
         style={{ backgroundImage: `url("${GRAIN_DATA_URI}")` }}
         aria-hidden="true"
       />
-      {children ?? (
-        <>
-          <span className="bc-scrim" aria-hidden="true" />
-          <span className="bc-text">{text}</span>
-        </>
-      )}
+      {children ??
+        (text ? (
+          <>
+            <span className="bc-scrim" aria-hidden="true" />
+            <span className="bc-text">{text}</span>
+          </>
+        ) : null)}
     </div>
   );
 }

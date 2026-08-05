@@ -83,60 +83,117 @@
 }
 
 .bc--card { aspect-ratio: 1 / 1; }
-.bc--featured { aspect-ratio: 1 / 1; border-radius: var(--rounded-2xl); }
+/* Featured cover fills the right of the card, flush, with a sharp divide from
+   the panel — only its right corners are rounded (to match the card). */
+.bc--featured { border-radius: 0 var(--rounded-3xl) var(--rounded-3xl) 0; }
 .bc--hero { aspect-ratio: 1 / 1; margin: 8px 0 40px; }
 
 /* Gradient zooms on hover — scale the canvas, not the overlay text. */
 .bc canvas { transition: transform 600ms var(--ease-out); }
 
-/* ── Featured (card: text left, square cover right) ─────────────────────────── */
+@media (hover: hover) and (pointer: fine) {
+  .blog-card:hover .bc canvas,
+  .blog-featured:hover .bc canvas { transform: scale(1.04); }
+}
+
+/* ── Shared card text (badge + title on top, description + author on bottom) ─── */
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 28px;
+  color: #0f1836;
+}
+
+.card-top { display: flex; flex-direction: column; gap: 14px; }
+
+.card-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.card-date { font-weight: 500; }
+.card-cat { color: var(--text-secondary); }
+
+.card-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: inherit;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-bottom { display: flex; flex-direction: column; gap: 16px; }
+
+.card-desc {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-author {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.card-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  margin-right: 2px;
+  border-radius: 999px;
+  background: rgba(12, 92, 255, 0.16);
+  color: var(--text-highlight);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.card-author-name { font-weight: 500; }
+.card-author-role { color: var(--text-secondary); }
+
+/* ── Featured (darker-blue panel left, cover takes over the right) ──────────── */
 .blog-featured {
   display: grid;
-  grid-template-columns: 1fr minmax(0, 44%);
-  gap: 12px;
-  align-items: center;
+  grid-template-columns: 1fr minmax(0, 46%);
+  align-items: stretch;
   text-decoration: none;
   color: inherit;
   margin-bottom: 56px;
-  padding: 20px;
-  background: var(--color-white);
-  border: 1px solid var(--stroke);
+  min-height: 460px;
+  background: var(--bg-accent-dark);
   border-radius: var(--rounded-3xl);
 }
 
-.blog-featured-body {
-  min-width: 0;
-  padding: 16px 28px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
+.blog-featured-body { padding: clamp(28px, 3vw, 48px); }
 
-/* Keep the pill at its content width (flex-column would stretch it full-width). */
-.blog-featured-body .chip {
-  align-self: flex-start;
-  margin-bottom: 18px;
-}
-
-.blog-featured-title {
-  font-size: clamp(26px, 2.2vw + 12px, 36px);
-  font-weight: 500;
-  line-height: 1.08;
+.blog-featured .card-eyebrow { font-size: 15px; }
+.blog-featured .card-title {
+  font-size: clamp(30px, 2.4vw + 14px, 44px);
+  line-height: 1.05;
   letter-spacing: -0.02em;
-  margin: 18px 0 14px;
-  transition: color 150ms ease;
+  -webkit-line-clamp: 4;
 }
-
-.blog-featured-excerpt {
-  font-size: 17px;
-  line-height: 1.5;
-  color: var(--text-secondary);
-  margin: 0 0 20px;
-}
+.blog-featured .card-desc { font-size: 17px; -webkit-line-clamp: 3; }
 
 @media (hover: hover) and (pointer: fine) {
-  .blog-featured:hover .bc canvas { transform: scale(1.04); }
-  .blog-featured:hover .blog-featured-title { color: var(--text-highlight); }
+  .blog-featured:hover .card-title { color: var(--text-highlight); }
 }
 
 /* ── Grid + cards (the gradient tile IS the card) ───────────────────────────── */
@@ -158,93 +215,11 @@
   outline-offset: 3px;
 }
 
-/* Overlay content sits inside the gradient tile, anchored to the bottom. */
+/* Card text overlay fills the gradient tile. */
 .bc-card-content {
   position: absolute;
   inset: 0;
   z-index: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 24px;
-  color: #0f1836;
-}
-
-.bc-card-title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-}
-
-/* Hidden at rest; description + author reveal on hover / focus. */
-.bc-card-reveal {
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transform: translateY(6px);
-  transition:
-    max-height 350ms var(--ease-out),
-    opacity 220ms ease,
-    transform 350ms var(--ease-out),
-    margin-top 350ms var(--ease-out);
-}
-
-.blog-card:hover .bc-card-reveal,
-.blog-card:focus-visible .bc-card-reveal {
-  max-height: 220px;
-  opacity: 1;
-  transform: none;
-  margin-top: 12px;
-}
-
-.bc-card-desc {
-  margin: 0 0 12px;
-  font-size: 14px;
-  line-height: 1.45;
-  color: #26325a;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.bc-card-author {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #26325a;
-}
-
-.bc-avatar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  background: rgba(12, 92, 255, 0.16);
-  color: var(--text-highlight);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .blog-card:hover .bc canvas { transform: scale(1.05); }
-}
-
-/* Touch devices can't hover — reveal the description + author by default. */
-@media (hover: none) {
-  .bc-card-reveal {
-    max-height: 220px;
-    opacity: 1;
-    transform: none;
-    margin-top: 12px;
-  }
 }
 
 /* ── Meta row ───────────────────────────────────────────────────────────────── */
@@ -387,11 +362,14 @@
 
 /* ── Responsive ─────────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
-  .blog-grid { grid-template-columns: repeat(2, 1fr); column-gap: 24px; row-gap: 44px; }
-  .blog-featured { grid-template-columns: 1fr; }
-  .blog-featured .bc--featured { order: -1; }
+  .blog-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .blog-featured { grid-template-columns: 1fr; min-height: 0; }
+  .blog-featured .bc--featured {
+    order: -1;
+    aspect-ratio: 16 / 10;
+    border-radius: var(--rounded-3xl) var(--rounded-3xl) 0 0;
+  }
   .blog-featured-body { padding: 28px; }
-  .blog-featured-title { margin-top: 4px; }
 }
 
 @media (max-width: 560px) {
