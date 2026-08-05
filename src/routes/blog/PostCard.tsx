@@ -49,13 +49,27 @@ export function CardText({ post }: { post: BlogPost }) {
   );
 }
 
-/** Grid card: the gradient tile is the card; text is arranged top + bottom. */
+/**
+ * Grid card: the gradient tile is the card. At rest only the title shows; the
+ * description + author reveal on hover / focus (or by default on touch).
+ */
 export function PostCard({ post }: { post: BlogPost }) {
+  const author = authorFor(post);
   return (
     <Link to={`/blog/${post.slug}`} className="blog-card">
       <BlogCover slug={post.slug} className="bc--card" size={420}>
-        <div className="card-body bc-card-content">
-          <CardText post={post} />
+        <div className="bc-card-content">
+          <h3 className="bc-card-title">{post.title}</h3>
+          <div className="bc-card-reveal">
+            <p className="bc-card-desc">{post.excerpt}</p>
+            <div className="card-author">
+              <span className="card-avatar" aria-hidden="true">
+                {initials(author.name)}
+              </span>
+              <span className="card-author-name">{author.name}</span>
+              <span className="card-author-role">{author.role}</span>
+            </div>
+          </div>
         </div>
       </BlogCover>
     </Link>

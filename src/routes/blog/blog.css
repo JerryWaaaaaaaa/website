@@ -6,9 +6,9 @@
 
 /* ── Page shell (light-blue page bg + clears the fixed nav) ─────────────────── */
 .blog-root {
-  background-color: var(--bg-accent-light);
+  background-color: var(--bg-neutral);
   /* Subtle dot-grid texture to give the page some interest. */
-  background-image: radial-gradient(rgba(12, 92, 255, 0.1) 1.2px, transparent 1.3px);
+  background-image: radial-gradient(rgba(12, 92, 255, 0.08) 1.2px, transparent 1.3px);
   background-size: 20px 20px;
   background-position: -10px -10px;
   min-height: 100vh;
@@ -17,7 +17,7 @@
 .blog-page {
   max-width: var(--page-max-width);
   margin: 0 auto;
-  padding: 128px var(--gutter) var(--section-block);
+  padding: 168px var(--gutter) var(--section-block);
 }
 
 .blog-masthead {
@@ -177,7 +177,7 @@
   color: inherit;
   margin-bottom: 56px;
   min-height: 460px;
-  background: var(--bg-accent-dark);
+  background: var(--bg-accent-medium);
   border-radius: var(--rounded-3xl);
 }
 
@@ -215,11 +215,65 @@
   outline-offset: 3px;
 }
 
-/* Card text overlay fills the gradient tile. */
+/* Card overlay: only the title at rest; description + author reveal on hover. */
 .bc-card-content {
   position: absolute;
   inset: 0;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
+  color: #0f1836;
+}
+
+.bc-card-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.bc-card-reveal {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(6px);
+  transition:
+    max-height 350ms var(--ease-out),
+    opacity 220ms ease,
+    transform 350ms var(--ease-out),
+    margin-top 350ms var(--ease-out);
+}
+
+.blog-card:hover .bc-card-reveal,
+.blog-card:focus-visible .bc-card-reveal {
+  max-height: 220px;
+  opacity: 1;
+  transform: none;
+  margin-top: 14px;
+}
+
+.bc-card-desc {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Touch devices can't hover — reveal the description + author by default. */
+@media (hover: none) {
+  .bc-card-reveal {
+    max-height: 220px;
+    opacity: 1;
+    transform: none;
+    margin-top: 14px;
+  }
 }
 
 /* ── Meta row ───────────────────────────────────────────────────────────────── */
@@ -289,7 +343,7 @@
 .post {
   max-width: 720px;
   margin: 0 auto;
-  padding: 128px var(--gutter) 40px;
+  padding: 168px var(--gutter) 40px;
 }
 
 .post-back {
@@ -373,7 +427,7 @@
 }
 
 @media (max-width: 560px) {
-  .blog-page { padding-top: 104px; }
+  .blog-page { padding-top: 128px; }
   .blog-grid { grid-template-columns: 1fr; row-gap: 40px; }
-  .post { padding-top: 100px; }
+  .post { padding-top: 128px; }
 }
