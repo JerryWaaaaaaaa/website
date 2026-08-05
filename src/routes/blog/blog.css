@@ -1,0 +1,433 @@
+/* =============================================================================
+   Blog — homepage + detail (prototype). Uses the global design tokens from
+   src/index.css (--bg-*, --text-*, --stroke, --rounded-*, --page-max-width,
+   --gutter, --section-block) and the global .chip / .btn classes.
+   ============================================================================= */
+
+/* ── Page shell (light-blue page bg + clears the fixed nav) ─────────────────── */
+.blog-root {
+  background-color: var(--bg-neutral);
+  /* Subtle dot-grid texture to give the page some interest. */
+  background-image: radial-gradient(rgba(12, 92, 255, 0.08) 1.2px, transparent 1.3px);
+  background-size: 20px 20px;
+  background-position: -10px -10px;
+  min-height: 100vh;
+}
+
+.blog-page {
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  padding: 168px var(--gutter) var(--section-block);
+}
+
+.blog-masthead {
+  margin-bottom: 48px;
+}
+
+.blog-masthead-sub {
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 560px;
+}
+
+/* ── Generated cover (gradient + grain + title) ─────────────────────────────── */
+.bc {
+  container-type: inline-size;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--rounded-lg);
+  background-color: var(--bg-accent-light);
+  isolation: isolate;
+}
+
+.bc-grain,
+.bc-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bc-grain {
+  background-size: 140px 140px;
+  mix-blend-mode: overlay;
+  opacity: 0.9;
+}
+
+/* Soft light lift behind the text so the dark title reads on any preset. */
+.bc-scrim {
+  background: radial-gradient(
+    ellipse 82% 74% at 50% 50%,
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0) 72%
+  );
+}
+
+.bc-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8%;
+  text-align: center;
+  /* Deep brand navy — legible on the pale gradient-stop palette the generator uses. */
+  color: #0f1836;
+  font-family: 'General Sans', sans-serif;
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: -0.01em;
+  font-size: clamp(20px, 8cqi, 84px);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.45);
+}
+
+.bc--card { aspect-ratio: 1 / 1; }
+/* Featured cover fills the right of the card, flush, with a sharp divide from
+   the panel — only its right corners are rounded (to match the card). */
+.bc--featured { border-radius: 0 var(--rounded-3xl) var(--rounded-3xl) 0; }
+.bc--hero { aspect-ratio: 1 / 1; margin: 8px 0 40px; }
+
+/* Gradient zooms on hover — scale the canvas, not the overlay text. */
+.bc canvas { transition: transform 600ms var(--ease-out); }
+
+@media (hover: hover) and (pointer: fine) {
+  .blog-card:hover .bc canvas,
+  .blog-featured:hover .bc canvas { transform: scale(1.04); }
+}
+
+/* ── Shared card text (badge + title on top, description + author on bottom) ─── */
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 28px;
+  color: #0f1836;
+}
+
+.card-top { display: flex; flex-direction: column; gap: 14px; }
+
+.card-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.card-date { font-weight: 500; }
+.card-cat { color: var(--text-secondary); }
+
+.card-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: inherit;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-bottom { display: flex; flex-direction: column; gap: 16px; }
+
+.card-desc {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-author {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.card-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  margin-right: 2px;
+  border-radius: 999px;
+  background: rgba(12, 92, 255, 0.16);
+  color: var(--text-highlight);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.card-author-name { font-weight: 500; }
+.card-author-role { color: var(--text-secondary); }
+
+/* ── Featured (darker-blue panel left, cover takes over the right) ──────────── */
+.blog-featured {
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 46%);
+  align-items: stretch;
+  text-decoration: none;
+  color: inherit;
+  margin-bottom: 56px;
+  min-height: 460px;
+  background: var(--bg-accent-medium);
+  border-radius: var(--rounded-3xl);
+}
+
+.blog-featured-body { padding: clamp(28px, 3vw, 48px); }
+
+.blog-featured .card-eyebrow { font-size: 15px; }
+.blog-featured .card-title {
+  font-size: clamp(30px, 2.4vw + 14px, 44px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  -webkit-line-clamp: 4;
+}
+.blog-featured .card-desc { font-size: 17px; -webkit-line-clamp: 3; }
+
+@media (hover: hover) and (pointer: fine) {
+  .blog-featured:hover .card-title { color: var(--text-highlight); }
+}
+
+/* ── Grid + cards (the gradient tile IS the card) ───────────────────────────── */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.blog-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--rounded-lg);
+}
+
+.blog-card:focus-visible {
+  outline: 2px solid var(--text-highlight);
+  outline-offset: 3px;
+}
+
+/* Card overlay: only the title at rest; description + author reveal on hover. */
+.bc-card-content {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
+  color: #0f1836;
+}
+
+.bc-card-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.bc-card-reveal {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(6px);
+  transition:
+    max-height 350ms var(--ease-out),
+    opacity 220ms ease,
+    transform 350ms var(--ease-out),
+    margin-top 350ms var(--ease-out);
+}
+
+.blog-card:hover .bc-card-reveal,
+.blog-card:focus-visible .bc-card-reveal {
+  max-height: 220px;
+  opacity: 1;
+  transform: none;
+  margin-top: 14px;
+}
+
+.bc-card-desc {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Touch devices can't hover — reveal the description + author by default. */
+@media (hover: none) {
+  .bc-card-reveal {
+    max-height: 220px;
+    opacity: 1;
+    transform: none;
+    margin-top: 14px;
+  }
+}
+
+/* ── Meta row ───────────────────────────────────────────────────────────────── */
+.blog-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.blog-cat { color: var(--text-primary); font-weight: 500; }
+
+.blog-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.5;
+}
+
+/* ── Pagination ─────────────────────────────────────────────────────────────── */
+.blog-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 72px;
+}
+
+.blog-page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-pill, 999px);
+  background: var(--bg-neutral);
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .blog-page-btn:hover {
+    background: var(--bg-accent-light);
+    border-color: var(--bg-accent-medium);
+  }
+}
+
+.blog-page-btn.is-active {
+  background: var(--bg-contrast);
+  border-color: var(--bg-contrast);
+  color: var(--text-contrast);
+}
+
+.blog-page-btn.is-disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ── Detail page ────────────────────────────────────────────────────────────── */
+.post {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 168px var(--gutter) 40px;
+}
+
+.post-back {
+  display: inline-block;
+  margin-bottom: 28px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.post-back:hover { color: var(--text-highlight); }
+
+.post .blog-meta { margin-bottom: 18px; }
+
+.post-title {
+  font-size: clamp(30px, 3vw + 14px, 46px);
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  margin: 0 0 20px;
+}
+
+.post-lede {
+  font-size: 20px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Rendered article body */
+.post-body { font-size: 18px; line-height: 1.7; color: var(--text-secondary); }
+.post-body > *:first-child { margin-top: 0; }
+.post-body p { margin: 0 0 22px; }
+.post-body strong { color: var(--text-primary); font-weight: 500; }
+
+.post-body h2 {
+  font-size: 27px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin: 44px 0 16px;
+}
+
+.post-body blockquote {
+  margin: 32px 0;
+  padding: 4px 0 4px 24px;
+  border-left: 3px solid var(--text-highlight);
+  font-size: 22px;
+  line-height: 1.4;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+/* Read next */
+.post-readnext {
+  max-width: var(--page-max-width);
+  margin: 88px auto 0;
+  padding: 48px var(--gutter) 0;
+  border-top: 1px solid var(--stroke);
+}
+
+.post-readnext-title {
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 0 0 32px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .blog-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .blog-featured { grid-template-columns: 1fr; min-height: 0; }
+  .blog-featured .bc--featured {
+    order: -1;
+    aspect-ratio: 16 / 10;
+    border-radius: var(--rounded-3xl) var(--rounded-3xl) 0 0;
+  }
+  .blog-featured-body { padding: 28px; }
+}
+
+@media (max-width: 560px) {
+  .blog-page { padding-top: 128px; }
+  .blog-grid { grid-template-columns: 1fr; row-gap: 40px; }
+  .post { padding-top: 128px; }
+}

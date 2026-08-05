@@ -9,12 +9,16 @@ import { ChipPage } from './routes/styleguide/components/ChipPage';
 import { NavBarPage } from './routes/styleguide/components/NavBarPage';
 import { GradientGenerator } from './routes/GradientGenerator';
 import { RibbonTuner } from './routes/RibbonTuner';
+import { BlogIndex } from './routes/blog/BlogIndex';
+import { BlogPost } from './routes/blog/BlogPost';
 
 export function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Marketing />} />
+        <Route path="/blog" element={<BlogIndex />} />
+        <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/gradient-generator" element={<GradientGenerator />} />
         <Route path="/ribbon-tuner" element={<RibbonTuner />} />
         <Route path="/style-guide" element={<StyleGuideLayout />}>
