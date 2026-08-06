@@ -403,7 +403,7 @@
 .post-readnext {
   max-width: var(--page-max-width);
   margin: 88px auto 0;
-  padding: 48px var(--gutter) 0;
+  padding: 48px var(--gutter) 88px;
   border-top: 1px solid var(--stroke);
 }
 
