@@ -451,19 +451,40 @@
 
 /* ── Blockquote ────────────────────────────────────────────────────────────── */
 .post-body blockquote {
-  margin: 32px 0;
-  padding: 4px 0 4px 24px;
-  border-left: 3px solid var(--text-highlight);
+  position: relative;
+  margin: 40px 0;
+  padding: 4px 8px 4px 64px;
   font-size: 22px;
-  line-height: 1.4;
+  line-height: 1.45;
   font-weight: 500;
   color: var(--text-primary);
   letter-spacing: -0.01em;
 }
-.post-body blockquote p { margin: 0; }
+/* Oversized decorative opening quote on the left. */
+.post-body blockquote::before {
+  content: '\201C';
+  position: absolute;
+  left: -2px;
+  top: 0.36em;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 90px;
+  line-height: 1;
+  color: rgba(12, 92, 255, 0.2);
+  pointer-events: none;
+}
+.post-body blockquote p { display: inline; margin: 0; }
+/* Small closing quote, right after the sentence (before any citation). */
+.post-body blockquote p::after {
+  content: '\201D';
+  margin-left: 3px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.78em;
+  color: var(--text-highlight);
+  vertical-align: -0.12em;
+}
 .post-body blockquote cite {
   display: block;
-  margin-top: 12px;
+  margin-top: 14px;
   font-size: 15px;
   font-weight: 400;
   font-style: normal;
@@ -501,8 +522,9 @@
 .post-body pre {
   margin: 28px 0;
   padding: 20px 22px;
-  background: #0f1836;
-  color: #e7ecff;
+  background: var(--bg-accent-light);
+  color: var(--text-primary);
+  border: 1px solid var(--stroke);
   border-radius: var(--rounded-lg);
   overflow-x: auto;
   font-size: 14.5px;
@@ -516,26 +538,30 @@
   padding: 0;
   color: inherit;
 }
-/* Lightweight syntax tokens for the mock snippet. */
-.post-body .tok-key { color: #b6a2ff; }
-.post-body .tok-fn { color: #7db4ff; }
-.post-body .tok-str { color: #86e0aa; }
-.post-body .tok-com { color: #8794c4; font-style: italic; }
+/* Lightweight syntax tokens tuned for the light panel. */
+.post-body .tok-key { color: #8250df; }
+.post-body .tok-fn { color: #0a56c2; }
+.post-body .tok-str { color: #0a7d33; }
+.post-body .tok-com { color: #6b778c; font-style: italic; }
 
 /* ── Callout / note ────────────────────────────────────────────────────────── */
 .post-body .post-note {
   margin: 28px 0;
-  padding: 16px 20px;
+  padding: 18px 22px;
   background: var(--bg-accent-light);
   border: 1px solid var(--stroke);
-  border-left: 3px solid var(--text-highlight);
-  border-radius: var(--rounded-md);
+  border-radius: var(--rounded-lg);
   font-size: 16px;
   line-height: 1.6;
   color: var(--text-secondary);
 }
 .post-body .post-note p { margin: 0; }
 .post-body .post-note strong { color: var(--text-highlight); }
+/* The chip sits on the card fill, so lift it to a lighter (white) shade. */
+.post-body .post-note code {
+  background: var(--bg-neutral);
+  border-color: var(--bg-accent-dark);
+}
 
 /* ── Table ─────────────────────────────────────────────────────────────────── */
 .post-body table {
@@ -611,7 +637,8 @@
   .post-body { font-size: 17px; }
   .post-body h2 { font-size: 24px; }
   .post-body h3 { font-size: 19px; }
-  .post-body blockquote { font-size: 19px; }
+  .post-body blockquote { font-size: 19px; padding-left: 46px; }
+  .post-body blockquote::before { font-size: 66px; }
   .post-body pre { font-size: 13px; padding: 16px; }
   .post-body th,
   .post-body td { padding: 10px 12px; }

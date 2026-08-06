@@ -42,7 +42,7 @@ export const POSTS: BlogPost[] = [
       '<img src="/hero-images/slides.png" alt="An AI-generated slide deck open in AI Create." loading="lazy" />' +
       '<figcaption>A deck generated from a single meeting — one of the half-billion artifacts created so far.</figcaption>' +
       '</figure>' +
-      '<blockquote>The best interface for AI is the work you were already doing.</blockquote>' +
+      '<blockquote><p>The best interface for AI is the work you were already doing.</p></blockquote>' +
       '<h3>Where we go from here</h3>' +
       '<p>We are doubling down on that thesis — <em>less prompting, more anticipating</em> — along three lines:</p>' +
       '<ol>' +
@@ -103,7 +103,7 @@ export const POSTS: BlogPost[] = [
       '<ul><li>made on a plane,</li><li>queued for minutes, and</li><li>replayed against a doc that moved on without you.</li></ul>' +
       '</li>' +
       '</ul>' +
-      '<blockquote>Latency is a feature. Every millisecond you shave off is trust you earn back.<cite>— our north-star principle for the sync team</cite></blockquote>' +
+      '<blockquote><p>Latency is a feature. Every millisecond you shave off is trust you earn back.</p><cite>— our north-star principle for the sync team</cite></blockquote>' +
       '<h2>The shape of the system</h2>' +
       '<p>At a high level, three services carry an edit from a keypress to every other participant. The surface below is the same shared canvas our customers collaborate on:</p>' +
       '<figure>' +
@@ -203,7 +203,7 @@ export const POSTS: BlogPost[] = [
       '<p>As AI writes more of the first draft, trust becomes the product. Here is how we design for it.</p>' +
       '<h2>Provenance by default</h2>' +
       '<p>Every AI-generated passage can show its sources. Every automated action is reversible. And nothing leaves your permission boundary without an explicit, auditable step.</p>' +
-      '<blockquote>Automation should expand human agency, never quietly replace it.</blockquote>' +
+      '<blockquote><p>Automation should expand human agency, never quietly replace it.</p></blockquote>' +
       '<p>These are not features bolted on at the end — they are constraints we design against from the first sketch.</p>',
   },
   {
