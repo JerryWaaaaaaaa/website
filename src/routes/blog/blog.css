@@ -86,7 +86,8 @@
 /* Featured cover fills the right of the card, flush, with a sharp divide from
    the panel — only its right corners are rounded (to match the card). */
 .bc--featured { border-radius: 0 var(--rounded-3xl) var(--rounded-3xl) 0; }
-.bc--hero { aspect-ratio: 1 / 1; margin: 8px 0 40px; }
+/* Full-bleed gradient behind the detail-page header (see .post-hero). */
+.bc--hero-bg { border-radius: 0; }
 
 /* Gradient zooms on hover — scale the canvas, not the overlay text. */
 .bc canvas { transition: transform 600ms var(--ease-out); }
@@ -280,10 +281,14 @@
 .blog-meta {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
+  row-gap: 6px;
   font-size: 14px;
   color: var(--text-secondary);
 }
+/* Keep each segment intact when the row wraps on narrow screens. */
+.blog-meta > span { white-space: nowrap; }
 
 .blog-cat { color: var(--text-primary); font-weight: 500; }
 
@@ -340,15 +345,48 @@
 }
 
 /* ── Detail page ────────────────────────────────────────────────────────────── */
+
+/* Gradient hero header: the post's mesh cover becomes a full-bleed background
+   behind the meta + title + description, then fades into the white page as the
+   reader scrolls — mirroring the v5 hero-to-white handoff on the home page. */
+.post-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.post-hero .bc--hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.post-hero-fade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 36%,
+    var(--bg-neutral) 100%
+  );
+}
+.post-hero-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 196px var(--gutter) 72px;
+}
+
 .post {
   max-width: 720px;
   margin: 0 auto;
-  padding: 168px var(--gutter) 40px;
+  padding: 8px var(--gutter) 40px;
 }
 
 .post-back {
   display: inline-block;
-  margin-bottom: 28px;
+  margin-bottom: 26px;
   font-size: 14px;
   font-weight: 500;
   color: var(--text-secondary);
@@ -356,19 +394,22 @@
 }
 .post-back:hover { color: var(--text-highlight); }
 
-.post .blog-meta { margin-bottom: 18px; }
+.post-hero .blog-meta { margin-bottom: 18px; }
+/* Author reads as the byline lead on the meta row. */
+.blog-author { color: var(--text-primary); font-weight: 500; }
 
 .post-title {
   font-size: clamp(30px, 3vw + 14px, 46px);
   font-weight: 500;
   line-height: 1.06;
   letter-spacing: -0.02em;
-  margin: 0 0 20px;
+  margin: 0 0 18px;
 }
 
+/* Description matches the body text style (same size/line-height/color). */
 .post-lede {
-  font-size: 20px;
-  line-height: 1.5;
+  font-size: 18px;
+  line-height: 1.7;
   color: var(--text-secondary);
   margin: 0;
 }
@@ -639,13 +680,15 @@
 @media (max-width: 560px) {
   .blog-page { padding-top: 128px; }
   .blog-grid { grid-template-columns: 1fr; row-gap: 40px; }
-  .post { padding-top: 128px; }
+  .post-hero-inner { padding: 132px var(--gutter) 52px; }
+  .post { padding-top: 8px; }
 
+  .post-lede { font-size: 17px; }
   .post-body { font-size: 17px; }
   .post-body h2 { font-size: 24px; }
   .post-body h3 { font-size: 19px; }
   .post-body blockquote { font-size: 19px; padding-left: 46px; }
-  .post-body blockquote::before { font-size: 66px; }
+  .post-body blockquote p::before { font-size: 66px; left: -46px; }
   .post-body pre { font-size: 13px; padding: 16px; }
   .post-body th,
   .post-body td { padding: 10px 12px; }

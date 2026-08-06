@@ -2,10 +2,24 @@ import { Link } from 'react-router-dom';
 import { BlogCover } from './BlogCover';
 import { authorFor, formatDate, initials, shortDate, type BlogPost } from './blogData';
 
-/** Category · date meta row, reused on the detail page. */
-export function PostMeta({ post, showReadTime = false }: { post: BlogPost; showReadTime?: boolean }) {
+/** Author · category · date meta row, reused on the detail page. */
+export function PostMeta({
+  post,
+  showReadTime = false,
+  showAuthor = false,
+}: {
+  post: BlogPost;
+  showReadTime?: boolean;
+  showAuthor?: boolean;
+}) {
   return (
     <div className="blog-meta">
+      {showAuthor && (
+        <>
+          <span className="blog-author">{authorFor(post).name}</span>
+          <span className="blog-dot" aria-hidden="true" />
+        </>
+      )}
       <span className="blog-cat">{post.category}</span>
       <span className="blog-dot" aria-hidden="true" />
       <span>{formatDate(post.date)}</span>

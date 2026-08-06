@@ -30,14 +30,20 @@ export function BlogPost() {
     <>
       <Nav />
       <div className="blog-root">
+      <header className="post-hero">
+        {/* The post's mesh gradient becomes the header background, fading to white. */}
+        <BlogCover slug={post.slug} className="bc--hero-bg" width={1120} height={520} />
+        <span className="post-hero-fade" aria-hidden="true" />
+        <div className="post-hero-inner">
+          <Link to="/blog" className="post-back">
+            ‹ All posts
+          </Link>
+          <PostMeta post={post} showReadTime showAuthor />
+          <h1 className="post-title">{post.title}</h1>
+          <p className="post-lede">{post.excerpt}</p>
+        </div>
+      </header>
       <article className="post">
-        <Link to="/blog" className="post-back">
-          ‹ All posts
-        </Link>
-        <PostMeta post={post} showReadTime />
-        <h1 className="post-title">{post.title}</h1>
-        <p className="post-lede">{post.excerpt}</p>
-        <BlogCover slug={post.slug} text={post.coverText ?? post.title} className="bc--hero" size={560} />
         {/* Mock body is trusted, authored content (prototype only). */}
         <div className="post-body" dangerouslySetInnerHTML={{ __html: post.body }} />
       </article>

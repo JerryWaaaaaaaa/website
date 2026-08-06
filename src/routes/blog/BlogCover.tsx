@@ -18,20 +18,26 @@ export function BlogCover({
   children,
   className = '',
   size = 320,
+  width,
+  height,
 }: {
   slug: string;
   text?: string;
   children?: ReactNode;
   className?: string;
+  /** Square render resolution; overridden by explicit `width`/`height`. */
   size?: number;
+  /** Explicit render resolution (use for non-square covers like the hero). */
+  width?: number;
+  height?: number;
 }) {
   return (
     <div className={`bc ${className}`.trim()}>
       <MeshCanvas
         preset={meshFor(slug)}
         palette={DEFAULT_PALETTE}
-        width={size}
-        height={size}
+        width={width ?? size}
+        height={height ?? size}
         style={{ position: 'absolute', inset: 0 }}
       />
       <span
