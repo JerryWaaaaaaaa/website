@@ -764,9 +764,47 @@
 @media (max-width: 560px) {
   .blog-page { padding-top: 128px; }
   .blog-grid { grid-template-columns: 1fr; row-gap: 40px; }
-  .post-hero-inner { padding: 132px var(--gutter) 52px; }
   .post { padding-top: 8px; }
 
+  /* Mobile hero: instead of overlaying the title on a stretched full-bleed
+     gradient (cramped + low-contrast on a phone), split it into a clean
+     gradient band up top — carrying the back-link + meta — and drop the
+     title + description onto the white surface below, flowing into the body. */
+  .post-hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+  .post-hero .bc--hero-bg {
+    position: relative;
+    inset: auto;
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+  }
+  /* The white fade only makes sense behind overlaid text on desktop. */
+  .post-hero-fade { display: none; }
+  /* Let the two groups join the hero grid directly. */
+  .post-hero-inner {
+    display: contents;
+  }
+  .post-hero-top {
+    grid-column: 1;
+    grid-row: 1;               /* overlay the gradient band */
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 96px var(--gutter) 22px;
+  }
+  .post-hero-top .post-back { margin-bottom: 0; }
+  .post-hero-top .blog-meta { margin-bottom: 0; }
+  .post-hero-head {
+    grid-column: 1;
+    grid-row: 2;               /* white surface below the band */
+    padding: 28px var(--gutter) 20px;
+  }
   .post-lede { font-size: 17px; }
   .post-body { font-size: 17px; }
   .post-body h2 { font-size: 24px; }

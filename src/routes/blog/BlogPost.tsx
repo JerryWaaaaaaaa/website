@@ -35,12 +35,18 @@ export function BlogPost() {
         <BlogCover slug={post.slug} className="bc--hero-bg" width={1120} height={520} />
         <span className="post-hero-fade" aria-hidden="true" />
         <div className="post-hero-inner">
-          <Link to="/blog" className="post-back">
-            ‹ All posts
-          </Link>
-          <PostMeta post={post} showReadTime showAuthor />
-          <h1 className="post-title">{post.title}</h1>
-          <p className="post-lede">{post.excerpt}</p>
+          {/* On mobile these two groups split across the gradient band (top) and
+              the white surface (head); on desktop they stack over the gradient. */}
+          <div className="post-hero-top">
+            <Link to="/blog" className="post-back">
+              ‹ All posts
+            </Link>
+            <PostMeta post={post} showReadTime showAuthor />
+          </div>
+          <div className="post-hero-head">
+            <h1 className="post-title">{post.title}</h1>
+            <p className="post-lede">{post.excerpt}</p>
+          </div>
         </div>
       </header>
       <article className="post">
