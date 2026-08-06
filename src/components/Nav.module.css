@@ -35,9 +35,7 @@
     border-color 250ms ease;
 }
 
-.navBar.productsOpen,
-.navBar.featuresOpen,
-.navBar.exploreOpen {
+.navBar.productsOpen {
   background: var(--bg-neutral);
   border-radius: 0 0 32px 32px;
 }
@@ -59,16 +57,17 @@
   background: var(--glass-bg);
   backdrop-filter: blur(16px);
   border-color: var(--border-subtle);
-  overflow: hidden;
 }
 .navWrap.isScrolled .navRow {
   padding: 12px 18px 12px 24px;
 }
-.navWrap.isScrolled .navBar.productsOpen,
-.navWrap.isScrolled .navBar.featuresOpen,
-.navWrap.isScrolled .navBar.exploreOpen {
+/* Clip only while the products panel is expanding, so its grid stays inside the
+   rounded pill. The Explore dropdown floats below the bar, so the bar must NOT clip
+   when it's open — hence the clip is scoped to productsOpen rather than the bar. */
+.navWrap.isScrolled .navBar.productsOpen {
   border-radius: 32px;
   background: var(--glass-bg);
+  overflow: hidden;
 }
 
 /* Logo */
@@ -278,56 +277,58 @@
   color: var(--text-secondary);
 }
 
-/* Features / Explore panels */
-.featuresPanel,
-.explorePanel {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 250ms ease;
+/* Explore — a floating "normal" dropdown card anchored to its trigger, rather than
+   an expanding bar panel like Products. Hidden until the trigger is open. */
+.exploreMenu {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 240px;
+  padding: 12px;
+  background: var(--bg-neutral);
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+  box-shadow: var(--elevation-4);
+  opacity: 0;
+  transform: translateY(-6px);
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 180ms var(--ease-out),
+    transform 180ms var(--ease-out),
+    visibility 0s linear 180ms;
 }
-.featuresPanelInner,
-.explorePanelInner {
-  overflow: hidden;
-  min-height: 0;
+.navTrigger.isOpen .exploreMenu {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 180ms var(--ease-out),
+    transform 180ms var(--ease-out),
+    visibility 0s;
 }
-.navBar.featuresOpen .featuresPanel {
-  grid-template-rows: 1fr;
-}
-.navBar.exploreOpen .explorePanel {
-  grid-template-rows: 1fr;
-}
-
-.pillContainer {
+.exploreMenuItem {
   display: flex;
   align-items: center;
-  background: var(--bg-accent-light);
-  border: 1px solid var(--stroke);
-  border-radius: 20px;
-  max-width: 1024px;
-  margin: 0 auto 24px;
-}
-.navWrap.isScrolled .pillContainer {
-  margin: 0 12px 12px;
-}
-.pillItem {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px 20px;
+  padding: 12px 16px;
   font-family: 'General Sans', sans-serif;
-  font-size: 18px;
-  font-weight: 400;
+  font-size: 17px;
+  font-weight: 500;
   line-height: 1.4;
+  letter-spacing: -0.01em;
   color: var(--text-primary);
   text-decoration: none;
   white-space: nowrap;
-  border-radius: 12px;
-  transition: background 150ms ease, border-radius 150ms ease;
+  border-radius: 14px;
+  transition: background 150ms ease;
 }
-.pillItem:hover {
-  background: var(--bg-accent-medium);
-  border-radius: 20px;
+.exploreMenuItem:hover {
+  background: var(--glass-fill);
 }
 
 /* =============================================================================
