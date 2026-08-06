@@ -21,6 +21,8 @@
 }
 
 .blog-masthead {
+  /* Title + description share one width so the heading wraps to two lines. */
+  max-width: 560px;
   margin-bottom: 48px;
 }
 
@@ -29,7 +31,6 @@
   line-height: 1.4;
   color: var(--text-secondary);
   margin: 0;
-  max-width: 560px;
 }
 
 /* ── Product filter (pills under the masthead) ──────────────────────────────── */
