@@ -460,26 +460,33 @@
   color: var(--text-primary);
   letter-spacing: -0.01em;
 }
-/* Oversized decorative opening quote on the left. */
-.post-body blockquote::before {
+.post-body blockquote p { position: relative; margin: 0; }
+/* Oversized decorative opening quote, vertically centered against the quote text
+   (anchored to the paragraph, so the citation line doesn't drag it off-center). */
+.post-body blockquote p::before {
   content: '\201C';
   position: absolute;
-  left: -2px;
-  top: 0.36em;
+  left: -64px;
+  top: 0;
+  bottom: 0;
+  width: 52px;
+  display: flex;
+  align-items: center;
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 90px;
   line-height: 1;
   color: rgba(12, 92, 255, 0.2);
+  /* The glyph sits high in its em box, so nudge it down to optically center. */
+  transform: translateY(0.24em);
   pointer-events: none;
 }
-.post-body blockquote p { display: inline; margin: 0; }
-/* Small closing quote, right after the sentence (before any citation). */
+/* Small closing quote, right after the sentence, in the text color. */
 .post-body blockquote p::after {
   content: '\201D';
   margin-left: 3px;
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 0.78em;
-  color: var(--text-highlight);
+  color: inherit;
   vertical-align: -0.12em;
 }
 .post-body blockquote cite {
