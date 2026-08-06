@@ -30,11 +30,28 @@ export const POSTS: BlogPost[] = [
     excerpt:
       'A little over a year after launch, teams have created half a billion documents, decks and sheets with AI Create. Here is what we have learned.',
     body:
-      '<p>When we launched AI Create, we set out to make the blank page disappear. Today, teams across more than 40,000 organizations have created over <strong>500 million</strong> documents, presentations and spreadsheets — and the pace is still accelerating.</p>' +
+      '<p>When we launched AI Create, we set out to make the blank page disappear. Today, teams across more than 40,000 organizations have created over <strong>500 million</strong> documents, presentations and spreadsheets — and the pace is <em>still accelerating</em>.</p>' +
       '<h2>What half a billion documents taught us</h2>' +
-      '<p>The most-used surface is not the one we expected. Meetings-to-docs now accounts for nearly a third of everything created, as teams turn conversations into structured artifacts without lifting a finger.</p>' +
-      '<blockquote>The best interface for AI is the work you were already doing.</blockquote>' +
-      '<p>We are doubling down on that thesis: less prompting, more anticipating. Expect the next wave of AI Create to feel less like a tool you visit and more like a colleague who shows up with a first draft.</p>',
+      '<p>The most-used surface is not the one we expected. <mark>Meetings-to-docs now accounts for nearly a third</mark> of everything created, as teams turn conversations into structured artifacts without lifting a finger. Broken down, the top surfaces are:</p>' +
+      '<ul>' +
+      '<li><strong>Docs</strong> — 41% of everything created, led by meeting recaps and PRDs.</li>' +
+      '<li><strong>Slides</strong> — 28%, most of it generated straight from a doc or a call.</li>' +
+      '<li><strong>Sheets</strong> — 19%, usually action-item trackers that keep updating themselves.</li>' +
+      '</ul>' +
+      '<figure>' +
+      '<img src="/hero-images/slides.png" alt="An AI-generated slide deck open in AI Create." loading="lazy" />' +
+      '<figcaption>A deck generated from a single meeting — one of the half-billion artifacts created so far.</figcaption>' +
+      '</figure>' +
+      '<blockquote><p>The best interface for AI is the work you were already doing.</p></blockquote>' +
+      '<h3>Where we go from here</h3>' +
+      '<p>We are doubling down on that thesis — <em>less prompting, more anticipating</em> — along three lines:</p>' +
+      '<ol>' +
+      '<li>First drafts that arrive <strong>before</strong> you ask, grounded in your own context.</li>' +
+      '<li>Handoffs between Docs, Slides and Sheets that keep a single source of truth.</li>' +
+      '<li>Agents that carry a project across days, not just a single prompt.</li>' +
+      '</ol>' +
+      '<aside class="post-note"><p><strong>By the numbers</strong> — 500M+ artifacts, 40k+ organizations, and roughly <code>1,200</code> new documents created every minute.</p></aside>' +
+      '<p>Expect the next wave of AI Create to feel less like a tool you visit and more like a colleague who shows up with a first draft. More soon on the <a href="/blog">blog</a>.</p>',
   },
   {
     slug: 'introducing-ai-slides',
@@ -76,11 +93,60 @@ export const POSTS: BlogPost[] = [
     excerpt:
       'A look under the hood at the CRDT-based engine that keeps thousands of concurrent editors — and AI agents — perfectly in sync.',
     body:
-      '<p>Collaboration is easy with two people. It gets interesting when you add a few thousand editors and a swarm of AI agents all mutating the same document at once.</p>' +
+      '<p>Collaboration is easy with two people. It gets <em>interesting</em> when you add a few thousand editors and a swarm of <strong>AI agents</strong> all mutating the same document at once. This post is a tour of the engine that keeps them in sync — and, conveniently, a <mark>living reference</mark> for how long-form writing renders on this blog.</p>' +
       '<h2>Why we chose CRDTs</h2>' +
-      '<p>Conflict-free replicated data types let every client apply edits locally and converge without a central lock. That matters even more when an AI agent is streaming hundreds of edits per second alongside a human who is still typing.</p>' +
-      '<blockquote>Latency is a feature. Every millisecond you shave off is trust you earn back.</blockquote>' +
-      '<p>We will go deep on our presence protocol, cursor prediction, and how we keep memory flat as documents grow into the millions of operations.</p>',
+      '<p>Conflict-free replicated data types let every client apply edits locally and converge without a central lock. That matters even more when an AI agent is streaming hundreds of edits per second alongside a human who is <em>still typing</em>. Three properties sold us:</p>' +
+      '<ul>' +
+      '<li><strong>Local-first writes.</strong> Every keystroke commits instantly, then syncs — you never wait on a round-trip to see your own text.</li>' +
+      '<li><strong>Commutativity.</strong> Operations can arrive in any order and still converge to an identical document.</li>' +
+      '<li><strong>Offline tolerance.</strong> A dropped connection is just a longer merge window, never a lost draft — even for edits that were:' +
+      '<ul><li>made on a plane,</li><li>queued for minutes, and</li><li>replayed against a doc that moved on without you.</li></ul>' +
+      '</li>' +
+      '</ul>' +
+      '<blockquote><p>Latency is a feature. Every millisecond you shave off is trust you earn back.</p><cite>— our north-star principle for the sync team</cite></blockquote>' +
+      '<h2>The shape of the system</h2>' +
+      '<p>At a high level, three services carry an edit from a keypress to every other participant. The surface below is the same shared canvas our customers collaborate on:</p>' +
+      '<figure>' +
+      '<img src="/product-suite-assets/canvas-ui.png" alt="The AI Create canvas with multiple live cursors editing one shared document." loading="lazy" />' +
+      '<figcaption>Humans and agents editing a single canvas — each cursor is a replica converging in real time.</figcaption>' +
+      '</figure>' +
+      '<h3>The write path</h3>' +
+      '<p>When you type, the client appends an operation to its local log and optimistically renders it. Only then does it leave the device. In order:</p>' +
+      '<ol>' +
+      '<li>The editor produces a <code>PositionedOp</code> tagged with a Lamport timestamp.</li>' +
+      '<li>The op is applied locally and broadcast to the room&rsquo;s <code>SyncGateway</code>.</li>' +
+      '<li>Peers merge it into their own replica — <em>no server ever owns the truth</em>.</li>' +
+      '</ol>' +
+      '<h3>Presence, without the chatter</h3>' +
+      '<p>Cursor positions change far more often than content, so we ship them over a separate, lossy channel. A tiny last-write-wins reducer keeps the payload flat:</p>' +
+      '<pre><code>' +
+      '<span class="tok-key">const</span> CHANNEL = <span class="tok-str">"presence:v2"</span>;   <span class="tok-com">// best-effort channel</span>\n' +
+      '\n' +
+      '<span class="tok-key">type</span> Cursor = { line: number; ch: number };\n' +
+      '\n' +
+      '<span class="tok-key">function</span> <span class="tok-fn">onPresence</span>(state, msg) {\n' +
+      '  <span class="tok-com">// last write wins per peer — cheap, and lossy on purpose</span>\n' +
+      '  <span class="tok-key">return</span> { ...state, [msg.peerId]: msg.cursor };\n' +
+      '}' +
+      '</code></pre>' +
+      '<aside class="post-note"><p><strong>Note</strong> — presence packets are deliberately best-effort. Drop one and a cursor lags a single frame; it can never block or reorder a content edit.</p></aside>' +
+      '<h4>Keeping memory flat</h4>' +
+      '<p>Long-lived docs accumulate history, so a background compactor folds settled operations into a snapshot and evicts the tombstones. Memory tracks the <em>visible</em> document, not its entire past.</p>' +
+      '<h2>Did it actually get faster?</h2>' +
+      '<p>We measured median end-to-end edit latency — keypress on one client to paint on another — before and after the rewrite, across three regions:</p>' +
+      '<table>' +
+      '<caption>Median edit latency, 50-editor rooms (lower is better).</caption>' +
+      '<thead><tr><th>Region</th><th>Before</th><th>After</th><th>Change</th></tr></thead>' +
+      '<tbody>' +
+      '<tr><td>US-East</td><td>142 ms</td><td>38 ms</td><td>−73%</td></tr>' +
+      '<tr><td>EU-West</td><td>168 ms</td><td>44 ms</td><td>−74%</td></tr>' +
+      '<tr><td>AP-South</td><td>210 ms</td><td>61 ms</td><td>−71%</td></tr>' +
+      '</tbody>' +
+      '</table>' +
+      '<p>The headline: <mark>a 3–4× drop</mark> in perceived edit latency, with the biggest wins exactly where round-trips were longest.</p>' +
+      '<hr />' +
+      '<h2>What&rsquo;s next</h2>' +
+      '<p>We are going deeper on cursor prediction and flat-memory garbage collection. If you want the gory numbers, read the companion post on <a href="/blog/engineering-latency">shaving 200ms off every generation</a> — or just open a doc and start typing. Either way, <strong>welcome to the fast path</strong>.</p>',
   },
   {
     slug: 'ai-sheets-launch',
@@ -137,7 +203,7 @@ export const POSTS: BlogPost[] = [
       '<p>As AI writes more of the first draft, trust becomes the product. Here is how we design for it.</p>' +
       '<h2>Provenance by default</h2>' +
       '<p>Every AI-generated passage can show its sources. Every automated action is reversible. And nothing leaves your permission boundary without an explicit, auditable step.</p>' +
-      '<blockquote>Automation should expand human agency, never quietly replace it.</blockquote>' +
+      '<blockquote><p>Automation should expand human agency, never quietly replace it.</p></blockquote>' +
       '<p>These are not features bolted on at the end — they are constraints we design against from the first sketch.</p>',
   },
   {

@@ -86,7 +86,8 @@
 /* Featured cover fills the right of the card, flush, with a sharp divide from
    the panel — only its right corners are rounded (to match the card). */
 .bc--featured { border-radius: 0 var(--rounded-3xl) var(--rounded-3xl) 0; }
-.bc--hero { aspect-ratio: 1 / 1; margin: 8px 0 40px; }
+/* Full-bleed gradient behind the detail-page header (see .post-hero). */
+.bc--hero-bg { border-radius: 0; }
 
 /* Gradient zooms on hover — scale the canvas, not the overlay text. */
 .bc canvas { transition: transform 600ms var(--ease-out); }
@@ -280,10 +281,14 @@
 .blog-meta {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
+  row-gap: 6px;
   font-size: 14px;
   color: var(--text-secondary);
 }
+/* Keep each segment intact when the row wraps on narrow screens. */
+.blog-meta > span { white-space: nowrap; }
 
 .blog-cat { color: var(--text-primary); font-weight: 500; }
 
@@ -340,15 +345,48 @@
 }
 
 /* ── Detail page ────────────────────────────────────────────────────────────── */
+
+/* Gradient hero header: the post's mesh cover becomes a full-bleed background
+   behind the meta + title + description, then fades into the white page as the
+   reader scrolls — mirroring the v5 hero-to-white handoff on the home page. */
+.post-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.post-hero .bc--hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.post-hero-fade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 36%,
+    var(--bg-neutral) 100%
+  );
+}
+.post-hero-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 196px var(--gutter) 72px;
+}
+
 .post {
   max-width: 720px;
   margin: 0 auto;
-  padding: 168px var(--gutter) 40px;
+  padding: 8px var(--gutter) 40px;
 }
 
 .post-back {
   display: inline-block;
-  margin-bottom: 28px;
+  margin-bottom: 26px;
   font-size: 14px;
   font-weight: 500;
   color: var(--text-secondary);
@@ -356,47 +394,260 @@
 }
 .post-back:hover { color: var(--text-highlight); }
 
-.post .blog-meta { margin-bottom: 18px; }
+.post-hero .blog-meta { margin-bottom: 18px; }
+/* Author reads as the byline lead on the meta row. */
+.blog-author { color: var(--text-primary); font-weight: 500; }
 
 .post-title {
   font-size: clamp(30px, 3vw + 14px, 46px);
   font-weight: 500;
   line-height: 1.06;
   letter-spacing: -0.02em;
-  margin: 0 0 20px;
+  margin: 0 0 18px;
 }
 
+/* Description matches the body text style (same size/line-height/color). */
 .post-lede {
-  font-size: 20px;
-  line-height: 1.5;
+  font-size: 18px;
+  line-height: 1.7;
   color: var(--text-secondary);
   margin: 0;
 }
 
-/* Rendered article body */
-.post-body { font-size: 18px; line-height: 1.7; color: var(--text-secondary); }
+/* =============================================================================
+   Rendered article body — a full typographic system for the mock markdown.
+   Only weights 400/500 of General Sans are loaded, so 500 is our "bold".
+   ============================================================================= */
+.post-body {
+  --post-mono: 'SFMono-Regular', 'SF Mono', 'JetBrains Mono', ui-monospace, 'Menlo', 'Consolas', monospace;
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
 .post-body > *:first-child { margin-top: 0; }
+.post-body > *:last-child { margin-bottom: 0; }
 .post-body p { margin: 0 0 22px; }
-.post-body strong { color: var(--text-primary); font-weight: 500; }
 
+/* ── Inline emphasis ───────────────────────────────────────────────────────── */
+.post-body strong { color: var(--text-primary); font-weight: 500; }
+.post-body em { font-style: italic; }
+
+/* Highlight — a soft lavender "marker" that survives line wraps. */
+.post-body mark {
+  background: var(--bg-highlight-pink);
+  color: var(--text-primary);
+  padding: 0.05em 0.28em;
+  border-radius: 5px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.post-body a {
+  color: var(--text-highlight);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color 150ms ease;
+}
+.post-body a:hover { color: #0a44bf; }
+
+/* ── Headings (h1 is the post title; body uses h2–h4) ──────────────────────── */
 .post-body h2 {
   font-size: 27px;
   font-weight: 500;
   line-height: 1.2;
   letter-spacing: -0.01em;
   color: var(--text-primary);
-  margin: 44px 0 16px;
+  margin: 48px 0 16px;
+}
+.post-body h3 {
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin: 36px 0 12px;
+}
+.post-body h4 {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-highlight);
+  margin: 30px 0 10px;
 }
 
+/* ── Lists (bullets + numbered + nesting) ──────────────────────────────────── */
+.post-body ul,
+.post-body ol {
+  margin: 0 0 22px;
+  padding-left: 1.4em;
+}
+.post-body li { margin: 0 0 10px; padding-left: 0.3em; }
+.post-body li::marker { color: var(--text-highlight); }
+.post-body ol li::marker { font-weight: 500; }
+.post-body li > ul,
+.post-body li > ol { margin: 10px 0 0; }
+
+/* ── Blockquote ────────────────────────────────────────────────────────────── */
 .post-body blockquote {
-  margin: 32px 0;
-  padding: 4px 0 4px 24px;
-  border-left: 3px solid var(--text-highlight);
+  position: relative;
+  margin: 40px 0;
+  padding: 4px 8px 4px 64px;
   font-size: 22px;
-  line-height: 1.4;
+  line-height: 1.45;
   font-weight: 500;
   color: var(--text-primary);
   letter-spacing: -0.01em;
+}
+.post-body blockquote p { position: relative; margin: 0; }
+/* Oversized decorative opening quote, vertically centered against the quote text
+   (anchored to the paragraph, so the citation line doesn't drag it off-center). */
+.post-body blockquote p::before {
+  content: '\201C';
+  position: absolute;
+  left: -64px;
+  top: 0;
+  bottom: 0;
+  width: 52px;
+  display: flex;
+  align-items: center;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 90px;
+  line-height: 1;
+  color: rgba(12, 92, 255, 0.2);
+  /* The glyph sits high in its em box, so nudge it down to optically center. */
+  transform: translateY(0.24em);
+  pointer-events: none;
+}
+/* Small closing quote, right after the sentence, in the text color. */
+.post-body blockquote p::after {
+  content: '\201D';
+  margin-left: 3px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.78em;
+  color: inherit;
+  vertical-align: -0.12em;
+}
+.post-body blockquote cite {
+  display: block;
+  margin-top: 14px;
+  font-size: 15px;
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-secondary);
+}
+
+/* ── Figures & inline images ───────────────────────────────────────────────── */
+.post-body figure { margin: 36px 0; }
+.post-body img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--rounded-lg);
+  border: 1px solid var(--stroke);
+  background: var(--bg-accent-light);
+}
+.post-body figcaption {
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+/* ── Inline code + code blocks ─────────────────────────────────────────────── */
+.post-body code {
+  font-family: var(--post-mono);
+  font-size: 0.86em;
+  background: var(--bg-accent-light);
+  border: 1px solid var(--stroke);
+  color: var(--text-primary);
+  padding: 0.12em 0.4em;
+  border-radius: 6px;
+}
+.post-body pre {
+  margin: 28px 0;
+  padding: 20px 22px;
+  background: var(--bg-accent-light);
+  color: var(--text-primary);
+  border: 1px solid var(--stroke);
+  border-radius: var(--rounded-lg);
+  overflow-x: auto;
+  font-size: 14.5px;
+  line-height: 1.65;
+}
+.post-body pre code {
+  font-family: var(--post-mono);
+  font-size: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+}
+/* Lightweight syntax tokens tuned for the light panel. */
+.post-body .tok-key { color: #8250df; }
+.post-body .tok-fn { color: #0a56c2; }
+.post-body .tok-str { color: #0a7d33; }
+.post-body .tok-com { color: #6b778c; font-style: italic; }
+
+/* ── Callout / note ────────────────────────────────────────────────────────── */
+.post-body .post-note {
+  margin: 28px 0;
+  padding: 18px 22px;
+  background: var(--bg-accent-light);
+  border: 1px solid var(--stroke);
+  border-radius: var(--rounded-lg);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+.post-body .post-note p { margin: 0; }
+.post-body .post-note strong { color: var(--text-highlight); }
+/* The chip sits on the card fill, so lift it to a lighter (white) shade. */
+.post-body .post-note code {
+  background: var(--bg-neutral);
+  border-color: var(--bg-accent-dark);
+}
+
+/* ── Table ─────────────────────────────────────────────────────────────────── */
+.post-body table {
+  width: 100%;
+  margin: 28px 0;
+  border-collapse: collapse;
+  font-size: 15.5px;
+}
+.post-body caption {
+  caption-side: bottom;
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-align: left;
+}
+.post-body th,
+.post-body td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--stroke);
+}
+.post-body thead th {
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--bg-accent-light);
+  border-bottom: 1px solid var(--bg-accent-dark);
+}
+.post-body th:not(:first-child),
+.post-body td:not(:first-child) { text-align: right; }
+.post-body tbody tr:last-child td { border-bottom: none; }
+.post-body tbody td:first-child { color: var(--text-primary); }
+
+/* ── Horizontal rule ───────────────────────────────────────────────────────── */
+.post-body hr {
+  border: none;
+  height: 1px;
+  background: var(--stroke);
+  margin: 48px 0;
 }
 
 /* Read next */
@@ -439,5 +690,17 @@
 @media (max-width: 560px) {
   .blog-page { padding-top: 128px; }
   .blog-grid { grid-template-columns: 1fr; row-gap: 40px; }
-  .post { padding-top: 128px; }
+  .post-hero-inner { padding: 132px var(--gutter) 52px; }
+  .post { padding-top: 8px; }
+
+  .post-lede { font-size: 17px; }
+  .post-body { font-size: 17px; }
+  .post-body h2 { font-size: 24px; }
+  .post-body h3 { font-size: 19px; }
+  .post-body blockquote { font-size: 19px; padding-left: 46px; }
+  .post-body blockquote p::before { font-size: 66px; left: -46px; }
+  .post-body pre { font-size: 13px; padding: 16px; }
+  .post-body th,
+  .post-body td { padding: 10px 12px; }
+  .post-body table { font-size: 14px; }
 }
