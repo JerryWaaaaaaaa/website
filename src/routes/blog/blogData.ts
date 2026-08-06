@@ -2,12 +2,17 @@
  * Mock blog content for the prototype. Replace with a real CMS/data source later.
  * `body` is trusted HTML (mock only) rendered via dangerouslySetInnerHTML.
  */
+import type { ProductKey } from '../../data/products';
+
 export type BlogCategory = 'Company' | 'Product' | 'Engineering';
 
 export type BlogPost = {
   slug: string;
   title: string;
   category: BlogCategory;
+  /** Product this post is about, matching the product suite. Omitted for
+   *  company-wide posts that don't belong to a single product. */
+  product?: ProductKey;
   /** ISO 'YYYY-MM-DD' */
   date: string;
   readTime: string;
@@ -25,6 +30,7 @@ export const POSTS: BlogPost[] = [
     title: 'Zoom AI Create crosses 500 million documents created',
     coverText: '500,000,000 documents created',
     category: 'Company',
+    product: 'paper',
     date: '2026-07-28',
     readTime: '4 min read',
     excerpt:
@@ -58,6 +64,7 @@ export const POSTS: BlogPost[] = [
     title: 'Introducing AI Slides: from meeting to deck in seconds',
     coverText: 'Meeting to deck, instantly',
     category: 'Product',
+    product: 'slides',
     date: '2026-07-15',
     readTime: '5 min read',
     excerpt:
@@ -88,6 +95,7 @@ export const POSTS: BlogPost[] = [
     title: 'How we built real-time collaboration at scale',
     coverText: 'Real-time, at scale',
     category: 'Engineering',
+    product: 'canvas',
     date: '2026-06-20',
     readTime: '9 min read',
     excerpt:
@@ -153,6 +161,7 @@ export const POSTS: BlogPost[] = [
     title: 'AI Sheets turns your meetings into living spreadsheets',
     coverText: 'Meetings become data',
     category: 'Product',
+    product: 'sheets',
     date: '2026-06-05',
     readTime: '4 min read',
     excerpt:
@@ -168,6 +177,7 @@ export const POSTS: BlogPost[] = [
     title: 'Knowledge Base is now generally available',
     coverText: 'One source of truth',
     category: 'Product',
+    product: 'datatable',
     date: '2026-05-22',
     readTime: '3 min read',
     excerpt:
@@ -226,6 +236,7 @@ export const POSTS: BlogPost[] = [
     title: '100+ new templates for AI Docs',
     coverText: '100+ new templates',
     category: 'Product',
+    product: 'paper',
     date: '2026-03-27',
     readTime: '2 min read',
     excerpt:
