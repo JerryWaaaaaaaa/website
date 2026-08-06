@@ -401,9 +401,19 @@
 
 /* Read next */
 .post-readnext {
+  position: relative;
   max-width: var(--page-max-width);
   margin: 88px auto 0;
   padding: 48px var(--gutter) 88px;
+}
+
+.post-readnext::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
   border-top: 1px solid var(--stroke);
 }
 
