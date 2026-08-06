@@ -1,4 +1,5 @@
 import { useEffect, useState, type CSSProperties } from 'react';
+import { PRODUCTS as SUITE_PRODUCTS, type Product as SuiteProduct } from '../data/products';
 import { useFloatScale } from './productSuite/useFloatScale';
 // Reuse the V5 section/screen/float layout wholesale; this file only adds the
 // horizontal tab-row navigation styles (see the Figma "Tab bar" design).
@@ -29,56 +30,26 @@ import {
   DataTableAiPopover,
 } from './productSuite/DataTableMockup';
 
-type Product = {
-  key: string;
-  label: string;
-  icon: string;
+// Product identity (key/label/icon/color) comes from the shared suite list in
+// src/data/products.ts — the same source the blog product filter reads — so the
+// two stay in sync. This section adds the per-product screenshot on top.
+type Product = SuiteProduct & {
   screen: string;
-  color: string;
   video?: string;
 };
 
-// Order per the Figma tab-bar design: Paper, Slides, Sheets, Canvas, Data table.
-const PRODUCTS: Product[] = [
-  {
-    key: 'paper',
-    label: 'Paper',
-    icon: '/Icon/product-icons/paper-fill.svg',
-    screen: '/product-suite-assets/paper-ui.png',
-    color: '#0d6bde',
-  },
-  {
-    key: 'slides',
-    label: 'Slides',
-    icon: '/Icon/product-icons/slides-fill.svg',
-    screen: '/product-suite-assets/slides-UI.png',
-    color: '#fb327e',
-    // Slides renders as a live, animated DOM mockup (see SlidesMockup).
-  },
-  {
-    key: 'sheets',
-    label: 'Sheets',
-    icon: '/Icon/product-icons/sheets-fill.svg',
-    screen: '/product-suite-assets/sheets.png',
-    color: '#019f5c',
-    // Sheets renders as a live, animated DOM mockup (see SheetsMockup).
-  },
-  {
-    key: 'canvas',
-    label: 'Canvas',
-    icon: '/Icon/product-icons/canvas-fill.svg',
-    screen: '/product-suite-assets/canvas-ui.png',
-    color: '#3579fd',
-    // Canvas renders as a live, animated DOM mockup (see CanvasMockup).
-  },
-  {
-    key: 'datatable',
-    label: 'Data table',
-    icon: '/Icon/product-icons/datatable-fill.svg',
-    screen: '/product-suite-assets/datatable-ui.png',
-    color: '#019f5c',
-  },
-];
+// Order per the Figma tab-bar design: Paper, Slides, Sheets, Canvas, Data table
+// (mirrored by SUITE_PRODUCTS). Slides / Sheets / Canvas render as live animated
+// DOM mockups (see *Mockup components); the screenshot is the poster fallback.
+const SCREENS: Record<SuiteProduct['key'], string> = {
+  paper: '/product-suite-assets/paper-ui.png',
+  slides: '/product-suite-assets/slides-UI.png',
+  sheets: '/product-suite-assets/sheets.png',
+  canvas: '/product-suite-assets/canvas-ui.png',
+  datatable: '/product-suite-assets/datatable-ui.png',
+};
+
+const PRODUCTS: Product[] = SUITE_PRODUCTS.map((p) => ({ ...p, screen: SCREENS[p.key] }));
 
 export function ProductSuiteV5D() {
   const [active, setActive] = useState('paper');
