@@ -4,7 +4,7 @@ import { useDialKit } from 'dialkit';
 import { useDialUrlSync } from './dialUrlSync';
 import s from './Nav.module.css';
 
-type Panel = 'products' | 'features' | 'explore' | null;
+type Panel = 'products' | 'explore' | null;
 
 // Each card carries its own brand color as an "R, G, B" triplet, exposed as the
 // --card-rgb CSS var on the card. The navbar style variants below apply their own
@@ -67,8 +67,14 @@ const NAV_VARIANTS = [
 ];
 const DEFAULT_NAV_VARIANT = 'neutral';
 
-const FEATURE_PILLS = ['AI Auto Writing', 'AI Templates', 'Knowledge Base', 'Sites'];
-const EXPLORE_PILLS = ['Use Cases', 'Templates', 'Help center'];
+// Explore dropdown links. `to` routes with the SPA router (Blog → the blog index
+// we already ship); `href` is a placeholder for destinations not yet wired, matching
+// the rest of the nav's `#` links.
+const EXPLORE_ITEMS: { label: string; to?: string; href?: string }[] = [
+  { label: 'Use cases', href: '#' },
+  { label: 'Blog', to: '/blog' },
+  { label: 'Help center', href: '#' },
+];
 
 function Chevron() {
   return (
@@ -206,10 +212,9 @@ export function Nav() {
   const wrapClass = [s.navWrap, scrolled ? s.isScrolled : ''].filter(Boolean).join(' ');
   const barClass = [
     s.navBar,
-    // Desktop-only expanding panels; on mobile the drawer owns the accordion.
+    // Only Products expands the bar itself; Explore is a floating dropdown that
+    // doesn't reshape the bar. On mobile the drawer owns the accordion.
     !isMobile && openPanel === 'products' ? s.productsOpen : '',
-    !isMobile && openPanel === 'features' ? s.featuresOpen : '',
-    !isMobile && openPanel === 'explore' ? s.exploreOpen : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -241,21 +246,6 @@ export function Nav() {
                 <Chevron />
               </button>
             </li>
-            <li className={triggerClass('features')}>
-              <button
-                className={s.navLink}
-                aria-expanded={openPanel === 'features'}
-                aria-haspopup="true"
-                aria-controls="menu-features"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggle('features');
-                }}
-              >
-                Features
-                <Chevron />
-              </button>
-            </li>
             <li className={triggerClass('explore')}>
               <button
                 className={s.navLink}
@@ -270,6 +260,46 @@ export function Nav() {
                 Explore
                 <Chevron />
               </button>
+              <div
+                className={s.exploreMenu}
+                id="menu-explore"
+                role="menu"
+                aria-label="Explore menu"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {EXPLORE_ITEMS.map((item) =>
+                  item.to ? (
+                    <Link
+                      key={item.label}
+                      to={item.to}
+                      className={s.exploreMenuItem}
+                      role="menuitem"
+                      onClick={() => setOpenPanel(null)}
+                    >
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      className={s.exploreMenuItem}
+                      role="menuitem"
+                    >
+                      {item.label}
+                    </a>
+                  )
+                )}
+              </div>
+            </li>
+            <li className={s.navTrigger}>
+              <a className={s.navLink} href="#">
+                Templates
+              </a>
+            </li>
+            <li className={s.navTrigger}>
+              <Link className={s.navLink} to="/blog">
+                Blog
+              </Link>
             </li>
           </ul>
 
@@ -326,41 +356,6 @@ export function Nav() {
           </div>
         </div>
 
-        <div
-          className={s.featuresPanel}
-          id="menu-features"
-          role="region"
-          aria-label="Features menu"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className={s.featuresPanelInner}>
-            <div className={s.pillContainer}>
-              {FEATURE_PILLS.map((label) => (
-                <a key={label} className={s.pillItem} href="#">
-                  {label}
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div
-          className={s.explorePanel}
-          id="menu-explore"
-          role="region"
-          aria-label="Explore menu"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className={s.explorePanelInner}>
-            <div className={s.pillContainer}>
-              {EXPLORE_PILLS.map((label) => (
-                <a key={label} className={s.pillItem} href="#">
-                  {label}
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
       </nav>
 
       {/* Mobile drawer — sibling of <nav> so the scrolled-pill overflow/clip
@@ -442,33 +437,6 @@ export function Nav() {
               </div>
             </div>
 
-            {/* Features */}
-            <div
-              className={[s.mDrawerSection, openPanel === 'features' ? s.isExpanded : '']
-                .filter(Boolean)
-                .join(' ')}
-            >
-              <button
-                className={s.mDrawerTrigger}
-                aria-expanded={openPanel === 'features'}
-                onClick={() => toggle('features')}
-              >
-                Features
-                <Chevron />
-              </button>
-              <div className={s.mDrawerBody}>
-                <div className={s.mDrawerBodyInner}>
-                  <div className={s.mDrawerLinks}>
-                    {FEATURE_PILLS.map((label) => (
-                      <a key={label} className={s.mDrawerLink} href="#">
-                        {label}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {/* Explore */}
             <div
               className={[s.mDrawerSection, openPanel === 'explore' ? s.isExpanded : '']
@@ -486,14 +454,43 @@ export function Nav() {
               <div className={s.mDrawerBody}>
                 <div className={s.mDrawerBodyInner}>
                   <div className={s.mDrawerLinks}>
-                    {EXPLORE_PILLS.map((label) => (
-                      <a key={label} className={s.mDrawerLink} href="#">
-                        {label}
-                      </a>
-                    ))}
+                    {EXPLORE_ITEMS.map((item) =>
+                      item.to ? (
+                        <Link
+                          key={item.label}
+                          to={item.to}
+                          className={s.mDrawerLink}
+                          onClick={() => setDrawerOpen(false)}
+                        >
+                          {item.label}
+                        </Link>
+                      ) : (
+                        <a key={item.label} className={s.mDrawerLink} href={item.href}>
+                          {item.label}
+                        </a>
+                      )
+                    )}
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Templates — direct link */}
+            <div className={s.mDrawerSection}>
+              <a className={s.mDrawerTrigger} href="#" onClick={() => setDrawerOpen(false)}>
+                Templates
+              </a>
+            </div>
+
+            {/* Blog — direct link to the blog index */}
+            <div className={s.mDrawerSection}>
+              <Link
+                className={s.mDrawerTrigger}
+                to="/blog"
+                onClick={() => setDrawerOpen(false)}
+              >
+                Blog
+              </Link>
             </div>
           </div>
 
