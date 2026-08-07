@@ -463,7 +463,9 @@
   width: 100%;
   max-width: 720px;
   margin: 0 auto;
-  padding: 36px var(--gutter) 8px;
+  /* Top padding mirrors the page's top padding (the band's top clearance) so
+     the title gets the same breathing room above it. */
+  padding: clamp(96px, 8vw, 132px) var(--gutter) 8px;
 }
 
 .post {
@@ -783,7 +785,7 @@
   /* Tighten the band + head spacing on phones (the stacked hero layout itself
      is now the default — see .post-hero). */
   .post-hero-top { padding-bottom: 22px; }
-  .post-hero-head { padding-top: 28px; }
+  .post-hero-head { padding-top: 56px; }
   .post-lede { font-size: 17px; }
   .post-body { font-size: 17px; }
   .post-body h2 { font-size: 24px; }
