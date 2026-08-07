@@ -31,12 +31,11 @@ export function BlogPost() {
       <Nav />
       <div className="blog-root">
       <header className="post-hero">
-        {/* The post's mesh gradient becomes the header background, fading to white. */}
+        {/* The post's mesh gradient becomes a self-contained band at the top of the header. */}
         <BlogCover slug={post.slug} className="bc--hero-bg" width={1120} height={520} />
-        <span className="post-hero-fade" aria-hidden="true" />
         <div className="post-hero-inner">
-          {/* On mobile these two groups split across the gradient band (top) and
-              the white surface (head); on desktop they stack over the gradient. */}
+          {/* These two groups split across the gradient band (top) and the
+              white surface (head) — see .post-hero in blog.css. */}
           <div className="post-hero-top">
             <Link to="/blog" className="post-back">
               ‹ All posts

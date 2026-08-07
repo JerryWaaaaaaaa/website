@@ -420,36 +420,50 @@
 
 /* ── Detail page ────────────────────────────────────────────────────────────── */
 
-/* Gradient hero header: the post's mesh cover becomes a full-bleed background
-   behind the meta + title + description, then fades into the white page as the
-   reader scrolls — mirroring the v5 hero-to-white handoff on the home page. */
+/* Gradient hero header: the post's mesh cover is a self-contained band up top
+   — carrying the back-link + meta — and the title + description sit on the
+   white surface below, flowing into the article body. The band is full-bleed;
+   its content (and the head below) align to the centered 720px reading column. */
 .post-hero {
-  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
   isolation: isolate;
   overflow: hidden;
 }
 .post-hero .bc--hero-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-.post-hero-fade {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0) 36%,
-    var(--bg-neutral) 100%
-  );
-}
-.post-hero-inner {
   position: relative;
+  grid-column: 1;
+  grid-row: 1;
+  z-index: 0;
+  width: 100%;
+  height: clamp(300px, 30vw, 440px);
+}
+/* The two groups join the hero grid directly so the top group can overlay the
+   band while the head drops onto the white surface below. */
+.post-hero-inner { display: contents; }
+.post-hero-top {
+  grid-column: 1;
+  grid-row: 1;                 /* overlay the gradient band */
   z-index: 2;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
   max-width: 720px;
   margin: 0 auto;
-  padding: 196px var(--gutter) 72px;
+  padding: clamp(96px, 8vw, 132px) var(--gutter) 24px;
+}
+.post-hero-top .post-back { margin-bottom: 0; }
+.post-hero-top .blog-meta { margin-bottom: 0; }
+.post-hero-head {
+  grid-column: 1;
+  grid-row: 2;                 /* white surface below the band */
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 36px var(--gutter) 8px;
 }
 
 .post {
@@ -766,45 +780,10 @@
   .blog-grid { grid-template-columns: 1fr; row-gap: 40px; }
   .post { padding-top: 8px; }
 
-  /* Mobile hero: instead of overlaying the title on a stretched full-bleed
-     gradient (cramped + low-contrast on a phone), split it into a clean
-     gradient band up top — carrying the back-link + meta — and drop the
-     title + description onto the white surface below, flowing into the body. */
-  .post-hero {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto;
-  }
-  .post-hero .bc--hero-bg {
-    position: relative;
-    inset: auto;
-    grid-column: 1;
-    grid-row: 1;
-    width: 100%;
-    aspect-ratio: 4 / 3;
-  }
-  /* The white fade only makes sense behind overlaid text on desktop. */
-  .post-hero-fade { display: none; }
-  /* Let the two groups join the hero grid directly. */
-  .post-hero-inner {
-    display: contents;
-  }
-  .post-hero-top {
-    grid-column: 1;
-    grid-row: 1;               /* overlay the gradient band */
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 96px var(--gutter) 22px;
-  }
-  .post-hero-top .post-back { margin-bottom: 0; }
-  .post-hero-top .blog-meta { margin-bottom: 0; }
-  .post-hero-head {
-    grid-column: 1;
-    grid-row: 2;               /* white surface below the band */
-    padding: 28px var(--gutter) 20px;
-  }
+  /* Tighten the band + head spacing on phones (the stacked hero layout itself
+     is now the default — see .post-hero). */
+  .post-hero-top { padding-bottom: 22px; }
+  .post-hero-head { padding-top: 28px; }
   .post-lede { font-size: 17px; }
   .post-body { font-size: 17px; }
   .post-body h2 { font-size: 24px; }
