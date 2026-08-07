@@ -252,7 +252,8 @@
   color: inherit;
   margin-bottom: 56px;
   min-height: 460px;
-  background: var(--bg-accent-medium);
+  /* Lighter blue panel than the shared --bg-accent-medium token. */
+  background: #eef4ff;
   border-radius: var(--rounded-3xl);
 }
 
