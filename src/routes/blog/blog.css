@@ -421,36 +421,52 @@
 
 /* ── Detail page ────────────────────────────────────────────────────────────── */
 
-/* Gradient hero header: the post's mesh cover becomes a full-bleed background
-   behind the meta + title + description, then fades into the white page as the
-   reader scrolls — mirroring the v5 hero-to-white handoff on the home page. */
+/* Gradient hero header: the post's mesh cover is a self-contained band up top
+   — carrying the back-link + meta — and the title + description sit on the
+   white surface below, flowing into the article body. The band is full-bleed;
+   its content (and the head below) align to the centered 720px reading column. */
 .post-hero {
-  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
   isolation: isolate;
   overflow: hidden;
 }
 .post-hero .bc--hero-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-.post-hero-fade {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0) 36%,
-    var(--bg-neutral) 100%
-  );
-}
-.post-hero-inner {
   position: relative;
+  grid-column: 1;
+  grid-row: 1;
+  z-index: 0;
+  width: 100%;
+  height: clamp(300px, 30vw, 440px);
+}
+/* The two groups join the hero grid directly so the top group can overlay the
+   band while the head drops onto the white surface below. */
+.post-hero-inner { display: contents; }
+.post-hero-top {
+  grid-column: 1;
+  grid-row: 1;                 /* overlay the gradient band */
   z-index: 2;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
   max-width: 720px;
   margin: 0 auto;
-  padding: 196px var(--gutter) 72px;
+  padding: clamp(96px, 8vw, 132px) var(--gutter) 24px;
+}
+.post-hero-top .post-back { margin-bottom: 0; }
+.post-hero-top .blog-meta { margin-bottom: 0; }
+.post-hero-head {
+  grid-column: 1;
+  grid-row: 2;                 /* white surface below the band */
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  /* Top padding mirrors the page's top padding (the band's top clearance) so
+     the title gets the same breathing room above it. */
+  padding: clamp(96px, 8vw, 132px) var(--gutter) 8px;
 }
 
 .post {
@@ -765,9 +781,12 @@
 @media (max-width: 560px) {
   .blog-page { padding-top: 128px; }
   .blog-grid { grid-template-columns: 1fr; row-gap: 40px; }
-  .post-hero-inner { padding: 132px var(--gutter) 52px; }
   .post { padding-top: 8px; }
 
+  /* Tighten the band + head spacing on phones (the stacked hero layout itself
+     is now the default — see .post-hero). */
+  .post-hero-top { padding-bottom: 22px; }
+  .post-hero-head { padding-top: 56px; }
   .post-lede { font-size: 17px; }
   .post-body { font-size: 17px; }
   .post-body h2 { font-size: 24px; }
