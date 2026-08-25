@@ -33,77 +33,274 @@
   margin: 0;
 }
 
-/* ── Product filter (pills under the masthead) ──────────────────────────────── */
-.blog-filter {
+/* ── Product + topic filter dropdowns ───────────────────────────────────────── */
+.blog-filters {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 10px;
   margin-bottom: 48px;
 }
 
-/* Each pill reuses the product's brand color (from the suite) via --pc. */
-.blog-filter-pill {
+.blog-select {
+  position: relative;
+  z-index: 1;
+}
+
+.blog-select.is-open {
+  z-index: 5;
+}
+
+.blog-select-trigger {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  min-inline-size: 180px;
   height: 40px;
-  padding: 0 16px;
+  padding: 0 14px 0 16px;
   border: 1px solid var(--stroke);
   border-radius: 999px;
   background: var(--bg-neutral);
   color: var(--text-primary);
+  font: inherit;
   font-size: 14px;
   font-weight: 500;
   line-height: 1;
-  text-decoration: none;
   white-space: nowrap;
-  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+  cursor: pointer;
+  transition:
+    background 150ms var(--ease-out),
+    border-color 150ms var(--ease-out),
+    transform 160ms var(--ease-out);
 }
 
-.blog-filter-icon {
-  width: 18px;
-  height: 18px;
+.blog-select-facet {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.blog-select-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-inline-start: auto;
+  color: var(--text-primary);
+}
+
+.blog-select-icon {
+  width: 16px;
+  height: 16px;
   object-fit: contain;
-  /* Slightly muted at rest; full strength once the pill is active. */
-  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+.blog-select-chevron {
+  flex-shrink: 0;
+  color: var(--text-secondary);
+  transition: transform 160ms var(--ease-out);
+}
+
+.blog-select.is-open .blog-select-chevron {
+  transform: rotate(180deg);
+}
+
+.blog-select-trigger:active {
+  transform: scale(0.97);
+}
+
+.blog-select-trigger:focus-visible {
+  outline: 2px solid var(--text-highlight);
+  outline-offset: 2px;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .blog-filter-pill:hover {
+  .blog-select-trigger:hover {
     background: var(--bg-accent-light);
     border-color: var(--bg-accent-medium);
   }
 }
 
-/* Active "All posts" pill (no product color) → brand-contrast fill. */
-.blog-filter-pill.is-active {
-  background: var(--bg-contrast);
-  border-color: var(--bg-contrast);
-  color: var(--text-contrast);
+.blog-select-menu {
+  position: absolute;
+  inset-block-start: calc(100% + 8px);
+  inset-inline-start: 0;
+  min-inline-size: 100%;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border: 1px solid var(--stroke);
+  border-radius: var(--rounded-xl);
+  background: var(--bg-neutral);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+  transform-origin: top center;
+  opacity: 1;
+  transform: translateY(0) scale(0.98);
+  transition:
+    opacity 160ms var(--ease-out),
+    transform 160ms var(--ease-out);
 }
 
-/* Active product pill → tinted pill in the product's own color, matching the
-   product-suite tab bar (see ProductSuiteV5D.css). */
-.blog-filter-pill.is-active[style*='--pc'] {
+@starting-style {
+  .blog-select-menu {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.96);
+  }
+}
+
+.blog-select-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 12px;
+  border: none;
+  border-radius: var(--rounded-md);
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: start;
+  cursor: pointer;
+  transition: background 150ms var(--ease-out), color 150ms var(--ease-out);
+}
+
+.blog-select-option > span:first-of-type {
+  flex: 1;
+}
+
+.blog-select-check {
+  inline-size: 14px;
+  block-size: 14px;
+  flex-shrink: 0;
+  color: currentColor;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .blog-select-option:hover {
+    background: var(--bg-accent-light);
+  }
+}
+
+.blog-select-option.is-active {
+  background: var(--bg-accent-light);
+  color: var(--text-primary);
+}
+
+/* Product options keep suite brand tint when selected. */
+.blog-select-option.is-active[style*='--pc'] {
   background: color-mix(in srgb, var(--pc) 14%, var(--bg-neutral));
-  border-color: color-mix(in srgb, var(--pc) 60%, transparent);
   color: var(--pc);
 }
 
-.blog-filter-pill.is-active .blog-filter-icon {
-  opacity: 1;
+.blog-select-option:focus-visible {
+  outline: 2px solid var(--text-highlight);
+  outline-offset: -2px;
 }
 
-.blog-filter-pill:focus-visible {
+.blog-filters-clear {
+  height: 40px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    color 150ms var(--ease-out),
+    background 150ms var(--ease-out),
+    transform 160ms var(--ease-out);
+}
+
+.blog-filters-clear:active {
+  transform: scale(0.97);
+}
+
+.blog-filters-clear:focus-visible {
   outline: 2px solid var(--text-highlight);
   outline-offset: 2px;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .blog-filters-clear:hover {
+    color: var(--text-primary);
+    background: var(--bg-accent-light);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blog-select-trigger,
+  .blog-select-trigger:active,
+  .blog-select-chevron,
+  .blog-select-menu,
+  .blog-filters-clear,
+  .blog-filters-clear:active {
+    transform: none;
+    transition: none;
+  }
+}
+
 .blog-empty {
-  margin: 8px 0;
-  padding: 32px 0;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin-block: 8px 0;
+  padding-block: 72px;
+  padding-inline: 24px;
+  border: 1px dashed color-mix(in srgb, var(--stroke) 85%, transparent);
+  border-radius: var(--rounded-xl);
+  background: color-mix(in srgb, var(--bg-neutral) 70%, transparent);
+  text-align: center;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 200ms var(--ease-out),
+    transform 200ms var(--ease-out);
+}
+
+@starting-style {
+  .blog-empty {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+.blog-empty-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.blog-empty-copy {
+  margin: 0 0 8px;
+  max-inline-size: 38ch;
   font-size: 16px;
+  line-height: 1.45;
   color: var(--text-secondary);
+}
+
+.blog-empty .btn {
+  text-decoration: none;
+}
+
+@media (max-width: 640px) {
+  .blog-empty {
+    padding-block: 40px;
+    padding-inline: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blog-empty {
+    transform: none;
+    transition: none;
+  }
 }
 
 /* ── Generated cover (gradient + grain + title) ─────────────────────────────── */

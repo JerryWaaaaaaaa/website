@@ -6,6 +6,8 @@ import type { ProductKey } from '../../data/products';
 
 export type BlogCategory = 'Company' | 'Product' | 'Engineering';
 
+export const BLOG_CATEGORIES: readonly BlogCategory[] = ['Company', 'Product', 'Engineering'];
+
 export type BlogPost = {
   slug: string;
   title: string;
@@ -258,7 +260,58 @@ export const POSTS: BlogPost[] = [
       '<p>Welcome to the AI Create blog. This is where we will share what we are building, why we are building it, and the occasional look under the hood.</p>' +
       '<p>Expect product announcements, engineering deep-dives, and stories from customers turning conversations into finished work. Thanks for reading — there is a lot more to come.</p>',
   },
+  ...fillerPosts(),
 ];
+
+/** Extra mock posts so the index can paginate past page 1 (prototype only). */
+function fillerPosts(): BlogPost[] {
+  const seeds: Array<{
+    slug: string;
+    title: string;
+    category: BlogCategory;
+    product?: ProductKey;
+  }> = [
+    { slug: 'paper-outline-from-call', title: 'Paper now drafts an outline from the last call', category: 'Product', product: 'paper' },
+    { slug: 'paper-comments-agents', title: 'Agents can now reply to comments in Paper', category: 'Engineering', product: 'paper' },
+    { slug: 'slides-brand-kits', title: 'Brand kits land in AI Slides', category: 'Product', product: 'slides' },
+    { slug: 'slides-speaker-notes', title: 'Speaker notes that write themselves', category: 'Product', product: 'slides' },
+    { slug: 'sheets-live-formulas', title: 'Live formulas that track the conversation', category: 'Engineering', product: 'sheets' },
+    { slug: 'sheets-owners-column', title: 'The owners column that stays honest', category: 'Product', product: 'sheets' },
+    { slug: 'canvas-spatial-search', title: 'Spatial search on the shared canvas', category: 'Engineering', product: 'canvas' },
+    { slug: 'canvas-frames', title: 'Frames: sections that travel with the work', category: 'Product', product: 'canvas' },
+    { slug: 'datatable-permissions', title: 'Row-level permissions in Data table', category: 'Engineering', product: 'datatable' },
+    { slug: 'datatable-views', title: 'Saved views for every working group', category: 'Product', product: 'datatable' },
+    { slug: 'paper-export-pdf', title: 'Cleaner PDF export from Paper', category: 'Product', product: 'paper' },
+    { slug: 'slides-from-sheet', title: 'Build a deck straight from a sheet', category: 'Product', product: 'slides' },
+    { slug: 'apac-data-residency', title: 'In-region residency expands to Seoul', category: 'Company' },
+    { slug: 'trust-center-update', title: 'Trust Center: provenance you can click', category: 'Company' },
+    { slug: 'latency-round-two', title: 'Another 80ms off the first token', category: 'Engineering' },
+    { slug: 'templates-legal', title: 'Legal and ops templates join the gallery', category: 'Product', product: 'paper' },
+    { slug: 'canvas-cursors', title: 'Cursor presence without the chatter', category: 'Engineering', product: 'canvas' },
+    { slug: 'sheets-chart-first', title: 'Chart-first sheets for weekly reviews', category: 'Product', product: 'sheets' },
+    { slug: 'datatable-sync', title: 'Data table syncs from meeting actions', category: 'Product', product: 'datatable' },
+    { slug: 'hiring-research', title: 'We are hiring research engineers', category: 'Company' },
+    { slug: 'paper-suggest-edits', title: 'Suggested edits that cite the meeting', category: 'Product', product: 'paper' },
+    { slug: 'slides-motion', title: 'Motion presets that stay on-brand', category: 'Product', product: 'slides' },
+    { slug: 'offline-replicas', title: 'Offline replicas that merge, not conflict', category: 'Engineering' },
+    { slug: 'customer-acme', title: 'How Acme retired the status-meeting deck', category: 'Company' },
+    { slug: 'paper-sections', title: 'Reusable sections across Paper docs', category: 'Product', product: 'paper' },
+    { slug: 'canvas-minimap', title: 'A minimap for very large canvases', category: 'Product', product: 'canvas' },
+    { slug: 'sheets-guardrails', title: 'Guardrails for AI-written formulas', category: 'Engineering', product: 'sheets' },
+    { slug: 'q2-roundup', title: 'Q2 roundup: what shipped, what is next', category: 'Company' },
+    { slug: 'datatable-csv', title: 'Smarter CSV import for Data table', category: 'Product', product: 'datatable' },
+    { slug: 'paper-mobile', title: 'Paper on mobile: review, do not rewrite', category: 'Product', product: 'paper' },
+  ];
+
+  return seeds.map((seed, i) => ({
+    ...seed,
+    coverText: seed.title,
+    date: `2026-02-${String(28 - (i % 27)).padStart(2, '0')}`,
+    readTime: `${3 + (i % 5)} min read`,
+    excerpt: 'A short update from the team building the agentic workspace.',
+    body: `<p>${seed.title}.</p><p>More detail coming as this prototype grows — this post exists so the blog can paginate and filter like a real index.</p>`,
+  }));
+}
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
