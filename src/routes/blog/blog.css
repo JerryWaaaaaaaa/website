@@ -440,7 +440,7 @@
 .card-author-name { font-weight: 500; }
 .card-author-role { color: var(--text-secondary); }
 
-/* ── Featured (darker-blue panel left, cover takes over the right) ──────────── */
+/* ── Featured (white panel left, cover takes over the right) ────────────────── */
 .blog-featured {
   display: grid;
   grid-template-columns: 1fr minmax(0, 46%);
@@ -449,8 +449,12 @@
   color: inherit;
   margin-bottom: 56px;
   min-height: 460px;
-  /* Lighter blue panel than the shared --bg-accent-medium token. */
-  background: #eef4ff;
+  /* White panel so the text side reads as a card against the gradient cover,
+     rather than blurring into it. Stroke + soft elevation keep it distinct
+     from the (also white) page background. */
+  background: var(--color-white);
+  border: 1px solid var(--stroke);
+  box-shadow: var(--elevation-1);
   border-radius: var(--rounded-3xl);
 }
 
