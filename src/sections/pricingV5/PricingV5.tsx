@@ -171,52 +171,58 @@ export function PricingV5() {
                   <span className="pr5-badge">Most popular</span>
                 )}
 
-                <h3 className="pr5-card-name">{plan.name}</h3>
-                <p className="pr5-card-blurb">{plan.blurb}</p>
+                {/* Top stub — the offer. Its bottom edge is the tear line. */}
+                <div className="pr5-card-top">
+                  <h3 className="pr5-card-name">{plan.name}</h3>
+                  <p className="pr5-card-blurb">{plan.blurb}</p>
 
-                <div className="pr5-price">
-                  <span className="pr5-price-amount">{price}</span>
-                  {!isFree && (
-                    <span className="pr5-price-suffix">{plan.priceSuffix}</span>
+                  <div className="pr5-price">
+                    <span className="pr5-price-amount">{price}</span>
+                    {!isFree && (
+                      <span className="pr5-price-suffix">{plan.priceSuffix}</span>
+                    )}
+                  </div>
+
+                  {plan.aiCredits && (
+                    <p className="pr5-credits">{plan.aiCredits}</p>
                   )}
+
+                  <Button variant={plan.ctaVariant} className="pr5-cta">
+                    {plan.ctaLabel}
+                  </Button>
                 </div>
 
-                {plan.aiCredits && (
-                  <p className="pr5-credits">{plan.aiCredits}</p>
-                )}
+                {/* Bottom stub — the details, below the perforated tear line. */}
+                <div className="pr5-card-bottom">
+                  {plan.featuresIntro && (
+                    <p className="pr5-features-intro">{plan.featuresIntro}</p>
+                  )}
 
-                <Button variant={plan.ctaVariant} className="pr5-cta">
-                  {plan.ctaLabel}
-                </Button>
-
-                {plan.featuresIntro && (
-                  <p className="pr5-features-intro">{plan.featuresIntro}</p>
-                )}
-
-                <ul className="pr5-features">
-                  {plan.features.map((feature) => {
-                    const label =
-                      typeof feature === 'string' ? feature : feature.label;
-                    const icon =
-                      typeof feature === 'string' ? undefined : feature.icon;
-                    return (
-                      <li key={label} className="pr5-feature">
-                        {icon ? (
-                          <img
-                            src={icon}
-                            alt=""
-                            className="pr5-feature-icon"
-                            width={16}
-                            height={16}
-                          />
-                        ) : (
-                          <CheckIcon />
-                        )}
-                        <span>{label}</span>
-                      </li>
-                    );
-                  })}
-                </ul>
+                  <ul className="pr5-features">
+                    {plan.features.map((feature) => {
+                      const label =
+                        typeof feature === 'string' ? feature : feature.label;
+                      const icon =
+                        typeof feature === 'string' ? undefined : feature.icon;
+                      return (
+                        <li key={label} className="pr5-feature">
+                          {icon ? (
+                            <img
+                              src={icon}
+                              alt=""
+                              className="pr5-feature-icon"
+                              width={16}
+                              height={16}
+                            />
+                          ) : (
+                            <CheckIcon />
+                          )}
+                          <span>{label}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               </article>
             );
           })}

@@ -113,18 +113,68 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 32px;
+  /* The two stubs meet with no gap so the side notches read as full circles
+     and the tear line lands exactly on the seam. Fill/border live on the
+     stubs (a mask can't punch a hole through a single shared box while a
+     drop shadow survives, so we split the card in two). */
+  --pr5-notch-r: 22px;
+}
+
+/* The two ticket stubs. Each carries the card fill + outline; the shared seam
+   is the perforated tear line. Semicircular side notches are punched at that
+   seam with two intersecting radial-gradient masks — true transparency, so the
+   section backdrop shows through the bite. The top stub cuts its two bottom
+   corners, the bottom stub its two top corners, and the quarter-circles meet
+   across the seam into full side notches. */
+.pr5-card-top,
+.pr5-card-bottom {
+  display: flex;
+  flex-direction: column;
   background: var(--bg-neutral);
   border: 1px solid var(--stroke);
-  border-radius: 24px;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+.pr5-card-top {
+  gap: 16px;
+  padding: 32px 32px 28px;
+  border-bottom: none;
+  border-radius: 24px 24px 0 0;
+  -webkit-mask-image:
+    radial-gradient(circle var(--pr5-notch-r) at 0 100%, #0000 calc(100% - 0.6px), #000 100%),
+    radial-gradient(circle var(--pr5-notch-r) at 100% 100%, #0000 calc(100% - 0.6px), #000 100%);
+  mask-image:
+    radial-gradient(circle var(--pr5-notch-r) at 0 100%, #0000 calc(100% - 0.6px), #000 100%),
+    radial-gradient(circle var(--pr5-notch-r) at 100% 100%, #0000 calc(100% - 0.6px), #000 100%);
+}
+
+.pr5-card-bottom {
+  gap: 12px;
+  padding: 28px 32px 32px;
+  /* The tear line spans between the notches; the mask clips its ends cleanly. */
+  border-top: 1px solid var(--border-subtle);
+  border-radius: 0 0 24px 24px;
+  -webkit-mask-image:
+    radial-gradient(circle var(--pr5-notch-r) at 0 0, #0000 calc(100% - 0.6px), #000 100%),
+    radial-gradient(circle var(--pr5-notch-r) at 100% 0, #0000 calc(100% - 0.6px), #000 100%);
+  mask-image:
+    radial-gradient(circle var(--pr5-notch-r) at 0 0, #0000 calc(100% - 0.6px), #000 100%),
+    radial-gradient(circle var(--pr5-notch-r) at 100% 0, #0000 calc(100% - 0.6px), #000 100%);
 }
 
 /* Featured card — filled blue highlight; flip text/CTA/icons for contrast */
-.pr5-card.is-featured {
+.pr5-card.is-featured .pr5-card-top,
+.pr5-card.is-featured .pr5-card-bottom {
   background: var(--bg-highlight-blue);
   border-color: transparent;
   color: var(--text-contrast);
+}
+
+.pr5-card.is-featured .pr5-card-bottom {
+  border-top-color: rgba(255, 255, 255, 0.28);
 }
 
 .pr5-card.is-featured .pr5-card-name,
@@ -142,10 +192,6 @@
 
 .pr5-card.is-featured .pr5-check {
   color: var(--color-white);
-}
-
-.pr5-card.is-featured .pr5-features-intro {
-  border-top-color: rgba(255, 255, 255, 0.25);
 }
 
 /* Badge + CTA flip to white-on-blue so they stay visible */
@@ -186,6 +232,9 @@
   letter-spacing: -0.01em;
   color: var(--text-primary);
   margin: 0;
+  /* Reserve two lines so every top stub is the same height and the tear lines
+     align across the row (names range from one to two lines). */
+  min-height: calc(2 * 1.1 * 22px);
 }
 
 .pr5-card-blurb {
@@ -236,11 +285,9 @@
   margin-top: 8px;
 }
 
-/* Feature list — intro line owns the divider above the bullets */
+/* Feature list — the perforated tear seam above is the divider now. */
 .pr5-features-intro {
-  margin: 8px 0 0;
-  padding-top: 16px;
-  border-top: 1px solid var(--stroke);
+  margin: 0;
   font-family: 'General Sans', sans-serif;
   font-size: 13px;
   font-weight: 500;
@@ -250,7 +297,7 @@
 
 .pr5-features {
   list-style: none;
-  margin: 12px 0 0;
+  margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -289,13 +336,16 @@
   .pr5-section { padding: 72px var(--gutter); }
   .pr5-head { margin-bottom: 40px; }
   .pr5-grid { gap: 16px; }
-  .pr5-card { padding: 24px; }
+  .pr5-card { --pr5-notch-r: 20px; }
+  .pr5-card-top { padding: 24px 24px 24px; }
+  .pr5-card-bottom { padding: 24px 24px 24px; }
 }
 
 /* Pricing V5 — mobile (cards stack to one column) */
 @media (max-width: 639px) {
   .pr5-section { padding: 56px var(--gutter); }
   .pr5-grid { grid-template-columns: 1fr; gap: 20px; }
+  .pr5-card { --pr5-notch-r: 18px; }
   .pr5-badge { left: 24px; }
 }
 
