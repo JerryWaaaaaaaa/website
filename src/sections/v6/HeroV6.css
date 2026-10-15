@@ -1,0 +1,191 @@
+/* V6 hero — Figma 260:56297 (2200 × 1428, 240px block padding, 64px gap). */
+.v6-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(40px, 2.9vw, 64px);
+  overflow: hidden;
+  padding: clamp(120px, 10.9vw, 240px) var(--gutter) clamp(72px, 6.4vw, 140px);
+  background: var(--gradient-accent);
+}
+
+.v6-hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.v6-hero-copy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+}
+
+.v6-hero-title {
+  align-items: center;
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+.v6-hero-title .v6-chips-row {
+  justify-content: center;
+}
+
+/* 92px square tile with the AI Companion emblem, matching the chip height. */
+.v6-hero-emblem {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  /* Same height as a chip line (72px type + 8/12px padding = 92px). */
+  width: calc(var(--v6-display) * 1.278);
+  height: calc(var(--v6-display) * 1.278);
+  border-radius: var(--rounded-lg);
+  background: var(--gradient-accent);
+}
+.v6-hero-emblem img {
+  display: block;
+  width: 70%;
+  height: auto;
+}
+
+.v6-hero-pill {
+  width: min(100%, 739px);
+}
+
+/* --- Product UI ---------------------------------------------------------- */
+.v6-hero-ui {
+  position: relative;
+  width: min(100%, 1024px);
+}
+.v6-hero-tracker {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Screenshare self view (Figma 260:56320): 252px card overlapping the right
+   edge of the browser frame. Positioned as % of the 1024 × 701 UI frame. */
+.v6-selfview {
+  position: absolute;
+  top: 66.3%;
+  left: 87.7%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 24.6%;
+  min-width: 150px;
+  padding: 6px;
+  border-radius: var(--rounded-md);
+  background: #0d0d0d;
+  box-shadow: var(--elevation-2);
+}
+.v6-selfview-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+}
+.v6-selfview-layouts {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+}
+.v6-layout {
+  position: relative;
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+.v6-layout--strip::after,
+.v6-layout--wide::after,
+.v6-layout--split::before,
+.v6-layout--split::after {
+  content: '';
+  position: absolute;
+  left: 1px;
+  width: 14px;
+  border-radius: 1px;
+}
+.v6-layout--strip::after {
+  top: 10px;
+  height: 4px;
+  background: #dfe3e8;
+}
+.v6-layout--wide::after {
+  top: 4px;
+  height: 10px;
+  background: #dfe3e8;
+}
+.v6-layout--split::before {
+  top: 2px;
+  height: 5.5px;
+  background: #3b90f7;
+}
+.v6-layout--split::after {
+  top: 8.5px;
+  height: 5.5px;
+  background: #3b90f7;
+}
+
+.v6-selfview-video {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+}
+.v6-selfview-video img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.v6-selfview-video::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+.v6-selfview-name {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.01em;
+}
+
+@media (max-width: 1199px) {
+  .v6-selfview {
+    left: auto;
+    right: -2%;
+  }
+}
+
+@media (max-width: 639px) {
+  .v6-hero-title .v6-chip-line {
+    white-space: normal;
+  }
+  .v6-selfview {
+    top: auto;
+    bottom: -12%;
+    width: 42%;
+  }
+}

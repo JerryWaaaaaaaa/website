@@ -1,0 +1,183 @@
+/* V6 "For every task you need" — Figma 200:75500.
+   Panel 1800 wide, 120px padding, 64px title gap. Tabs are 5 equal 62px cells;
+   each product slide is 1360 × 870 (87.18% of the 1560 frame) and the next one
+   peeks in from the right, clipped at the panel edge. */
+.v6-ss {
+  --v6-ss-slide-w: 87.18%;
+  --v6-ss-cycle: var(--psuite-v5c-cycle, 10000ms);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(32px, 3.56vw, 64px);
+  padding-inline: clamp(20px, 6.67vw, 120px);
+  background: var(--bg-accent-medium);
+}
+
+.v6-ss-body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Tabs ----------------------------------------------------------------- */
+.v6-ss-tabs {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.v6-ss-tabs::-webkit-scrollbar {
+  display: none;
+}
+.v6-ss-tab {
+  position: relative;
+  display: inline-flex;
+  flex: 1 0 0;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-width: 120px;
+  padding: 16px 24px;
+  overflow: hidden;
+  border: none;
+  background: var(--v6-tab-fill);
+  color: var(--text-inactive);
+  font: inherit;
+  font-size: var(--v6-heading-5);
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: color var(--duration-base) ease;
+}
+.v6-ss-tab[data-active] {
+  color: var(--pc);
+}
+.v6-ss-tab:focus-visible {
+  outline: 2px solid var(--text-highlight);
+  outline-offset: -2px;
+}
+
+/* Countdown fill: grows left → right across the active chip over one cycle;
+   its animationend advances the slideshow (see ProductSlideshowV6.tsx). */
+.v6-ss-fill {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  background: color-mix(in srgb, var(--pc) 20%, var(--bg-accent-medium));
+  pointer-events: none;
+  animation: v6-ss-fill var(--v6-ss-cycle) linear forwards;
+}
+.v6-ss-fill[data-paused='true'] {
+  animation-play-state: paused;
+}
+@keyframes v6-ss-fill {
+  to {
+    width: 100%;
+  }
+}
+
+.v6-ss-tab-icon,
+.v6-ss-tab-label {
+  position: relative;
+  z-index: 1;
+}
+.v6-ss-tab-icon {
+  display: block;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+.v6-ss-tab-icon--mono {
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / 20px no-repeat;
+  mask: var(--icon) center / 20px no-repeat;
+}
+
+/* --- Slides ----------------------------------------------------------------- */
+.v6-ss-viewport {
+  position: relative;
+  /* Slide height follows its 1360 × 870 frame. */
+  aspect-ratio: 1560 / 870;
+  /* Clip the outgoing slide on the left; the next one may still peek out to
+     the panel's right edge (the panel itself clips). */
+  clip-path: inset(0 -100vw 0 0);
+}
+.v6-ss-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--v6-ss-slide-w);
+  height: 100%;
+  overflow: hidden;
+  transform: translateX(calc(var(--offset) * 100%));
+  visibility: hidden;
+}
+.v6-ss-slide[data-near] {
+  visibility: visible;
+  transition: transform 700ms var(--ease-emphasized);
+}
+.v6-ss-slide-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* Product UI frame: 1200 × 630 at 80/120 inside the slide (clips its floats);
+   the screen itself is 960 wide, centred. */
+.v6-ss-stage {
+  position: absolute;
+  top: 13.8%;
+  left: 5.88%;
+  width: 88.24%;
+  height: 72.4%;
+  overflow: hidden;
+}
+.v6-ss-screen {
+  width: 80%;
+  margin: 3% auto 0;
+}
+.v6-ss-screen .psuite-v5-screen {
+  border-radius: calc(14px * var(--psuite-float-scale, 1));
+  background: rgba(252, 252, 252, 0.95);
+}
+
+@media (max-width: 1199px) {
+  .v6-ss {
+    --v6-ss-slide-w: 92%;
+  }
+  .v6-ss-tab {
+    padding-inline: 20px;
+  }
+}
+
+@media (max-width: 639px) {
+  .v6-ss {
+    --v6-ss-slide-w: 100%;
+  }
+  .v6-ss-viewport {
+    aspect-ratio: 4 / 3;
+  }
+  .v6-ss-stage {
+    top: 8%;
+    left: 0;
+    width: 100%;
+    height: 84%;
+  }
+  .v6-ss-screen {
+    width: 92%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No countdown or auto-advance: the active chip shows fully filled and,
+     with no animationend, the slideshow only changes on click. */
+  .v6-ss-fill {
+    width: 100%;
+    animation: none;
+  }
+  .v6-ss-slide[data-near] {
+    transition: none;
+  }
+}

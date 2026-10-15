@@ -1,0 +1,227 @@
+/* =============================================================================
+   V6 — Microsite Stylized (Figma QDrgl8Mpky2WshHHxnLz8E · 261:72350)
+   Shared shell for every V6 section. The design is drawn on a 2200px canvas with
+   an 1800px body column; sizes below are the Figma values capped with clamp()
+   so the page scales down fluidly, with floors from the DESIGN.md type ramp.
+   ========================================================================== */
+
+.v6-page {
+  /* Panel padding: 120px block / 160px inline at full size. */
+  --v6-block: clamp(56px, 6.67vw, 120px);
+  --v6-inline: clamp(20px, 8.9vw, 160px);
+  /* Type scale (Figma px → fluid). */
+  --v6-display: clamp(36px, 4vw, 72px);
+  --v6-title: clamp(32px, 3.34vw, 60px);
+  --v6-heading-2: clamp(28px, 2.45vw, 44px);
+  --v6-heading-3: clamp(22px, 1.78vw, 32px);
+  --v6-heading-4: clamp(18px, 1.23vw, 22px);
+  --v6-heading-5: clamp(16px, 1.12vw, 20px);
+  --v6-body: clamp(16px, 1vw, 18px);
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+}
+
+/* Body column: every section below the hero/product strip is a panel inside
+   the 1800px column (edge-to-edge once the viewport is narrower). */
+.v6-body {
+  width: 100%;
+  max-width: var(--v6-body-max-width);
+  margin-inline: auto;
+}
+
+.v6-panel {
+  position: relative;
+  overflow: hidden;
+  padding: var(--v6-block) var(--v6-inline);
+}
+
+/* 12px corner dot at 24/24 (Figma "Ellipse 5574"). */
+.v6-dot {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 2;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+}
+
+.v6-title {
+  margin: 0;
+  font-size: var(--v6-title);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.v6-lede {
+  margin: 0;
+  font-size: var(--v6-body);
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.v6-text-gradient {
+  background: var(--v6-text-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Dot-grid texture + soft wash behind section headers (Open platform, Templates). */
+.v6-dot-grid {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 100%;
+  max-height: 1171px;
+  background: url('/v6/shared/dot-grid.webp') top center / 1800px auto repeat-y;
+  opacity: 0.7;
+  pointer-events: none;
+}
+.v6-header-wash {
+  position: absolute;
+  top: 36px;
+  left: 0;
+  width: min(952px, 70%);
+  height: 257px;
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    var(--bg-accent-medium) 55.5%,
+    rgba(227, 237, 252, 0) 100%
+  );
+  pointer-events: none;
+}
+
+/* --- Chip headline ------------------------------------------------------ */
+/* Display lines set inside rounded highlight blocks (hero + CTA). */
+.v6-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.v6-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.v6-chip-line {
+  display: inline-flex;
+  align-items: center;
+  padding: calc(var(--v6-display) * 0.111) calc(var(--v6-display) * 0.111)
+    calc(var(--v6-display) * 0.167);
+  border-radius: var(--rounded-lg);
+  font-size: var(--v6-display);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.v6-chip-line--blue {
+  background: var(--bg-highlight-blue);
+  color: var(--bg-highlight-pink);
+}
+.v6-chip-line--pink {
+  background: var(--bg-highlight-pink);
+  color: var(--text-highlight);
+}
+.v6-chip-line--rose {
+  background: var(--bg-highlight-rose);
+  color: var(--text-highlight-rose);
+}
+
+/* --- Agent prompt CTA ("Get started for free") ------------------------- */
+.v6-agent {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px 32px 16px 16px;
+  border: none;
+  border-radius: var(--rounded-md);
+  background: var(--bg-contrast);
+  color: var(--text-contrast);
+  font: inherit;
+  font-size: var(--v6-heading-4);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform var(--duration-feedback) var(--ease-out),
+    opacity var(--duration-feedback) ease;
+}
+.v6-agent:active {
+  transform: scale(0.97);
+}
+.v6-agent--pink {
+  background: var(--bg-highlight-pink);
+  color: var(--text-highlight);
+}
+.v6-agent-media {
+  display: block;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 27px;
+  object-fit: cover;
+}
+.v6-agent-icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 27px;
+  background: var(--color-blue);
+}
+.v6-agent-icon img {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .v6-agent:hover {
+    opacity: 0.88;
+  }
+}
+
+/* Pill holding a line of body copy + the agent CTA (hero, CTA). */
+.v6-prompt-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(100%, 763px);
+  padding: 8px 8px 8px 20px;
+  border-radius: var(--rounded-lg);
+  background: var(--bg-accent-light);
+}
+.v6-prompt-pill p {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+  font-size: var(--v6-body);
+  line-height: 1.4;
+}
+
+@media (max-width: 639px) {
+  .v6-prompt-pill {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+  }
+  .v6-agent {
+    justify-content: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v6-agent,
+  .v6-agent:active {
+    transition: none;
+    transform: none;
+  }
+}

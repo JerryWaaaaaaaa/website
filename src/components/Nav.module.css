@@ -601,3 +601,91 @@
     transition: none;
   }
 }
+
+/* =============================================================================
+   V6 — Microsite Stylized nav (Figma 260:39476 nav-desktop-scroll)
+   Same structure and behavior as the default bar; only the skin changes. Links
+   sit right-aligned in Geist Mono caps, buttons use 12px corners, and the
+   scrolled state is a full-width tinted glass bar inset 8px from the viewport
+   (instead of the 1024px pill).
+   ========================================================================== */
+.navWrap[data-version='v6'] .navRow {
+  gap: 48px;
+  padding: 12px 18px 12px 24px;
+}
+.navWrap[data-version='v6'] .navLogo {
+  padding: 0 18px 0 9px;
+}
+.navWrap[data-version='v6'] .navLinks {
+  justify-content: flex-end;
+  gap: 20px;
+}
+.navWrap[data-version='v6'] .navLink {
+  gap: 5px;
+  padding: 5px 0;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  border-radius: 0;
+}
+.navWrap[data-version='v6'] .navLink:hover,
+.navWrap[data-version='v6'] .navTrigger.isOpen .navLink {
+  background: none;
+  color: var(--text-highlight);
+}
+.navWrap[data-version='v6'] .navCta :global(.btn) {
+  border-radius: var(--rounded-md);
+}
+.navWrap[data-version='v6'] .navCta :global(.btn-secondary) {
+  background: var(--bg-accent-light);
+}
+.navWrap[data-version='v6'] .navCta :global(.btn-secondary):hover {
+  background: var(--bg-accent-medium);
+}
+.navWrap[data-version='v6'] .exploreMenu {
+  right: 0;
+  left: auto;
+  border-radius: var(--rounded-lg);
+}
+.navWrap[data-version='v6'] .exploreMenuItem {
+  border-radius: var(--rounded-sm);
+}
+
+/* Scrolled: tinted glass bar, inset 8px, 12px corners (Figma bg rgba(8,59,130,.1)
+   with a 24px backdrop blur over an 8px blur on the wrapper). */
+.navWrap[data-version='v6'].isScrolled {
+  padding: 8px 8px 0;
+}
+.navWrap[data-version='v6'].isScrolled .navBar,
+.navWrap[data-version='v6'].isScrolled .navBar.productsOpen {
+  max-width: 100%;
+  border-radius: var(--rounded-md);
+  background: var(--v6-nav-glass);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-color: transparent;
+}
+.navWrap[data-version='v6'].isScrolled .navRow {
+  padding: 12px 18px 12px 24px;
+}
+.navWrap[data-version='v6'] .navBar.productsOpen {
+  border-radius: 0 0 var(--rounded-md) var(--rounded-md);
+}
+.navWrap[data-version='v6'] .productsPanel .productGrid {
+  max-width: 1200px;
+}
+@media (max-width: 900px) {
+  .navWrap[data-version='v6'] .navRow,
+  .navWrap[data-version='v6'].isScrolled .navRow {
+    padding-left: var(--gutter);
+    padding-right: var(--gutter);
+  }
+  .navWrap[data-version='v6'].isScrolled {
+    padding: 0;
+  }
+  .navWrap[data-version='v6'].isScrolled .navBar {
+    border-radius: 0;
+  }
+}

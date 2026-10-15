@@ -19,11 +19,11 @@ export function Marketing() {
   return (
     <>
       <ScrollBackground />
-      <Nav />
+      {version.nav ? version.nav() : <Nav />}
       <V5VariantProvider>
         <main>{version.render()}</main>
       </V5VariantProvider>
-      <Footer />
+      {version.footer ? version.footer() : <Footer />}
       <HeroVariantToggle />
       <V5Tuning />
       <DialRoot position="bottom-right" defaultOpen={false} />

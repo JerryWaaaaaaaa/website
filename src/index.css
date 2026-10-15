@@ -16,6 +16,8 @@
   --color-gray-light: #999999;
   --color-blue-inactive: #a3b9dd;
   --color-icon-brand: #0d6bde;
+  --color-rose-light: #ffe3ee;
+  --color-rose: #fb327e;
 
   /* Semantic: Backgrounds */
   --bg-neutral: var(--color-white);
@@ -25,6 +27,7 @@
   --bg-highlight-blue: var(--color-blue);
   --bg-highlight-pink: var(--color-pink);
   --bg-contrast: var(--color-black);
+  --bg-highlight-rose: var(--color-rose-light);
 
   /* Semantic: Text */
   --text-primary: var(--color-black);
@@ -33,6 +36,7 @@
   --text-contrast: var(--color-white);
   --text-contrast-secondary: var(--color-gray-light);
   --text-inactive: var(--color-blue-inactive);
+  --text-highlight-rose: var(--color-rose);
 
   /* Semantic: Stroke */
   --stroke: var(--color-shade-medium);
@@ -70,6 +74,14 @@
   --rounded-xl: 20px;
   --rounded-2xl: 24px;
   --rounded-3xl: 32px;
+
+  /* V6 (Microsite Stylized) — see DESIGN.md → V6 */
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --v6-nav-glass: rgba(8, 59, 130, 0.1);
+  --v6-tab-fill: rgba(12, 92, 255, 0.05);
+  --v6-text-gradient: linear-gradient(90deg, #0c5cff 0%, #c5b0ff 80.4%);
+  --v6-body-max-width: 1800px;
+  --v6-content-max-width: 1480px;
 
   /* Layout — controlled live by the Section Variant Dial */
   --page-max-width: 1200px;

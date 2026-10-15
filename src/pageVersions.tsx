@@ -12,6 +12,9 @@ import { SectionVariantSlot } from './components/SectionVariantSlot';
 import { BuiltUnique } from './sections/BuiltUnique';
 import { OpenPlatform } from './sections/OpenPlatform';
 import { UseCase } from './sections/UseCase';
+import { Nav } from './components/Nav';
+import { V6Page } from './sections/v6/V6Page';
+import { FooterV6 } from './sections/v6/FooterV6';
 // import { MeetingDoc } from './sections/MeetingDoc';
 // import { Flow } from './sections/Flow';
 // import { FromConversation } from './sections/FromConversation';
@@ -44,12 +47,16 @@ const BgZone = ({
   </div>
 );
 
-export type VersionId = 'v1' | 'v2' | 'v3' | 'v4' | 'v5';
+export type VersionId = 'v1' | 'v2' | 'v3' | 'v4' | 'v5' | 'v6';
 
 export interface PageVersion {
   id: VersionId;
   label: string;
   render: () => ReactNode;
+  /** Replaces the default <Nav /> chrome for this version. */
+  nav?: () => ReactNode;
+  /** Replaces the default <Footer /> chrome for this version. */
+  footer?: () => ReactNode;
 }
 
 const sharedSections = (
@@ -141,6 +148,15 @@ export const PAGE_VERSIONS: PageVersion[] = [
       </>
     ),
   },
+  {
+    id: 'v6',
+    label: 'V6',
+    // v6 is the "Microsite Stylized" redesign (Figma QDrgl8Mpky2WshHHxnLz8E ·
+    // 261:72350): every section is new, with its own nav skin and footer.
+    render: () => <V6Page />,
+    nav: () => <Nav variant="v6" />,
+    footer: () => <FooterV6 />,
+  },
 ];
 
-export const DEFAULT_VERSION: VersionId = 'v5';
+export const DEFAULT_VERSION: VersionId = 'v6';

@@ -98,6 +98,19 @@ tokens:
     duration-fast: '200ms'
     duration-base: '250ms'
     duration-slow: '350ms'
+  v6:
+    # V6 "Microsite Stylized" redesign (Figma QDrgl8Mpky2WshHHxnLz8E · 261:72350).
+    # Additive tokens — V1–V5 keep using the tokens above unchanged.
+    color-rose-light: '#FFE3EE'
+    color-rose: '#FB327E'
+    bg-highlight-rose: 'var(--color-rose-light)'
+    text-highlight-rose: 'var(--color-rose)'
+    nav-glass: 'rgba(8, 59, 130, 0.10)'
+    tab-fill: 'rgba(12, 92, 255, 0.05)'
+    text-gradient: 'linear-gradient(90deg, #0C5CFF 0%, #C5B0FF 80.4%)'
+    font-mono: '"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace'
+    body-max-width: '1800px'
+    content-max-width: '1480px'
   components:
     button:
       height: '46px'
@@ -469,6 +482,23 @@ well and hover fill.
 - Headings lead with the benefit, not the feature name.
 - Sentence case for body and buttons; UPPERCASE only for the Overline role.
 - Descriptions are short — one idea per paragraph, generous whitespace between.
+
+## V6 — Microsite Stylized
+
+V6 (`?version=v6`, the default page) is the photography-led redesign. It keeps
+the base palette and General Sans, and adds a small set of tokens (see the `v6`
+block in the front matter, mirrored in `src/index.css`):
+
+- **Chip headlines** — display lines set inside 16px-radius highlight blocks:
+  blue block + pink text, pink block + blue text, and a rose block
+  (`--bg-highlight-rose` / `--text-highlight-rose`) for the Slides word.
+- **Halftone photography** — section backgrounds are pre-rendered halftone
+  photos exported from Figma (`public/v6/**`), never live shaders.
+- **Panels** — every body section is a full-width panel in the 1800px column
+  with a 12px gradient corner dot at 24px/24px.
+- **Mono labels** — Geist Mono (500, uppercase) for nav links and footer column
+  headings only (`--font-mono`).
+- **Text gradient** — `--v6-text-gradient` clipped to text for lead phrases.
 
 ## Do's & Don'ts
 

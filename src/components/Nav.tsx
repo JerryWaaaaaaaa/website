@@ -4,7 +4,7 @@ import { useDialKit } from 'dialkit';
 import { useDialUrlSync } from './dialUrlSync';
 import s from './Nav.module.css';
 
-type Panel = 'products' | 'explore' | null;
+type Panel = 'products' | 'features' | 'explore' | null;
 
 // Each card carries its own brand color as an "R, G, B" triplet, exposed as the
 // --card-rgb CSS var on the card. The navbar style variants below apply their own
@@ -70,11 +70,27 @@ const DEFAULT_NAV_VARIANT = 'neutral';
 // Explore dropdown links. `to` routes with the SPA router (Blog → the blog index
 // we already ship); `href` is a placeholder for destinations not yet wired, matching
 // the rest of the nav's `#` links.
-const EXPLORE_ITEMS: { label: string; to?: string; href?: string }[] = [
+type MenuItem = { label: string; to?: string; href?: string };
+
+const EXPLORE_ITEMS: MenuItem[] = [
   { label: 'Use cases', href: '#' },
   { label: 'Blog', to: '/blog' },
   { label: 'Help center', href: '#' },
 ];
+
+// V6 only — the redesign swaps the Templates / Blog links for a Features menu
+// listing the six key features from the scroll story.
+const FEATURE_ITEMS: MenuItem[] = [
+  { label: 'Meeting deliverables', href: '#' },
+  { label: 'Editable AI outputs', href: '#' },
+  { label: 'Inline AI', href: '#' },
+  { label: 'Share live', href: '#' },
+  { label: 'Team permissions', href: '#' },
+  { label: 'AI templates', href: '#' },
+];
+
+/** `default` is the V1–V5 bar; `v6` is the Microsite Stylized restyle. */
+export type NavVariant = 'default' | 'v6';
 
 function Chevron() {
   return (
@@ -90,7 +106,8 @@ function Chevron() {
   );
 }
 
-export function Nav() {
+export function Nav({ variant = 'default' }: { variant?: NavVariant } = {}) {
+  const isV6 = variant === 'v6';
   const [scrolled, setScrolled] = useState(false);
   const [openPanel, setOpenPanel] = useState<Panel>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -222,8 +239,97 @@ export function Nav() {
   const triggerClass = (panel: Exclude<Panel, null>) =>
     [s.navTrigger, openPanel === panel ? s.isOpen : ''].filter(Boolean).join(' ');
 
+  const ctaLabel = isV6 ? 'Get started now' : 'Get started today';
+
+  const renderDropdown = (panel: 'features' | 'explore', label: string, items: MenuItem[]) => (
+    <li className={triggerClass(panel)}>
+      <button
+        className={s.navLink}
+        aria-expanded={openPanel === panel}
+        aria-haspopup="true"
+        aria-controls={`menu-${panel}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggle(panel);
+        }}
+      >
+        {label}
+        <Chevron />
+      </button>
+      <div
+        className={s.exploreMenu}
+        id={`menu-${panel}`}
+        role="menu"
+        aria-label={`${label} menu`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {items.map((item) =>
+          item.to ? (
+            <Link
+              key={item.label}
+              to={item.to}
+              className={s.exploreMenuItem}
+              role="menuitem"
+              onClick={() => setOpenPanel(null)}
+            >
+              {item.label}
+            </Link>
+          ) : (
+            <a key={item.label} href={item.href} className={s.exploreMenuItem} role="menuitem">
+              {item.label}
+            </a>
+          )
+        )}
+      </div>
+    </li>
+  );
+
+  const renderDrawerMenu = (panel: 'features' | 'explore', label: string, items: MenuItem[]) => (
+    <div
+      className={[s.mDrawerSection, openPanel === panel ? s.isExpanded : '']
+        .filter(Boolean)
+        .join(' ')}
+    >
+      <button
+        className={s.mDrawerTrigger}
+        aria-expanded={openPanel === panel}
+        onClick={() => toggle(panel)}
+      >
+        {label}
+        <Chevron />
+      </button>
+      <div className={s.mDrawerBody}>
+        <div className={s.mDrawerBodyInner}>
+          <div className={s.mDrawerLinks}>
+            {items.map((item) =>
+              item.to ? (
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  className={s.mDrawerLink}
+                  onClick={() => setDrawerOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <a key={item.label} className={s.mDrawerLink} href={item.href}>
+                  {item.label}
+                </a>
+              )
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <header className={wrapClass} ref={navRef} data-nav-variant={navVariant}>
+    <header
+      className={wrapClass}
+      ref={navRef}
+      data-nav-variant={navVariant}
+      data-version={isV6 ? 'v6' : undefined}
+    >
       <nav className={barClass} role="navigation" aria-label="Main navigation">
         <div className={s.navRow}>
           <Link to="/" className={s.navLogo} aria-label="Zoom AI Create — home">
@@ -246,66 +352,27 @@ export function Nav() {
                 <Chevron />
               </button>
             </li>
-            <li className={triggerClass('explore')}>
-              <button
-                className={s.navLink}
-                aria-expanded={openPanel === 'explore'}
-                aria-haspopup="true"
-                aria-controls="menu-explore"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggle('explore');
-                }}
-              >
-                Explore
-                <Chevron />
-              </button>
-              <div
-                className={s.exploreMenu}
-                id="menu-explore"
-                role="menu"
-                aria-label="Explore menu"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {EXPLORE_ITEMS.map((item) =>
-                  item.to ? (
-                    <Link
-                      key={item.label}
-                      to={item.to}
-                      className={s.exploreMenuItem}
-                      role="menuitem"
-                      onClick={() => setOpenPanel(null)}
-                    >
-                      {item.label}
-                    </Link>
-                  ) : (
-                    <a
-                      key={item.label}
-                      href={item.href}
-                      className={s.exploreMenuItem}
-                      role="menuitem"
-                    >
-                      {item.label}
-                    </a>
-                  )
-                )}
-              </div>
-            </li>
-            <li className={s.navTrigger}>
-              <a className={s.navLink} href="#">
-                Templates
-              </a>
-            </li>
-            <li className={s.navTrigger}>
-              <Link className={s.navLink} to="/blog">
-                Blog
-              </Link>
-            </li>
+            {isV6 && renderDropdown('features', 'Features', FEATURE_ITEMS)}
+            {renderDropdown('explore', 'Explore', EXPLORE_ITEMS)}
+            {!isV6 && (
+              <>
+                <li className={s.navTrigger}>
+                  <a className={s.navLink} href="#">
+                    Templates
+                  </a>
+                </li>
+                <li className={s.navTrigger}>
+                  <Link className={s.navLink} to="/blog">
+                    Blog
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
 
           <div className={s.navCta}>
             <button className="btn btn-secondary">Sign in</button>
-            <button className="btn btn-primary">Get started today</button>
+            <button className="btn btn-primary">{ctaLabel}</button>
           </div>
 
           <button
@@ -437,66 +504,35 @@ export function Nav() {
               </div>
             </div>
 
-            {/* Explore */}
-            <div
-              className={[s.mDrawerSection, openPanel === 'explore' ? s.isExpanded : '']
-                .filter(Boolean)
-                .join(' ')}
-            >
-              <button
-                className={s.mDrawerTrigger}
-                aria-expanded={openPanel === 'explore'}
-                onClick={() => toggle('explore')}
-              >
-                Explore
-                <Chevron />
-              </button>
-              <div className={s.mDrawerBody}>
-                <div className={s.mDrawerBodyInner}>
-                  <div className={s.mDrawerLinks}>
-                    {EXPLORE_ITEMS.map((item) =>
-                      item.to ? (
-                        <Link
-                          key={item.label}
-                          to={item.to}
-                          className={s.mDrawerLink}
-                          onClick={() => setDrawerOpen(false)}
-                        >
-                          {item.label}
-                        </Link>
-                      ) : (
-                        <a key={item.label} className={s.mDrawerLink} href={item.href}>
-                          {item.label}
-                        </a>
-                      )
-                    )}
-                  </div>
+            {isV6 && renderDrawerMenu('features', 'Features', FEATURE_ITEMS)}
+            {renderDrawerMenu('explore', 'Explore', EXPLORE_ITEMS)}
+
+            {!isV6 && (
+              <>
+                {/* Templates — direct link */}
+                <div className={s.mDrawerSection}>
+                  <a className={s.mDrawerTrigger} href="#" onClick={() => setDrawerOpen(false)}>
+                    Templates
+                  </a>
                 </div>
-              </div>
-            </div>
 
-            {/* Templates — direct link */}
-            <div className={s.mDrawerSection}>
-              <a className={s.mDrawerTrigger} href="#" onClick={() => setDrawerOpen(false)}>
-                Templates
-              </a>
-            </div>
-
-            {/* Blog — direct link to the blog index */}
-            <div className={s.mDrawerSection}>
-              <Link
-                className={s.mDrawerTrigger}
-                to="/blog"
-                onClick={() => setDrawerOpen(false)}
-              >
-                Blog
-              </Link>
-            </div>
+                {/* Blog — direct link to the blog index */}
+                <div className={s.mDrawerSection}>
+                  <Link
+                    className={s.mDrawerTrigger}
+                    to="/blog"
+                    onClick={() => setDrawerOpen(false)}
+                  >
+                    Blog
+                  </Link>
+                </div>
+              </>
+            )}
           </div>
 
           <div className={s.mobilePanelCta}>
             <button className="btn btn-secondary">Sign in</button>
-            <button className="btn btn-primary">Get started today</button>
+            <button className="btn btn-primary">{ctaLabel}</button>
           </div>
         </div>
       </div>
