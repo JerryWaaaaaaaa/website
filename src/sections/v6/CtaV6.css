@@ -1,0 +1,35 @@
+/* V6 CTA — Figma 260:56524 (1800 × 941; copy top-left at 160/120). */
+.v6-cta {
+  display: flex;
+  align-items: flex-start;
+  min-height: min(941px, 52vw);
+}
+.v6-cta-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+.v6-cta-copy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 100%;
+}
+.v6-cta-title {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+@media (max-width: 639px) {
+  .v6-cta {
+    min-height: 560px;
+  }
+  .v6-cta-title .v6-chip-line {
+    white-space: normal;
+  }
+}

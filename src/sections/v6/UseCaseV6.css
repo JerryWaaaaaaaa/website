@@ -1,0 +1,135 @@
+/* V6 use cases — Figma 200:75601 (bg-accent-light panel, 1480 content width). */
+.v6-uc {
+  background: var(--bg-accent-light);
+}
+.v6-uc-inner {
+  max-width: var(--v6-content-max-width);
+  margin-inline: auto;
+}
+
+/* Square tabs: the selected one grows to fill the row (Figma "selected-left"). */
+.v6-uc-tabs {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.v6-uc-tabs::-webkit-scrollbar {
+  display: none;
+}
+.v6-uc-tab {
+  flex: 0 0 auto;
+  flex-grow: 0;
+  padding: 16px clamp(20px, 2.7vw, 48px);
+  border: none;
+  background: var(--v6-tab-fill);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: var(--v6-heading-5);
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    flex-grow 450ms var(--ease-emphasized),
+    background-color var(--duration-base) ease,
+    color var(--duration-base) ease;
+}
+.v6-uc-tab[data-active] {
+  flex-grow: 1;
+  background: var(--bg-highlight-pink);
+  color: var(--text-highlight);
+}
+@media (hover: hover) and (pointer: fine) {
+  .v6-uc-tab:not([data-active]):hover {
+    background: var(--glass-fill-hover);
+  }
+}
+.v6-uc-tab:focus-visible {
+  outline: 2px solid var(--text-highlight);
+  outline-offset: -2px;
+}
+
+.v6-uc-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  overflow: hidden;
+  background: var(--bg-accent-medium);
+}
+.v6-uc-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  padding: clamp(28px, 3.56vw, 64px);
+}
+.v6-uc-chip {
+  background: var(--bg-accent-dark);
+}
+.v6-uc-headline {
+  margin: 0;
+  font-size: var(--v6-title);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  animation: v6-uc-in 400ms var(--ease-out);
+}
+.v6-uc-headline .v6-text-gradient {
+  display: block;
+}
+@keyframes v6-uc-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* 740 × 740 image well: halftone photo + the product screenshot (549 × 556). */
+.v6-uc-media {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+.v6-uc-media-bg {
+  position: absolute;
+  top: -16.35%;
+  left: 0;
+  width: 100%;
+  height: 132.7%;
+  object-fit: cover;
+}
+.v6-uc-shot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 74.2%;
+  height: 75.1%;
+  border-radius: 18.5px;
+  object-fit: contain;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.98);
+  transition:
+    opacity 350ms var(--ease-out),
+    transform 350ms var(--ease-out);
+}
+.v6-uc-shot[data-active] {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+
+@media (max-width: 899px) {
+  .v6-uc-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v6-uc-tab,
+  .v6-uc-shot {
+    transition: none;
+  }
+  .v6-uc-headline {
+    animation: none;
+  }
+}

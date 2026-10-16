@@ -1,0 +1,134 @@
+/* V6 "Open platform by design" — Figma 200:75571 (bg-accent-medium panel,
+   dot grid at 70%, three 330 × 361 cards fanned across a 1480 × 481 stage). */
+.v6-op {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 3.56vw, 64px);
+  background: var(--bg-accent-medium);
+}
+
+.v6-op-header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 682px;
+}
+
+.v6-op-stage {
+  position: relative;
+  height: 481px;
+  container-type: inline-size;
+}
+
+.v6-op-card {
+  --card-w: 330.667px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: var(--card-w);
+  height: 361px;
+  padding: 32px;
+  overflow: hidden;
+  border-radius: var(--rounded-2xl);
+  background: linear-gradient(to bottom, var(--bg-accent-dark), var(--bg-neutral) 70%);
+  /* Intro: every card starts stacked at the centre, untilted. */
+  transform: translate(-50%, -50%);
+  transition: transform 900ms var(--ease-emphasized);
+  transition-delay: calc(var(--i) * 60ms);
+}
+.v6-op-stage[data-revealed='true'] .v6-op-card {
+  transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(var(--r));
+}
+/* The middle card sits on top of the stack (Figma order). */
+.v6-op-card:nth-child(2) {
+  z-index: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .v6-op-stage[data-revealed='true'] .v6-op-card:hover,
+  .v6-op-stage[data-revealed='true'] .v6-op-card:focus-within {
+    z-index: 2;
+    transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y) - 16px))
+      rotate(calc(var(--r) + var(--hr)));
+    transition-delay: 0ms;
+    transition-duration: 450ms;
+  }
+}
+
+.v6-op-card-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+.v6-op-card-copy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.v6-op-overline {
+  margin: 0;
+  color: var(--text-highlight);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+.v6-op-card-title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.v6-op-card-body {
+  margin: 4px 0 0;
+  color: var(--text-secondary);
+  font-size: 18px;
+  line-height: 1.4;
+}
+.v6-op-card-cta {
+  position: relative;
+  align-self: flex-start;
+  text-decoration: none;
+}
+
+/* Narrow screens: the fan can't fit, so the cards stack in a column. */
+@media (max-width: 899px) {
+  .v6-op-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    height: auto;
+  }
+  .v6-op-card,
+  .v6-op-stage[data-revealed='true'] .v6-op-card {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: min(100%, 420px);
+    height: auto;
+    min-height: 300px;
+    gap: 32px;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v6-op-card {
+    transition: none;
+  }
+  .v6-op-stage[data-revealed='true'] .v6-op-card:hover,
+  .v6-op-stage[data-revealed='true'] .v6-op-card:focus-within {
+    transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(var(--r));
+  }
+}

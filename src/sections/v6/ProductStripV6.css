@@ -1,0 +1,73 @@
+/* V6 product strip — Figma 200:75468 (64px block, 120px inline, 1800 max). */
+.v6-strip {
+  display: flex;
+  justify-content: center;
+  padding: clamp(40px, 2.9vw, 64px) clamp(20px, 5.45vw, 120px);
+  background: var(--bg-accent-light);
+}
+.v6-strip-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  width: 100%;
+  max-width: var(--v6-body-max-width);
+}
+.v6-strip-lead {
+  max-width: 457px;
+  margin: 0;
+  font-size: var(--v6-heading-3);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.v6-strip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.v6-strip-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 72px;
+  padding: 8px 12px;
+  border-radius: var(--rounded-md);
+  font-size: 14px;
+  line-height: 16px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.v6-strip-item img {
+  display: block;
+  width: 48px;
+  height: 48px;
+}
+
+@media (max-width: 1199px) {
+  .v6-strip-inner {
+    justify-content: center;
+    text-align: center;
+  }
+  .v6-strip-list {
+    justify-content: center;
+  }
+}
+@media (max-width: 639px) {
+  .v6-strip-list {
+    gap: 4px;
+  }
+  .v6-strip-item {
+    width: 64px;
+    padding: 8px 4px;
+  }
+  .v6-strip-item img {
+    width: 40px;
+    height: 40px;
+  }
+}

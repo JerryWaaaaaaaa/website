@@ -1,0 +1,98 @@
+/* V6 scroll story — Figma 200:75530 (1800 × 1050, two 900px columns).
+   The section is a tall scroll track; .v6-story-stage pins for its length. */
+.v6-story {
+  position: relative;
+  /* One viewport of pinned travel per step after the first, plus the pin. */
+  height: calc(100vh + (6 - 1) * 55vh);
+  background: var(--bg-accent-light);
+}
+
+.v6-story-stage {
+  position: sticky;
+  top: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100vh;
+  max-height: 1050px;
+  overflow: hidden;
+}
+
+/* --- Titles --------------------------------------------------------------- */
+.v6-story-copy {
+  position: relative;
+  overflow: hidden;
+  padding: 0 clamp(20px, 6.67vw, 120px) 0 var(--v6-inline);
+  /* Fade titles out at the column edges. */
+  -webkit-mask: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+  mask: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+}
+.v6-story-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(32px, 3.1vw, 56px);
+  margin: 0;
+  /* Anchor line for the active title (~38% down, as in the Figma frame). */
+  padding: 38vh 0 50vh;
+  list-style: none;
+  will-change: transform;
+}
+.v6-story-title {
+  /* Sized so the 1.2× active title still fits the column (672px when active). */
+  width: calc(100% / 1.2);
+  max-width: 560px;
+  opacity: 0.16;
+}
+.v6-story-title h3 {
+  margin: 0;
+  font-size: var(--v6-heading-2);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  /* Active title grows to 52.8px (1.2×) without reflowing the column. */
+  transform-origin: left center;
+  transition: transform 400ms var(--ease-emphasized);
+}
+.v6-story-title[data-active] h3 {
+  transform: scale(1.2);
+}
+/* Keep the decorated badge from inheriting the scale's extra width. */
+.v6-story-title .kp-badge {
+  margin-bottom: 0.35em;
+}
+
+/* --- Media ----------------------------------------------------------------- */
+.v6-story-media {
+  position: relative;
+  overflow: hidden;
+}
+.v6-story-frame {
+  position: absolute;
+  inset: 0;
+  transition: opacity 420ms var(--ease-out);
+}
+/* Each frame shows the V5 key-point media edge to edge (StepMedia renders it
+   absolutely positioned with object-fit: cover). */
+.v6-story-frame .bd5-media-asset {
+  object-fit: cover;
+}
+
+/* --- Tablet / mobile: titles above, media below, still pinned. ------------- */
+@media (max-width: 899px) {
+  .v6-story-stage {
+    grid-template-columns: 1fr;
+    grid-template-rows: 44% 56%;
+  }
+  .v6-story-list {
+    padding: 14vh 0 30vh;
+  }
+  .v6-story-copy {
+    padding-inline: var(--gutter);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v6-story-title h3,
+  .v6-story-frame {
+    transition: none;
+  }
+}
