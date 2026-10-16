@@ -35,7 +35,6 @@
   overflow: hidden;
   border-radius: var(--rounded-2xl);
   background: linear-gradient(to bottom, var(--bg-accent-dark), var(--bg-neutral) 70%);
-  box-shadow: var(--elevation-2);
   /* Intro: every card starts stacked at the centre, untilted. */
   transform: translate(-50%, -50%);
   transition: transform 900ms var(--ease-emphasized);

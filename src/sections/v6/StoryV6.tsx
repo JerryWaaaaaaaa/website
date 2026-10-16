@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { KEY_POINTS } from '../builtDifferentiate/keyPoints';
 import { StepMedia } from '../builtDifferentiate/StepMedia';
 import {
@@ -10,26 +10,16 @@ import {
 import { PanelDot } from './AgentCta';
 import './StoryV6.css';
 
-type Backdrop = 'gradient' | 'office' | 'desk' | 'photo';
-
 type Step = {
   title: ReactNode;
   /** Plain-text title for assistive tech (the visual one carries decorations). */
   label: string;
-  backdrop: Backdrop;
-  /** 'canvas-*' = a slide canvas from the Figma frame; otherwise the key point media. */
-  media: 'canvas-proposal' | 'canvas-collab' | number;
 };
 
-// Copy follows the Figma frame (200:75532); media for steps the frame doesn't
-// draw reuses the key-point illustrations from /core-features.
+// Titles follow the Figma frame (200:75532); each step's image is the matching
+// V5 "Built Different" key-point media (KEY_POINTS[i].media).
 const STEPS: Step[] = [
-  {
-    label: KEY_POINTS[0].title,
-    title: KEY_POINTS[0].title,
-    backdrop: 'office',
-    media: 'canvas-proposal',
-  },
+  { label: KEY_POINTS[0].title, title: KEY_POINTS[0].title },
   {
     label: 'Fully editable AI outputs',
     title: (
@@ -38,8 +28,6 @@ const STEPS: Step[] = [
         <Underline>Fully editable</Underline> AI outputs
       </>
     ),
-    backdrop: 'gradient',
-    media: 1,
   },
   {
     label: KEY_POINTS[2].title,
@@ -48,8 +36,6 @@ const STEPS: Step[] = [
         <Highlight>Inline AI</Highlight>, right where you need it.
       </>
     ),
-    backdrop: 'gradient',
-    media: 'canvas-collab',
   },
   {
     label: KEY_POINTS[3].title,
@@ -58,65 +44,14 @@ const STEPS: Step[] = [
         Share live, <ScreenshareChip /> right in your meeting.
       </>
     ),
-    backdrop: 'desk',
-    media: 3,
   },
-  { label: KEY_POINTS[4].title, title: KEY_POINTS[4].title, backdrop: 'gradient', media: 4 },
-  { label: KEY_POINTS[5].title, title: KEY_POINTS[5].title, backdrop: 'photo', media: 5 },
+  { label: KEY_POINTS[4].title, title: KEY_POINTS[4].title },
+  { label: KEY_POINTS[5].title, title: KEY_POINTS[5].title },
 ];
 const N = STEPS.length;
 
 // Opacity of a title by its distance from the active one (Figma: 100/16/8/5%).
 const FADE = [1, 0.16, 0.08, 0.05];
-
-const CURSORS = [
-  { name: 'Ashlee York', color: '#9053c2', svg: 'purple', x: 716.6, y: 545.4 },
-  { name: 'Darrel Marquez', color: '#ffbf39', svg: 'gold', x: 929.4, y: 345.4 },
-  { name: 'Maurice Lawson', color: '#f0607a', svg: 'red', x: 814.2, y: 127.8 },
-  { name: 'Clara Arellano', color: '#ff5f0f', svg: 'orange', x: 604.6, y: 287.8 },
-  { name: 'Sophia Mosley', color: '#007c7c', svg: 'teal', x: 87.8, y: 492.6 },
-];
-
-/** Slide canvas from the Figma frame: white card bleeding off the right edge. */
-function SlideCanvas({ variant }: { variant: 'proposal' | 'collab' }) {
-  return (
-    <div className="v6-story-canvas">
-      <img
-        src={variant === 'collab' ? '/v6/story/slide-abc-corp.webp' : '/v6/story/slide-design-proposal.webp'}
-        alt=""
-      />
-      {variant === 'collab' && (
-        <>
-          <div className="v6-story-editor">
-            <span className="v6-story-editor-tag">
-              <img src="/v6/story/avatar-john.png" alt="" />
-              John Chen
-            </span>
-            <span className="v6-story-editor-box" />
-          </div>
-          {CURSORS.map((c) => (
-            <span
-              key={c.name}
-              className="v6-story-cursor"
-              style={
-                {
-                  '--x': `${(c.x / 1216) * 100}%`,
-                  '--y': `${(c.y / 683.2) * 100}%`,
-                  '--c': c.color,
-                } as CSSProperties
-              }
-            >
-              <span className="v6-story-cursor-arrow">
-                <img src={`/v6/story/cursor-${c.svg}.svg`} alt="" />
-              </span>
-              <span className="v6-story-cursor-name">{c.name}</span>
-            </span>
-          ))}
-        </>
-      )}
-    </div>
-  );
-}
 
 /**
  * V6 scroll story (Figma 200:75530).
@@ -225,14 +160,7 @@ export function StoryV6() {
                 data-active={isActive ? 'true' : undefined}
                 style={{ opacity: isActive || isPrev ? 1 : 0, zIndex: isActive ? 2 : isPrev ? 1 : 0 }}
               >
-                <img className="v6-story-backdrop" src={`/v6/story/bg-${s.backdrop}.webp`} alt="" />
-                {typeof s.media === 'number' ? (
-                  <div className="v6-story-illustration">
-                    <StepMedia media={KEY_POINTS[s.media].media} isActive={isActive} />
-                  </div>
-                ) : (
-                  <SlideCanvas variant={s.media === 'canvas-collab' ? 'collab' : 'proposal'} />
-                )}
+                <StepMedia media={KEY_POINTS[i].media} isActive={isActive} />
               </div>
             );
           })}

@@ -4,28 +4,16 @@ import { Button } from '../../components/Button';
 import { PanelDot } from './AgentCta';
 import './UseCaseV6.css';
 
-// V6 copy per persona (Figma 200:75601 draws Sales; the rest follow its
-// "<lead> with …" pattern). Images reuse the shared V5 persona art, except
-// Sales which uses the Figma screenshot.
-const COPY: Record<string, { label?: string; lead: string; rest: string; image?: string }> = {
-  sales: {
-    lead: 'Close deals faster',
-    rest: 'with AI-powered documentation',
-    image: '/v6/use-case/sales-conversation.png',
-  },
-  recruiters: { label: 'HR', lead: 'Hire faster', rest: 'with AI-powered interview notes' },
-  consultants: { lead: 'Deliver faster', rest: 'with AI-powered client reports' },
-  coaches: { lead: 'Stay present', rest: 'while AI captures every session' },
-  agencies: { lead: 'Ship faster', rest: 'with AI-powered briefs and decks' },
-  pm: { lead: 'Plan faster', rest: 'with AI-powered PRDs and roadmaps' },
-};
+// Copy and images are the V5 personas (useCaseV5/shared.tsx); Sales swaps in
+// the Figma screenshot.
+const IMAGES: Record<string, string> = { sales: '/v6/use-case/sales-conversation.png' };
 
 const TABS = PERSONAS.map((p) => ({
   key: p.key,
-  label: COPY[p.key]?.label ?? p.label,
-  lead: COPY[p.key]?.lead ?? p.headlineLead,
-  rest: COPY[p.key]?.rest ?? p.headlineRest,
-  image: COPY[p.key]?.image ?? p.image,
+  label: p.label,
+  lead: p.headlineLead,
+  rest: p.headlineRest.trim(),
+  image: IMAGES[p.key] ?? p.image,
 }));
 
 /** V6 use cases (Figma 200:75601): role tabs over a copy + media panel. */

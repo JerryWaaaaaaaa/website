@@ -29,6 +29,16 @@ import './ProductSlideshowV6.css';
 // Tab order per the Figma tab bar (260:39567).
 const ORDER: ProductKey[] = ['slides', 'sheets', 'paper', 'canvas', 'datatable'];
 const PRODUCTS = ORDER.map((k) => productFor(k)!) as Product[];
+
+// Halftone background per slide. Figma only exports Slides and Sheets, so the
+// other products reuse those two until their own artwork is swapped in.
+const BACKGROUNDS: Record<ProductKey, string> = {
+  slides: '/v6/slideshow/bg-slides.webp',
+  sheets: '/v6/slideshow/bg-sheets.webp',
+  paper: '/v6/slideshow/bg-slides.webp',
+  canvas: '/v6/slideshow/bg-sheets.webp',
+  datatable: '/v6/slideshow/bg-slides.webp',
+};
 const N = PRODUCTS.length;
 
 /** Live mockup + its spill-floats for one product, as in ProductSuiteV5D. */
@@ -226,7 +236,7 @@ export function ProductSlideshowV6() {
                 data-near={near ? 'true' : undefined}
                 style={{ '--offset': offset } as CSSProperties}
               >
-                <img className="v6-ss-slide-bg" src={`/v6/slideshow/bg-${p.key}.webp`} alt="" />
+                <img className="v6-ss-slide-bg" src={BACKGROUNDS[p.key]} alt="" />
                 <div className="v6-ss-stage">
                   <ProductStage product={p} active={offset === 0} />
                 </div>
