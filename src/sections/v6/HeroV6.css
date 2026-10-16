@@ -11,12 +11,8 @@
 }
 
 .v6-hero-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
+  /* Positioning comes from HalftoneImage (.v6-halftone: absolute, inset 0). */
+  z-index: 0;
 }
 
 .v6-hero-copy {
