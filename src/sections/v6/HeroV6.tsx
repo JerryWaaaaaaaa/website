@@ -1,11 +1,50 @@
 import { AgentCta } from './AgentCta';
+import { HalftoneImage, type HalftoneParams, type ImagePlacement } from './halftone/HalftoneImage';
 import './HeroV6.css';
 
-/** V6 hero (Figma 260:56297): chip headline over a halftone photo + product UI. */
+// Figma 191:60298 effect stack: "Gradient map" then "Halftone". Figma renders
+// the halftone on the 1237 × 1642 photo and the hero cover-scales that result
+// into its 2200 px frame, so the dot size is given in frame px (scaleDots).
+const HERO_HALFTONE: HalftoneParams = {
+  gradient: [
+    { position: 0.427885, color: [0.798963, 0.734289, 0.978929, 1] },
+    { position: 0.581731, color: [0.27451, 0.454902, 0.811765, 1] },
+    { position: 0.716346, color: [0.839216, 0.898039, 0.992157, 1] },
+    { position: 1, color: [0.370106, 0.798747, 0.770178, 1] },
+  ],
+  dotSize: (5.5 * 2200) / 1237,
+  dotScale: 1,
+  softness: 1,
+  rotation: 0,
+  center: [50, 50],
+};
+
+// The portrait photo cover-filled into the 2200 × 1428 hero ("image-bg" 260:56298).
+const HERO_PLACEMENT: ImagePlacement = {
+  frame: [2200, 1428],
+  left: 0,
+  top: -52.25,
+  width: 100,
+  height: 204.5,
+  scaleDots: true,
+};
+
+/**
+ * V6 hero (Figma 260:56297): chip headline over a halftone photo + product UI.
+ * The background is the Figma halftone rebuilt in WebGL (dots swell around the
+ * cursor on desktop); the exported render (bg.webp) is the fallback.
+ */
 export function HeroV6() {
   return (
     <section className="v6-hero" aria-labelledby="v6-hero-title">
-      <img className="v6-hero-bg" src="/v6/hero/bg.webp" alt="" aria-hidden="true" />
+      <HalftoneImage
+        className="v6-hero-bg"
+        src="/v6/hero/source.webp"
+        fallbackSrc="/v6/hero/bg.webp"
+        params={HERO_HALFTONE}
+        placement={HERO_PLACEMENT}
+        interactive
+      />
 
       <div className="v6-hero-copy">
         <h1 className="v6-chips v6-hero-title" id="v6-hero-title">

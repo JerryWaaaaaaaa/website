@@ -27,6 +27,12 @@ export type ImagePlacement = {
   top: number;
   width: number;
   height: number;
+  /**
+   * Treat dotSize as frame px and scale it (and the cursor radius) with the
+   * frame's cover scale — for designs where Figma rendered the halftone at the
+   * frame size and the result is scaled to fit. Off: dotSize is fixed CSS px.
+   */
+  scaleDots?: boolean;
 };
 
 type Props = {
@@ -44,6 +50,7 @@ const MAX_DPR = 2;
 const POINTER_RADIUS = 180; // CSS px
 const POINTER_BOOST = 0.6; // dots grow up to 1.6× at the cursor
 const EASE_MS = 140; // time constant for the strength easing in / out
+const MIN_DOT = 3; // CSS px floor for scaled dots, so phones don't get mush
 
 type GL = WebGL2RenderingContext;
 
@@ -132,6 +139,14 @@ export function HalftoneImage({ src, fallbackSrc, params, placement, interactive
 
     const u = (p: WebGLProgram, name: string) => gl.getUniformLocation(p, name);
 
+    /** Multiplier on dotSize / cursor radius for the current canvas size. */
+    const dotK = () => {
+      if (!placement.scaleDots) return 1;
+      const [fw, fh] = placement.frame;
+      const k = Math.max(size.w / fw, size.h / fh);
+      return Math.max(k, MIN_DOT / paramsRef.current.dotSize);
+    };
+
     /** Rasterise the photo into the canvas box exactly as Figma places it. */
     const uploadSource = () => {
       if (!image) return;
@@ -195,7 +210,7 @@ export function HalftoneImage({ src, fallbackSrc, params, placement, interactive
       // Radius matches Figma: dotSize, in device texels.
       gl.useProgram(programs.blur);
       gl.uniform1i(u(programs.blur, 'u_input'), 0);
-      gl.uniform1f(u(programs.blur, 'u_radius'), p.dotSize);
+      gl.uniform1f(u(programs.blur, 'u_radius'), p.dotSize * dotK());
       gl.bindFramebuffer(gl.FRAMEBUFFER, targets[1].fbo);
       gl.bindTexture(gl.TEXTURE_2D, targets[0].tex);
       gl.uniform2f(u(programs.blur, 'u_dir'), 1, 0);
@@ -226,19 +241,20 @@ export function HalftoneImage({ src, fallbackSrc, params, placement, interactive
         gl.disable(gl.SCISSOR_TEST);
       }
       const h = programs.half;
+      const k = dotK();
       gl.useProgram(h);
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, targets[2].tex);
       gl.uniform1i(u(h, 'u_blurred'), 0);
       gl.uniform2f(u(h, 'u_dims'), size.w, size.h);
       gl.uniform2f(u(h, 'u_center'), (p.center[0] / 100) * size.w, (p.center[1] / 100) * size.h);
-      gl.uniform1f(u(h, 'u_dotSize'), p.dotSize);
+      gl.uniform1f(u(h, 'u_dotSize'), p.dotSize * k);
       gl.uniform1f(u(h, 'u_dotScale'), p.dotScale);
       gl.uniform1f(u(h, 'u_softness'), p.softness);
       gl.uniform1f(u(h, 'u_rotation'), (p.rotation * Math.PI) / 180);
       gl.uniform2f(u(h, 'u_pointer'), pointer.x, pointer.y);
       gl.uniform1f(u(h, 'u_pointerStrength'), pointer.strength);
-      gl.uniform1f(u(h, 'u_pointerRadius'), POINTER_RADIUS);
+      gl.uniform1f(u(h, 'u_pointerRadius'), POINTER_RADIUS * k);
       gl.uniform1f(u(h, 'u_pointerBoost'), POINTER_BOOST);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     };
@@ -276,7 +292,8 @@ export function HalftoneImage({ src, fallbackSrc, params, placement, interactive
 
     // Box (CSS px) the cursor effect can touch, padded for neighbour dots.
     const boxAround = (x: number, y: number): [number, number, number, number] => {
-      const r = POINTER_RADIUS + paramsRef.current.dotSize * 3;
+      const k = dotK();
+      const r = (POINTER_RADIUS + paramsRef.current.dotSize * 3) * k;
       return [Math.max(0, x - r), Math.max(0, y - r), Math.min(size.w, x + r), Math.min(size.h, y + r)];
     };
     const union = (
@@ -368,7 +385,7 @@ export function HalftoneImage({ src, fallbackSrc, params, placement, interactive
       gl.deleteBuffer(quad);
       Object.values(programs).forEach((p) => gl.deleteProgram(p));
     };
-      // params/placement are static per caller (module-level constants), so the
+    // params/placement are static per caller (module-level constants), so the
     // GL setup only re-runs when the image or interactivity changes.
   }, [src, interactive]);
 
