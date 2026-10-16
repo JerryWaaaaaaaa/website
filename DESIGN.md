@@ -493,7 +493,12 @@ block in the front matter, mirrored in `src/index.css`):
   blue block + pink text, pink block + blue text, and a rose block
   (`--bg-highlight-rose` / `--text-highlight-rose`) for the Slides word.
 - **Halftone photography** — section backgrounds are pre-rendered halftone
-  photos exported from Figma (`public/v6/**`), never live shaders.
+  photos exported from Figma (`public/v6/**`). The one exception is the CTA,
+  which runs the Figma "Gradient map → Halftone" effect live in WebGL
+  (`src/sections/v6/halftone/`) so its dots can swell around the cursor; the
+  exported render is its fallback. Keep live shaders to one or two per page:
+  they draw once per size, redraw only a small box around the cursor, pause
+  off screen, and stay static on touch devices and with reduced motion.
 - **Panels** — every body section is a full-width panel in the 1800px column
   with a 12px gradient corner dot at 24px/24px.
 - **Mono labels** — Geist Mono (500, uppercase) for nav links and footer column

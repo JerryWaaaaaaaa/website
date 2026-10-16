@@ -1,0 +1,31 @@
+/* Live halftone layer: the pre-rendered export sits underneath and stays until
+   the WebGL canvas has drawn its first frame (or forever, without WebGL). */
+.v6-halftone {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.v6-halftone-fallback,
+.v6-halftone-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.v6-halftone-fallback {
+  object-fit: cover;
+}
+.v6-halftone-canvas {
+  opacity: 0;
+  transition: opacity 400ms var(--ease-out);
+}
+.v6-halftone-canvas[data-ready='true'] {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .v6-halftone-canvas {
+    transition: none;
+  }
+}
