@@ -1,0 +1,69 @@
+/* DialKit side panel — docked right, pushes the page instead of covering it.
+   --dial-panel-w is 0 while closed so consumers can use it unconditionally. */
+:root {
+  --dial-panel-w: 0px;
+}
+:root.dial-panel-open {
+  --dial-panel-w: 300px;
+}
+
+/* :root-qualified so it beats index.css's later `body { margin: 0 }`. */
+:root body {
+  margin-right: var(--dial-panel-w);
+  transition: margin-right 250ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.dial-side-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2000;
+  width: 300px;
+  /* DialKit's inline panel grows to its content instead of clamping to this
+     box, so the aside owns the scroll. contain keeps wheel/trackpad scrolls
+     at the ends from leaking into the page. */
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: #fff;
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+  transform: translateX(0);
+  transition: transform 250ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+.dial-side-panel[data-open='false'] {
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform 250ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s 250ms;
+}
+
+/* Tab hanging off the panel's left edge (or the viewport edge when closed). */
+.dial-side-toggle {
+  position: fixed;
+  top: 50%;
+  right: var(--dial-panel-w);
+  z-index: 2001;
+  width: 20px;
+  height: 48px;
+  margin-top: -24px;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-right: 0;
+  border-radius: 8px 0 0 8px;
+  background: #fff;
+  color: rgba(0, 0, 0, 0.6);
+  font: 16px/1 system-ui, sans-serif;
+  cursor: pointer;
+  transition: right 250ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+.dial-side-toggle:hover {
+  color: #000;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root body,
+  .dial-side-panel,
+  .dial-side-toggle {
+    transition: none;
+  }
+}

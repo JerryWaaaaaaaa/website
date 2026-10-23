@@ -39,3 +39,15 @@ const BY_KEY: Record<ProductKey, Product> = Object.fromEntries(
 export function productFor(key: string | undefined | null): Product | undefined {
   return key ? BY_KEY[key as ProductKey] : undefined;
 }
+
+/**
+ * Hero product rotation (V5 + V6 heroes): the rotating product word, its
+ * colour, the product UI shown in the browser frame, and the frame's URL. All
+ * four advance together off one clock.
+ */
+export const HERO_PRODUCTS = [
+  { name: 'Sheets', color: '#019F5C', image: '/hero-browser/sheets-ui.png', url: 'sheets.zoom.com' },
+  { name: 'Canvas', color: '#3579FD', image: '/hero-browser/canvas-ui.png', url: 'canvas.zoom.com' },
+  { name: 'Slides', color: '#FB327E', image: '/hero-browser/slides-UI.png', url: 'slides.zoom.com' },
+  { name: 'Paper', color: '#3579FD', image: '/hero-browser/paper-ui.png', url: 'paper.zoom.com' },
+];

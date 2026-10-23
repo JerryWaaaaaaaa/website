@@ -1,0 +1,9 @@
+/* Cursor ASCII heat trail: a full-bleed layer above the halftone, under content. */
+.v6-ascii-trail {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}

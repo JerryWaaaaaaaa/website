@@ -20,6 +20,7 @@ export function Personas() {
       <p
         style={{
           margin: '0 0 16px',
+          fontFamily: 'var(--font-overline)',
           fontSize: 12,
           fontWeight: 500,
           letterSpacing: '0.08em',

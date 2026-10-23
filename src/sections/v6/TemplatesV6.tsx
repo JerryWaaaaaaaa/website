@@ -1,5 +1,7 @@
-import type { CSSProperties } from 'react';
+import { useRef, type CSSProperties } from 'react';
 import { AgentCta, PanelDot } from './AgentCta';
+import { DotGrid } from './DotGrid';
+import { useCardDrag } from './useCardDrag';
 import './TemplatesV6.css';
 
 // Figma 200:75712: card centres as offsets from the 1480 × 697 stage centre,
@@ -16,12 +18,16 @@ const TEMPLATES = [
 
 /**
  * V6 template gallery (Figma 200:75700).
- * Annotation: each card rotates and scales up slightly on hover.
+ * Annotation: each card rotates and scales up slightly on hover. On the
+ * desktop scatter (fine pointer, ≥1200px) the cards can be dragged around.
  */
 export function TemplatesV6() {
+  const stageRef = useRef<HTMLUListElement | null>(null);
+  const drag = useCardDrag(stageRef, '(min-width: 1200px) and (pointer: fine)');
+
   return (
     <section className="v6-panel v6-tpl" aria-labelledby="v6-tpl-title">
-      <div className="v6-dot-grid" aria-hidden="true" />
+      <DotGrid />
       <div className="v6-header-wash" aria-hidden="true" />
       <PanelDot />
 
@@ -41,26 +47,36 @@ export function TemplatesV6() {
           </AgentCta>
         </header>
 
-        <ul className="v6-tpl-stage" role="list">
+        <ul className="v6-tpl-stage" role="list" ref={stageRef}>
           {TEMPLATES.map((t) => (
             <li
               key={t.key}
               className="v6-tpl-slot"
+              data-card={t.key}
+              onPointerDown={drag.onPointerDown}
+              onClickCapture={drag.onClickCapture}
               style={
                 {
                   '--x': `${(t.x / 1480) * 100}cqw`,
                   '--y': `${(t.y / 697) * 100}%`,
                   '--r': `${t.r}deg`,
                   '--hr': `${t.r < 0 ? -2.5 : 2.5}deg`,
+                  zIndex: drag.zIndex(t.key),
                 } as CSSProperties
               }
             >
-              <a className="v6-tpl-card" href="#">
+              <a className="v6-tpl-card" href="#" draggable={false}>
                 <span className="v6-tpl-cover">
-                  <img src={`/v6/templates/${t.key}.webp`} alt="" loading="lazy" />
+                  <img src={`/v6/templates/${t.key}.webp`} alt="" loading="lazy" draggable={false} />
                 </span>
                 <span className="v6-tpl-meta">
-                  <img src={`/v6/templates/icon-${t.icon}.svg`} alt="" width={24} height={24} />
+                  <img
+                    src={`/v6/templates/icon-${t.icon}.svg`}
+                    alt=""
+                    width={24}
+                    height={24}
+                    draggable={false}
+                  />
                   <span className="v6-tpl-name">{t.title}</span>
                 </span>
               </a>

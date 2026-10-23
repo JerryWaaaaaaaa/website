@@ -7,7 +7,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
+  right: var(--dial-panel-w, 0px); /* clear the DialKit side panel */
   z-index: 100;
   display: flex;
   justify-content: center;
@@ -45,6 +45,17 @@
   align-items: center;
   width: 100%;
   padding: 16px 24px;
+}
+/* Desktop: equal side columns so the links sit on the bar's true centre,
+   whatever the logo and CTA widths. */
+@media (min-width: 901px) {
+  .navRow {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+  }
+  .navCta {
+    justify-self: end;
+  }
 }
 
 /* Scrolled pill state */

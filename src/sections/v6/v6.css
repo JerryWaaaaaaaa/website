@@ -69,14 +69,15 @@
   color: transparent;
 }
 
-/* Dot-grid texture + soft wash behind section headers (Open platform, Templates). */
+/* Dot-grid texture + soft wash behind section headers (Open platform, Templates).
+   .v6-dot-grid is DotGrid's canvas: crisp --v6-dot-size dots every --v6-dot-gap
+   across the whole panel, pulled toward and heated by the cursor. */
 .v6-dot-grid {
   position: absolute;
-  inset: 0 0 auto;
+  inset: 0;
+  display: block;
+  width: 100%;
   height: 100%;
-  max-height: 1171px;
-  background: url('/v6/shared/dot-grid.webp') top center / 1800px auto repeat-y;
-  opacity: 0.7;
   pointer-events: none;
 }
 .v6-header-wash {
@@ -170,6 +171,7 @@
   object-fit: cover;
 }
 .v6-agent-icon {
+  position: relative;
   display: grid;
   flex-shrink: 0;
   place-items: center;
@@ -177,41 +179,79 @@
   height: 48px;
   border-radius: 27px;
   background: var(--color-blue);
+  overflow: hidden;
 }
 .v6-agent-icon img {
   display: block;
+  grid-area: 1 / 1;
   width: 24px;
   height: 24px;
+}
+/* Second arrow waits off the circle's left edge. */
+.v6-agent-icon img + img {
+  transform: translateX(-36px);
+}
+/* Label shuffle (AgentCta's useShuffle): the real label keeps the width and
+   hides while the scrambled overlay plays on top of it. Mono, so the overlay
+   (same letter count) covers the label exactly whatever glyphs it shows. */
+.v6-agent-label {
+  position: relative;
+  font-family: var(--font-mono);
+}
+.v6-agent-label-shuffle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: pre;
+  visibility: hidden;
+}
+.v6-agent-label[data-shuffling] .v6-agent-label-text {
+  visibility: hidden;
+}
+.v6-agent-label[data-shuffling] .v6-agent-label-shuffle {
+  visibility: visible;
 }
 @media (hover: hover) and (pointer: fine) {
   .v6-agent:hover {
     opacity: 0.88;
   }
+  /* Arrow swap: the arrow slides out right as its twin slides in from the
+     left. Only the hover-in animates — the two arrows are identical, so the
+     snap back on leave is invisible. */
+  .v6-agent:hover .v6-agent-icon img {
+    transform: translateX(36px);
+    transition: transform 380ms var(--ease-out);
+  }
+  .v6-agent:hover .v6-agent-icon img + img {
+    transform: none;
+  }
 }
 
-/* Pill holding a line of body copy + the agent CTA (hero, CTA). */
-.v6-prompt-pill {
+/* Tagline (hero, CTA): a light body-copy chip and the agent CTA side by side,
+   4px apart. Width is set per section. */
+.v6-tagline {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  width: min(100%, 763px);
-  padding: 8px 8px 8px 20px;
-  border-radius: var(--rounded-lg);
-  background: var(--bg-accent-light);
+  gap: 4px;
 }
-.v6-prompt-pill p {
+.v6-tagline p {
+  display: flex;
   flex: 1 1 0;
+  align-items: center;
   min-width: 0;
   margin: 0;
+  padding: 12px 16px;
+  border-radius: var(--rounded-lg);
+  background: var(--bg-accent-light);
   font-size: var(--v6-body);
   line-height: 1.4;
 }
+.v6-tagline .v6-agent {
+  padding: 16px 20px;
+}
 
 @media (max-width: 639px) {
-  .v6-prompt-pill {
+  .v6-tagline {
     flex-direction: column;
-    align-items: stretch;
-    padding: 16px;
   }
   .v6-agent {
     justify-content: flex-start;
@@ -223,5 +263,12 @@
   .v6-agent:active {
     transition: none;
     transform: none;
+  }
+  .v6-agent:hover .v6-agent-icon img {
+    transform: none;
+    transition: none;
+  }
+  .v6-agent:hover .v6-agent-icon img + img {
+    transform: translateX(-36px);
   }
 }

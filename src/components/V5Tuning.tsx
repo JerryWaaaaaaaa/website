@@ -327,6 +327,14 @@ export function V5Tuning() {
   useEffect(() => {
     document.documentElement.style.setProperty('--page-max-width', `${activeWidth}px`);
   }, [activeWidth]);
+  // V5Tuning only mounts on v5; hand the token back to index.css when leaving so
+  // other versions don't inherit v5's tuned width.
+  useEffect(
+    () => () => {
+      document.documentElement.style.removeProperty('--page-max-width');
+    },
+    [],
+  );
 
   // --suite-magnify-max: peak scale of the hovered HeroV5B (Grouped) suite icons.
   useEffect(() => {
