@@ -51,6 +51,18 @@
 .v6-ss-tab[data-active] {
   color: var(--pc);
 }
+/* 1px divider between neighbouring tabs, drawn above the countdown fill. */
+.v6-ss-tab + .v6-ss-tab::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  width: 1px;
+  background: rgba(12, 92, 255, 0.15);
+  pointer-events: none;
+}
 .v6-ss-tab:focus-visible {
   outline: 2px solid var(--text-highlight);
   outline-offset: -2px;
@@ -97,9 +109,8 @@
   position: relative;
   /* Slide height follows its 1360 × 870 frame. */
   aspect-ratio: 1560 / 870;
-  /* Clip the outgoing slide on the left; the next one may still peek out to
-     the panel's right edge (the panel itself clips). */
-  clip-path: inset(0 -100vw 0 0);
+  /* No clip of its own: the previous and next slides peek out to both panel
+     edges, and the panel (overflow: hidden) does the clipping. */
 }
 .v6-ss-slide {
   position: absolute;
@@ -124,19 +135,22 @@
   pointer-events: none;
 }
 
-/* Product UI frame: 1200 × 630 at 80/120 inside the slide (clips its floats);
-   the screen itself is 960 wide, centred. */
+/* Product UI frame: 1200 × 630 at 80/120 inside the slide; the screen itself
+   is 960 wide, centred. Every float is positioned to land inside this frame,
+   so it doesn't clip (that would cut the floats' shadows); the slide does. */
 .v6-ss-stage {
   position: absolute;
   top: 13.8%;
   left: 5.88%;
   width: 88.24%;
   height: 72.4%;
-  overflow: hidden;
 }
 .v6-ss-screen {
   width: 80%;
   margin: 3% auto 0;
+  /* Slides' voice-over panel tucks further over the screen (V5: -20.5%) so it
+     stays inside the stage's 10% side margin. */
+  --float-voice-right: -9.5%;
 }
 .v6-ss-screen .psuite-v5-screen {
   border-radius: calc(14px * var(--psuite-float-scale, 1));

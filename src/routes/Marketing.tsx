@@ -1,9 +1,8 @@
 import { useSearchParams } from 'react-router-dom';
-import { DialRoot } from 'dialkit';
-import 'dialkit/styles.css';
+import { DialSidePanel } from '../components/DialSidePanel';
 import { Nav } from '../components/Nav';
+import { PageVersionDial } from '../components/PageVersionDial';
 import { ScrollBackground } from '../components/ScrollBackground';
-import { HeroVariantToggle } from '../components/HeroVariantToggle';
 import { V5Tuning } from '../components/V5Tuning';
 import { V5VariantProvider } from '../components/V5VariantContext';
 import { Footer } from '../sections/Footer';
@@ -15,18 +14,21 @@ export function Marketing() {
   const version =
     PAGE_VERSIONS.find((v) => v.id === versionParam) ??
     PAGE_VERSIONS.find((v) => v.id === DEFAULT_VERSION)!;
+  // The section-variant + tuning panels only drive v5 sections; mounting them on
+  // other versions would just clutter the dial kit with dead controls.
+  const isV5 = version.id === 'v5';
+  const main = <main>{version.render()}</main>;
 
   return (
     <>
+      {/* First so its "Page" panel registers (and lists) above every other panel. */}
+      <PageVersionDial />
       <ScrollBackground />
       {version.nav ? version.nav() : <Nav />}
-      <V5VariantProvider>
-        <main>{version.render()}</main>
-      </V5VariantProvider>
+      {isV5 ? <V5VariantProvider>{main}</V5VariantProvider> : main}
       {version.footer ? version.footer() : <Footer />}
-      <HeroVariantToggle />
-      <V5Tuning />
-      <DialRoot position="bottom-right" defaultOpen={false} />
+      {isV5 && <V5Tuning />}
+      <DialSidePanel />
     </>
   );
 }

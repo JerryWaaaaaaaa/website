@@ -54,6 +54,7 @@ tokens:
   typography:
     family:
       sans: '"General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+      mono: '"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace'
     weight:
       regular: 400
       medium: 500
@@ -66,7 +67,7 @@ tokens:
       body: { size-desktop: '18px', size-tablet: '16px', size-mobile: '16px', weight: 400, line-height: 1.4, tracking: '0' }
       button-label: { size-desktop: '16px', size-tablet: '16px', size-mobile: '14px', weight: 500, line-height: 1.2, tracking: '-0.01em' }
       caption: { size-desktop: '14px', size-tablet: '14px', size-mobile: '14px', weight: 400, line-height: '16px', tracking: '0' }
-      overline: { size-desktop: '12px', size-tablet: '12px', size-mobile: '12px', weight: 500, line-height: 1.0, tracking: '0.01em', transform: 'uppercase' }
+      overline: { family: 'mono', size-desktop: '12px', size-tablet: '12px', size-mobile: '12px', weight: 500, line-height: 1.0, tracking: '0.01em', transform: 'uppercase' }
   spacing:
     base: '4px'
     scale: ['4px', '8px', '12px', '16px', '20px', '24px', '32px', '48px']
@@ -111,6 +112,10 @@ tokens:
     font-mono: '"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace'
     body-max-width: '1800px'
     content-max-width: '1480px'
+    dot-color: '#9CB6E6'
+    dot-color-hot: '#0C5CFF'
+    dot-size: '1px'
+    dot-gap: '13px'
   components:
     button:
       height: '46px'
@@ -254,13 +259,14 @@ breakpoints — the discrete sizes below are the canonical anchors.
 | Body | 18px | 16px | 16px | 400 | 1.4 | 0 |
 | Button Label | 16px | 16px | 14px | 500 | 1.2 | -0.01em |
 | Caption | 14px | 14px | 14px | 400 | 16px | 0 |
-| Overline | 12px | 12px | 12px | 500 | 1.0 | +0.01em, uppercase |
+| Overline | 12px | 12px | 12px | 500 | 1.0 | +0.01em, uppercase, Geist Mono |
 
 **Headings** carry tight negative tracking (H1/H2 especially) and short line
 heights for a dense, confident masthead feel. **Body** is always `line-height:
 1.4` — never tighter. **Button Label** doubles as the nav-link style.
 **Caption** uses a fixed `16px` line height (not a multiplier). **Overline** is
-the eyebrow label above headings and is always `text-transform: uppercase`.
+the eyebrow label above headings and is always `text-transform: uppercase`,
+set in Geist Mono via `--font-overline` (every other role uses General Sans).
 
 Role guidance:
 
@@ -432,7 +438,7 @@ A single-line uppercase pill label placed above a section heading.
 |---|---|
 | Background | `--bg-accent-light` (`#F3F8FF`) |
 | Text color | `--text-highlight` (`#0C5CFF`) |
-| Font | Overline role (uppercase) |
+| Font | Overline role (Geist Mono, uppercase) |
 | Padding | `6px 12px` |
 | Height | `24px` |
 | Radius | `999px` |
@@ -502,8 +508,14 @@ block in the front matter, mirrored in `src/index.css`):
   with reduced motion.
 - **Panels** — every body section is a full-width panel in the 1800px column
   with a 12px gradient corner dot at 24px/24px.
-- **Mono labels** — Geist Mono (500, uppercase) for nav links and footer column
-  headings only (`--font-mono`).
+- **Dot grid** — Open platform and Templates panels carry a canvas dot grid
+  (`DotGrid` → `.v6-dot-grid`): crisp 1px `--v6-dot-size` dots every
+  `--v6-dot-gap` across the whole panel. Dots within ~150px of the cursor are
+  pulled toward it (up to 9px) and heat toward `--v6-dot-color-hot`; heat builds
+  while the cursor lingers and fades after it leaves (a heatmap trail). Static on
+  touch and with reduced motion.
+- **Mono labels** — Geist Mono (500, uppercase) for nav links, footer column
+  headings, and every Overline-role eyebrow (`--font-mono` / `--font-overline`).
 - **Text gradient** — `--v6-text-gradient` clipped to text for lead phrases.
 
 ## Do's & Don'ts

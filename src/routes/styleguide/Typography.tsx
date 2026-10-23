@@ -10,6 +10,7 @@ const SCALE = [
   { role: 'Heading 5', size: 20, weight: 500, ls: '0', sample: 'Card title' },
   { role: 'Body', size: 18, weight: 400, ls: '0', sample: 'AI tools that work together so you can focus on the work that matters.' },
   { role: 'Caption', size: 14, weight: 400, ls: '0', sample: 'Caption text used sparingly' },
+  { role: 'Overline', size: 12, weight: 500, ls: '0.01em', sample: 'Auto writing', mono: true },
 ];
 
 export function Typography() {
@@ -17,7 +18,7 @@ export function Typography() {
     <article className="sg-page">
       <h1>Typography</h1>
       <p className="sg-description">
-        Type scale, responsive sizes, and usage guidelines for General Sans.
+        Type scale, responsive sizes, and usage guidelines for General Sans and Geist Mono (Overline).
       </p>
 
       <ComponentPreview label="Type scale (desktop)" align="start" padded>
@@ -38,7 +39,8 @@ export function Typography() {
               </div>
               <div
                 style={{
-                  fontFamily: '"General Sans", sans-serif',
+                  fontFamily: 'mono' in s ? 'var(--font-overline)' : '"General Sans", sans-serif',
+                  textTransform: 'mono' in s ? 'uppercase' : undefined,
                   fontSize: s.size,
                   fontWeight: s.weight,
                   letterSpacing: s.ls,

@@ -168,7 +168,7 @@
 }
 
 .openplat5-overline {
-  font-family: 'General Sans', sans-serif;
+  font-family: var(--font-overline);
   font-size: 12px;
   font-weight: 500;
   line-height: 1;

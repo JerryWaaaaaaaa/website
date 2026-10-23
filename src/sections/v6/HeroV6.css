@@ -1,18 +1,22 @@
-/* V6 hero — Figma 260:56297 (2200 × 1428, 240px block padding, 64px gap). */
+/* V6 hero — Figma 606:45464 (2200 × 1361: 240px top / 100px bottom padding,
+   64px gap). */
 .v6-hero {
+  /* Hero headline is 64px (the shared V6 display size is 72). */
+  --v6-display: clamp(32px, 2.91vw, 64px);
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: clamp(40px, 2.9vw, 64px);
   overflow: hidden;
-  padding: clamp(120px, 10.9vw, 240px) var(--gutter) clamp(72px, 6.4vw, 140px);
+  padding: clamp(120px, 10.9vw, 240px) var(--gutter) clamp(48px, 4.55vw, 100px);
   background: var(--gradient-accent);
 }
 
-.v6-hero-bg {
-  /* Positioning comes from HalftoneImage (.v6-halftone: absolute, inset 0). */
+/* "image-bg" overhangs the hero by 67 / 1361 of its height; the hero clips it. */
+.v6-hero .v6-hero-bg {
   z-index: 0;
+  bottom: -4.92%;
 }
 
 .v6-hero-copy {
@@ -33,44 +37,226 @@
 .v6-hero-title .v6-chips-row {
   justify-content: center;
 }
+/* 8 / 12px block and 12px inline chip padding at the 64px size. */
+.v6-hero-title .v6-chip-line {
+  padding: calc(var(--v6-display) * 0.125) calc(var(--v6-display) * 0.1875)
+    calc(var(--v6-display) * 0.1875);
+}
 
-/* 92px square tile with the AI Companion emblem, matching the chip height. */
+/* Square tile with the AI Companion emblem, matching the chip height. */
 .v6-hero-emblem {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  /* Same height as a chip line (72px type + 8/12px padding = 92px). */
-  width: calc(var(--v6-display) * 1.278);
-  height: calc(var(--v6-display) * 1.278);
+  /* Same height as a chip line (64px type + 8/12px padding = 84px). */
+  width: calc(var(--v6-display) * 1.3125);
+  height: calc(var(--v6-display) * 1.3125);
   border-radius: var(--rounded-lg);
-  background: var(--gradient-accent);
+  /* Figma 607:45592: radial gradient anchored off the tile's top-left corner
+     (a skewed ellipse, so it's kept as Figma's SVG rather than CSS). */
+  background:
+    url("data:image/svg+xml;utf8,<svg viewBox='0 0 84 84' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect width='100%' height='100%' fill='url(%23g)'/><defs><radialGradient id='g' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(11.6 10.1 -5.4992 9.2732 -36.5 -17)'><stop stop-color='%23f8f2ff' offset='0.068953'/><stop stop-color='%23e9f5ff' offset='0.69015'/><stop stop-color='%23bfd1fb' offset='0.92649'/><stop stop-color='%2398b6f5' offset='1'/></radialGradient></defs></svg>")
+      center / 100% 100% no-repeat,
+    #e3edfc;
 }
 .v6-hero-emblem img {
   display: block;
-  width: 70%;
+  width: 66.7%; /* 56 / 84 */
   height: auto;
 }
 
-.v6-hero-pill {
-  width: min(100%, 739px);
+/* Tagline (606:45478): shared .v6-tagline, 706px wide here. */
+.v6-hero-tagline {
+  width: min(100%, 706px);
 }
 
 /* --- Product UI ---------------------------------------------------------- */
 .v6-hero-ui {
   position: relative;
   width: min(100%, 1024px);
+  container-type: inline-size;
 }
-.v6-hero-tracker {
-  display: block;
+/* Browser frame (Figma project-tracker render, 2400 × 1642): sized in cqw of
+   the UI column so it scales as one piece. 1cqw = 24px of the 2400 render. */
+.v6-hero-browser {
+  /* Screen swap timing, shared by the URL and the product shot: the outgoing
+     one blurs away a touch faster than the incoming one sharpens. */
+  --swap-ease: cubic-bezier(0.65, 0, 0.35, 1);
+  --swap-in: 700ms;
+  --swap-out: 550ms;
+  overflow: hidden;
+  padding: 0 1.083cqw 1.083cqw;
+  border-radius: 1.67cqw;
+  /* Same tinted glass as the scrolled V6 nav bar. */
+  background: var(--v6-nav-glass);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+.v6-hero-browser-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 4.333cqw;
+}
+.v6-hero-browser-lights {
+  display: flex;
+  gap: 0.667cqw;
+  padding-left: 1.67cqw;
+}
+.v6-hero-browser-lights i {
+  width: 1cqw;
+  height: 1cqw;
+  border-radius: 50%;
+  background: #ed6a5e;
+}
+.v6-hero-browser-lights i:nth-child(2) {
+  background: #f5bf4f;
+}
+.v6-hero-browser-lights i:nth-child(3) {
+  background: #61c554;
+}
+.v6-hero-browser-url {
+  position: absolute;
+  top: 1cqw;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 38.75cqw;
+  height: 2.25cqw;
+  border-radius: 0.42cqw;
+  background: #fff;
+  transform: translateX(-50%);
+}
+.v6-hero-browser-url-text {
+  grid-area: 1 / 1;
+  color: #3d3d3d;
+  font-family: 'Inter', sans-serif;
+  font-size: max(9px, 1.08cqw);
+  line-height: 1;
+  /* Same swap as the product shots; a lighter blur for the small text. */
+  opacity: 0;
+  filter: blur(4px);
+  transition:
+    opacity var(--swap-out) var(--swap-ease),
+    filter var(--swap-out) var(--swap-ease);
+}
+.v6-hero-browser-url-text[data-active] {
+  opacity: 1;
+  filter: blur(0);
+  transition-duration: var(--swap-in);
+}
+.v6-hero-browser-url img {
+  position: absolute;
+  top: 50%;
+  right: 0.83cqw;
+  /* The SVG has no intrinsic size (100% × 100%), so size both axes (13 × 14). */
+  width: max(7px, 0.55cqw);
+  height: max(7.5px, 0.59cqw);
+  transform: translateY(-50%);
+}
+/* Product UI: V5's 2352 × 1514 shots, crossfading like V5's hero. */
+.v6-hero-browser-content {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 2352 / 1514;
+  border: 1px solid #e3edfc;
+  border-radius: 1.25cqw;
+  background: #fff;
+}
+/* Screen swap: a blurred crossfade, so the two shots read as one screen
+   changing rather than two overlapping. The outgoing shot blurs away a touch
+   faster than the incoming one sharpens.
+   Transitions (not keyframes) so a swap mid-fade retargets smoothly. */
+.v6-hero-browser-img {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: fill;
+  opacity: 0;
+  filter: blur(8px);
+  transition:
+    opacity var(--swap-out) var(--swap-ease),
+    filter var(--swap-out) var(--swap-ease);
+}
+.v6-hero-browser-img[data-active] {
+  opacity: 1;
+  filter: blur(0);
+  transition-duration: var(--swap-in);
 }
 
-/* Screenshare self view (Figma 260:56320): 252px card overlapping the right
-   edge of the browser frame. Positioned as % of the 1024 × 701 UI frame. */
+/* --- Rotating product chip ------------------------------------------------ */
+/* Light tint of the product colour behind the name in that colour; both
+   crossfade as the product changes (--product is set inline). */
+.v6-hero-product {
+  position: relative;
+  background: color-mix(in oklab, var(--product) 13%, #fff);
+  color: var(--product);
+  transition:
+    background-color 500ms var(--ease-out),
+    color 500ms var(--ease-out);
+}
+/* Clips the vertical roll; padded so descenders (Paper) aren't cut, and eases
+   its width to each measured name. */
+.v6-hero-product-window {
+  display: inline-grid;
+  overflow: clip;
+  margin-block: -0.15em;
+  padding-block: 0.15em;
+  transition: width 500ms var(--ease-emphasized);
+}
+.v6-hero-product-word {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+}
+.v6-hero-product-word[data-dir='in'] {
+  animation: v6-hero-word-in 500ms var(--ease-emphasized) both;
+}
+.v6-hero-product-word[data-dir='out'] {
+  animation: v6-hero-word-out 500ms var(--ease-emphasized) both;
+}
+@keyframes v6-hero-word-in {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+@keyframes v6-hero-word-out {
+  to {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+.v6-hero-product-measure {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  visibility: hidden;
+  pointer-events: none;
+}
+.v6-hero-product-measure span {
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v6-hero-product,
+  .v6-hero-product-window,
+  .v6-hero-browser-img,
+  .v6-hero-browser-url-text {
+    transition: none;
+  }
+  .v6-hero-product-word {
+    animation: none;
+  }
+}
+
+/* Screenshare self view (Figma 606:45488): 252px card overlapping the right
+   edge of the browser frame, at (898, 255) of the 1024 × 701 UI frame.
+   --dx / --dy: the drag offset written by useCardDrag. */
 .v6-selfview {
   position: absolute;
-  top: 66.3%;
+  top: 36.38%;
   left: 87.7%;
   display: flex;
   flex-direction: column;
@@ -79,8 +265,22 @@
   min-width: 150px;
   padding: 6px;
   border-radius: var(--rounded-md);
-  background: #0d0d0d;
-  box-shadow: var(--elevation-2);
+  /* Dark glass. */
+  background: rgba(13, 13, 13, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transform: translate(var(--dx, 0px), var(--dy, 0px));
+}
+/* Draggable around the hero on desktop. */
+@media (min-width: 640px) and (pointer: fine) {
+  .v6-selfview {
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+  }
+  .v6-selfview[data-dragging='true'] {
+    cursor: grabbing;
+  }
 }
 .v6-selfview-bar {
   display: flex;
@@ -137,7 +337,7 @@
   aspect-ratio: 16 / 9;
   border-radius: 14px;
 }
-.v6-selfview-video img {
+.v6-selfview-video video {
   display: block;
   width: 100%;
   height: 100%;
@@ -151,23 +351,6 @@
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.25);
   pointer-events: none;
 }
-.v6-selfview-name {
-  position: absolute;
-  bottom: 4px;
-  left: 4px;
-  padding: 4px 8px;
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.42);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  color: #fff;
-  font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 16px;
-  letter-spacing: 0.01em;
-}
-
 @media (max-width: 1199px) {
   .v6-selfview {
     left: auto;
@@ -176,6 +359,10 @@
 }
 
 @media (max-width: 639px) {
+  /* Room for the self view hanging below the UI. */
+  .v6-hero {
+    padding-bottom: 72px;
+  }
   .v6-hero-title .v6-chip-line {
     white-space: normal;
   }

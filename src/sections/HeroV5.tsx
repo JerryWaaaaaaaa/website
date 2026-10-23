@@ -1,33 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Button } from '../components/Button';
+import { HERO_PRODUCTS } from '../data/products';
 import './HeroV5.css';
 
-const PRODUCTS = [
-  {
-    name: 'Sheets',
-    color: '#019F5C',
-    image: '/hero-browser/sheets-ui.png',
-    url: 'sheets.zoom.com',
-  },
-  {
-    name: 'Canvas',
-    color: '#3579FD',
-    image: '/hero-browser/canvas-ui.png',
-    url: 'canvas.zoom.com',
-  },
-  {
-    name: 'Slides',
-    color: '#FB327E',
-    image: '/hero-browser/slides-UI.png',
-    url: 'slides.zoom.com',
-  },
-  {
-    name: 'Paper',
-    color: '#3579FD',
-    image: '/hero-browser/paper-ui.png',
-    url: 'paper.zoom.com',
-  },
-];
+const PRODUCTS = HERO_PRODUCTS;
 
 // Bottom product-suite badges — the full Zoom suite story (Figma node 3267:6296).
 // Icons come straight from public/Icon.

@@ -140,12 +140,14 @@ export function Nav({ variant = 'default' }: { variant?: NavVariant } = {}) {
     immediate: true,
   });
 
+  // v6 always shows the scrolled (glass bar) state, so it needs no listener.
   useEffect(() => {
+    if (isV6) return;
     const onScroll = () => setScrolled(window.scrollY > 50);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [isV6]);
 
   // Track the mobile breakpoint (matches the CSS hamburger switch at 900px).
   useEffect(() => {
@@ -226,7 +228,7 @@ export function Nav({ variant = 'default' }: { variant?: NavVariant } = {}) {
   const toggle = (panel: Exclude<Panel, null>) =>
     setOpenPanel((p) => (p === panel ? null : panel));
 
-  const wrapClass = [s.navWrap, scrolled ? s.isScrolled : ''].filter(Boolean).join(' ');
+  const wrapClass = [s.navWrap, isV6 || scrolled ? s.isScrolled : ''].filter(Boolean).join(' ');
   const barClass = [
     s.navBar,
     // Only Products expands the bar itself; Explore is a floating dropdown that

@@ -1,5 +1,7 @@
-/* V6 CTA — Figma 260:56524 (1800 × 941; copy top-left at 160/120). */
+/* V6 CTA — Figma 607:45685 (1800 × 941; copy top-left at 160/120). */
 .v6-cta {
+  /* Headline is 64px, as in the hero (the shared V6 display size is 72). */
+  --v6-display: clamp(32px, 2.91vw, 64px);
   display: flex;
   align-items: flex-start;
   min-height: min(941px, 52vw);
@@ -19,6 +21,17 @@
   margin: 0;
   font-size: inherit;
   font-weight: inherit;
+}
+/* 8 / 12px block and 12px inline chip padding at the 64px size. */
+.v6-cta-title .v6-chip-line {
+  padding: calc(var(--v6-display) * 0.125) calc(var(--v6-display) * 0.1875)
+    calc(var(--v6-display) * 0.1875);
+}
+.v6-cta-tagline {
+  width: min(100%, 740px);
+}
+.v6-cta-tagline .v6-agent {
+  border-radius: var(--rounded-lg);
 }
 
 @media (max-width: 639px) {

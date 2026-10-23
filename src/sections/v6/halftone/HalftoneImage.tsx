@@ -11,8 +11,14 @@ export type HalftoneParams = {
   softness: number;
   /** Degrees. */
   rotation: number;
+  /** Continuous spin added on top of rotation, deg/s (0 = static; off for reduced motion). */
+  rotationSpeed?: number;
   /** Grid origin as % of the canvas. */
   center: [number, number];
+  /** Cursor falloff radius, CSS px (scaled like dotSize when scaleDots). */
+  pointerRadius?: number;
+  /** Extra dot growth at the cursor: 0.6 → dots reach 1.6×. */
+  pointerBoost?: number;
 };
 
 /**
@@ -96,6 +102,8 @@ export function HalftoneImage({ src, fallbackSrc, params, placement, interactive
   const [ready, setReady] = useState(false);
   const paramsRef = useRef(params);
   paramsRef.current = params;
+  // Set by the GL effect: redraws from paramsRef without re-uploading the image.
+  const refreshRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -132,6 +140,11 @@ export function HalftoneImage({ src, fallbackSrc, params, placement, interactive
     let image: HTMLImageElement | null = null;
     let targets: ReturnType<typeof makeTarget>[] = [];
     let size = { w: 0, h: 0, pw: 0, ph: 0, dpr: 1 };
+
+    // Accumulated spin (deg), advanced by the spin loop while rotationSpeed ≠ 0.
+    let spinOffset = 0;
+    let spinRaf = 0;
+    let lastSpinT = 0;
 
     // Pointer state (CSS px, relative to the canvas).
     const pointer = { x: -9999, y: -9999, strength: 0, target: 0 };
@@ -178,13 +191,16 @@ export function HalftoneImage({ src, fallbackSrc, params, placement, interactive
     };
 
     /** Gradient map + separable blur into offscreen targets (once per size). */
-    const prepare = () => {
-      const p = paramsRef.current;
+    const allocTargets = () => {
       targets.forEach((t) => {
         gl.deleteTexture(t.tex);
         gl.deleteFramebuffer(t.fbo);
       });
       targets = [0, 1, 2].map(() => makeTarget(gl, size.pw, size.ph));
+    };
+
+    const prepare = () => {
+      const p = paramsRef.current;
       gl.viewport(0, 0, size.pw, size.ph);
       gl.disable(gl.SCISSOR_TEST);
 
@@ -251,20 +267,29 @@ export function HalftoneImage({ src, fallbackSrc, params, placement, interactive
       gl.uniform1f(u(h, 'u_dotSize'), p.dotSize * k);
       gl.uniform1f(u(h, 'u_dotScale'), p.dotScale);
       gl.uniform1f(u(h, 'u_softness'), p.softness);
-      gl.uniform1f(u(h, 'u_rotation'), (p.rotation * Math.PI) / 180);
+      gl.uniform1f(u(h, 'u_rotation'), (((p.rotation + spinOffset) % 360) * Math.PI) / 180);
       gl.uniform2f(u(h, 'u_pointer'), pointer.x, pointer.y);
       gl.uniform1f(u(h, 'u_pointerStrength'), pointer.strength);
-      gl.uniform1f(u(h, 'u_pointerRadius'), POINTER_RADIUS * k);
-      gl.uniform1f(u(h, 'u_pointerBoost'), POINTER_BOOST);
+      gl.uniform1f(u(h, 'u_pointerRadius'), (p.pointerRadius ?? POINTER_RADIUS) * k);
+      gl.uniform1f(u(h, 'u_pointerBoost'), p.pointerBoost ?? POINTER_BOOST);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     };
 
     const fullRender = () => {
       if (!image || !size.pw) return;
       uploadSource();
+      allocTargets();
       prepare();
       drawHalftone();
       if (!disposed) setReady(true);
+      startSpin();
+    };
+
+    refreshRef.current = () => {
+      if (disposed || !targets.length) return;
+      prepare();
+      drawHalftone();
+      startSpin();
     };
 
     const resize = () => {
@@ -290,10 +315,31 @@ export function HalftoneImage({ src, fallbackSrc, params, placement, interactive
     const live = interactive && canHover && !reduceMotion && host != null;
     let inView = true;
 
+    // --- Spin loop: full halftone redraw per frame while visible -------------
+    const spin = (t: number) => {
+      spinRaf = 0;
+      const speed = paramsRef.current.rotationSpeed ?? 0;
+      if (disposed || !targets.length || !speed || reduceMotion || !inView) {
+        lastSpinT = 0;
+        return;
+      }
+      const dt = lastSpinT ? Math.min(t - lastSpinT, 64) : 0;
+      lastSpinT = t;
+      spinOffset = (spinOffset + (speed * dt) / 1000) % 360;
+      drawHalftone();
+      spinRaf = requestAnimationFrame(spin);
+    };
+    function startSpin() {
+      if (!spinRaf && (paramsRef.current.rotationSpeed ?? 0) && !reduceMotion && inView) {
+        spinRaf = requestAnimationFrame(spin);
+      }
+    }
+
     // Box (CSS px) the cursor effect can touch, padded for neighbour dots.
     const boxAround = (x: number, y: number): [number, number, number, number] => {
       const k = dotK();
-      const r = (POINTER_RADIUS + paramsRef.current.dotSize * 3) * k;
+      const p = paramsRef.current;
+      const r = ((p.pointerRadius ?? POINTER_RADIUS) + p.dotSize * 3) * k;
       return [Math.max(0, x - r), Math.max(0, y - r), Math.min(size.w, x + r), Math.min(size.h, y + r)];
     };
     const union = (
@@ -337,16 +383,17 @@ export function HalftoneImage({ src, fallbackSrc, params, placement, interactive
       schedule();
     };
 
-    let io: IntersectionObserver | null = null;
     if (live) {
       host.addEventListener('pointermove', onMove, { passive: true });
       host.addEventListener('pointerleave', onLeave, { passive: true });
-      io = new IntersectionObserver(([entry]) => {
-        inView = entry.isIntersecting;
-        if (inView) schedule();
-      });
-      io.observe(canvas);
     }
+    const io = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      if (!inView) return;
+      if (live) schedule();
+      startSpin();
+    });
+    io.observe(canvas);
 
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
@@ -369,9 +416,11 @@ export function HalftoneImage({ src, fallbackSrc, params, placement, interactive
 
     return () => {
       disposed = true;
+      refreshRef.current = null;
       if (raf) cancelAnimationFrame(raf);
+      if (spinRaf) cancelAnimationFrame(spinRaf);
       ro.disconnect();
-      io?.disconnect();
+      io.disconnect();
       if (live) {
         host.removeEventListener('pointermove', onMove);
         host.removeEventListener('pointerleave', onLeave);
@@ -385,9 +434,16 @@ export function HalftoneImage({ src, fallbackSrc, params, placement, interactive
       gl.deleteBuffer(quad);
       Object.values(programs).forEach((p) => gl.deleteProgram(p));
     };
-    // params/placement are static per caller (module-level constants), so the
-    // GL setup only re-runs when the image or interactivity changes.
+    // placement is static per caller (module-level constant), so the GL setup
+    // only re-runs when the image or interactivity changes.
   }, [src, interactive]);
+
+  // Live param edits (e.g. DialKit) redraw in place; keyed on content, not
+  // identity, so a caller rebuilding an equal object each render is free.
+  const paramsKey = JSON.stringify(params);
+  useEffect(() => {
+    refreshRef.current?.();
+  }, [paramsKey]);
 
   return (
     <div className={`v6-halftone${className ? ` ${className}` : ''}`} aria-hidden="true">

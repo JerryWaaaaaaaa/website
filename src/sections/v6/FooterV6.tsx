@@ -89,7 +89,7 @@ export function FooterV6() {
             </ul>
           </div>
           <div className="v6-footer-row v6-footer-legal">
-            <p>©2025 Zoom Communications Inc. All rights reserved.</p>
+            <p>©2026 Zoom Communications Inc. All rights reserved.</p>
             <ul role="list">
               {LEGAL.map((l) => (
                 <li key={l}>

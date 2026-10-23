@@ -41,7 +41,9 @@
   /* 328px at the full 1480 stage; shrinks with the spread so cards keep the
      Figma overlap instead of piling up. */
   width: min(328px, 22.16cqw);
-  transform: translate(-50%, -50%) rotate(var(--r));
+  /* --dx / --dy: the drag offset written by useCardDrag. */
+  transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, 0px)))
+    rotate(var(--r));
 }
 
 .v6-tpl-card {
@@ -51,7 +53,8 @@
   border: 1.5px solid #dfe3e8;
   border-radius: var(--rounded-xl);
   background: var(--bg-neutral);
-  box-shadow: var(--elevation-1);
+  /* Flat at rest; the shadow only appears with the hover lift. */
+  box-shadow: none;
   color: inherit;
   text-decoration: none;
   transition:
@@ -60,7 +63,8 @@
 }
 @media (hover: hover) and (pointer: fine) {
   .v6-tpl-slot:hover {
-    z-index: 2;
+    /* Beats the inline stack order set by dragging. */
+    z-index: 50 !important;
   }
   .v6-tpl-card:hover,
   .v6-tpl-card:focus-visible {
@@ -103,6 +107,24 @@
   letter-spacing: -0.15px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Desktop scatter: cards can be dragged around the stage. */
+@media (min-width: 1200px) and (pointer: fine) {
+  .v6-tpl-slot {
+    user-select: none;
+  }
+  .v6-tpl-slot,
+  .v6-tpl-card {
+    cursor: grab;
+  }
+  .v6-tpl-slot[data-dragging='true'] {
+    z-index: 51 !important;
+    cursor: grabbing;
+  }
+  .v6-tpl-slot[data-dragging='true'] .v6-tpl-card {
+    cursor: grabbing;
+  }
 }
 
 /* Below desktop the scatter can't fit: cards become a swipeable row. */

@@ -1,20 +1,91 @@
-/* V6 scroll story — Figma 200:75530 (1800 × 1050, two 900px columns).
-   The section is a tall scroll track; .v6-story-stage pins for its length. */
+/* V6 key-features story — Figma 200:75530 (1800 × 1050, two 900px columns).
+   Click-to-switch: the titles are tabs, the right column shows the active one. */
 .v6-story {
   position: relative;
-  /* One viewport of pinned travel per step after the first, plus the pin. */
-  height: calc(100vh + (6 - 1) * 55vh);
   background: var(--bg-accent-light);
 }
 
 .v6-story-stage {
-  position: sticky;
-  top: 0;
+  position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  height: 100vh;
-  max-height: 1050px;
+  height: clamp(640px, 100vh, 1050px);
   overflow: hidden;
+}
+
+/* --- Dot slider ------------------------------------------------------------ */
+/* Vertical stack in the left gutter; the active dot stretches into a pill like
+   a slider thumb. */
+.v6-story-dots {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--v6-inline) / 2);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transform: translate(-50%, -50%);
+}
+.v6-story-dot {
+  /* 20px hit area around a 6px dot. */
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 14px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition: height 400ms var(--ease-emphasized);
+}
+.v6-story-dot::before,
+.v6-story-dot::after {
+  content: '';
+  grid-area: 1 / 1;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--text-highlight);
+  transition:
+    height 400ms var(--ease-emphasized),
+    opacity 200ms var(--ease-out);
+}
+/* ::before is the dot / the active bar's track. */
+.v6-story-dot::before {
+  opacity: 0.2;
+}
+/* ::after is the countdown fill: it wipes down the active bar over one dwell,
+   and its animationend advances the story (see StoryV6.tsx). */
+.v6-story-dot::after {
+  opacity: 0;
+}
+.v6-story-dot[data-active] {
+  height: 32px;
+}
+.v6-story-dot[data-active]::before,
+.v6-story-dot[data-active]::after {
+  height: 24px;
+}
+.v6-story-dot[data-active]::after {
+  opacity: 1;
+  animation: v6-story-fill var(--v6-story-dwell, 6s) linear both;
+}
+.v6-story-dots[data-paused] .v6-story-dot::after {
+  animation-play-state: paused;
+}
+@keyframes v6-story-fill {
+  from {
+    clip-path: inset(0 0 100% 0 round 3px);
+  }
+  to {
+    clip-path: inset(0 0 0 0 round 3px);
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .v6-story-dot:not([data-active]):hover::before {
+    opacity: 0.45;
+  }
 }
 
 /* --- Titles --------------------------------------------------------------- */
@@ -29,18 +100,45 @@
 .v6-story-list {
   display: flex;
   flex-direction: column;
-  gap: clamp(32px, 3.1vw, 56px);
+  gap: clamp(44px, 4.2vw, 76px);
   margin: 0;
   /* Anchor line for the active title (~38% down, as in the Figma frame). */
   padding: 38vh 0 50vh;
   list-style: none;
-  will-change: transform;
+  transition: transform 600ms var(--ease-emphasized);
 }
 .v6-story-title {
   /* Sized so the 1.2× active title still fits the column (672px when active). */
   width: calc(100% / 1.2);
   max-width: 560px;
   opacity: 0.16;
+  transition: opacity 400ms var(--ease-out);
+}
+/* Each title is a tab button styled as the plain heading. */
+.v6-story-tab {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.v6-story-title[data-active] .v6-story-tab {
+  cursor: default;
+}
+.v6-story-tab:focus-visible {
+  outline: 2px solid var(--text-highlight);
+  outline-offset: 6px;
+  border-radius: 4px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .v6-story-title:not([data-active]):hover {
+    opacity: 0.4 !important;
+  }
 }
 .v6-story-title h3 {
   margin: 0;
@@ -76,7 +174,7 @@
   object-fit: cover;
 }
 
-/* --- Tablet / mobile: titles above, media below, still pinned. ------------- */
+/* --- Tablet / mobile: titles above, media below. -------------------------- */
 @media (max-width: 899px) {
   .v6-story-stage {
     grid-template-columns: 1fr;
@@ -86,13 +184,32 @@
     padding: 14vh 0 30vh;
   }
   .v6-story-copy {
-    padding-inline: var(--gutter);
+    /* Room for the dot slider in the left gutter. */
+    padding-inline: calc(var(--gutter) + 24px) var(--gutter);
+  }
+  .v6-story-dots {
+    top: 22%;
+    left: calc(var(--gutter) + 4px);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .v6-story-title,
   .v6-story-title h3,
-  .v6-story-frame {
+  .v6-story-list,
+  .v6-story-frame,
+  .v6-story-dot,
+  .v6-story-dot::before,
+  .v6-story-dot::after {
     transition: none;
   }
+  /* No auto-advance: the active bar just shows solid. */
+  .v6-story-dot[data-active]::after {
+    animation: none;
+  }
+}
+
+/* The meeting-deliverable card loop drifts at 0.6× its default (24s) speed here. */
+.v6-story-frame .md-loop-track {
+  animation-duration: 40s;
 }

@@ -27,21 +27,20 @@
   top: 50%;
   left: 50%;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   width: var(--card-w);
   height: 361px;
-  padding: 32px;
-  overflow: hidden;
-  border-radius: var(--rounded-2xl);
-  background: linear-gradient(to bottom, var(--bg-accent-dark), var(--bg-neutral) 70%);
   /* Intro: every card starts stacked at the centre, untilted. */
   transform: translate(-50%, -50%);
   transition: transform 900ms var(--ease-emphasized);
   transition-delay: calc(var(--i) * 60ms);
 }
 .v6-op-stage[data-revealed='true'] .v6-op-card {
-  transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(var(--r));
+  /* --dx / --dy: the drag offset written by OpenPlatformV6's useCardDrag. */
+  transform: translate(
+      calc(-50% + var(--x) + var(--dx, 0px)),
+      calc(-50% + var(--y) + var(--dy, 0px))
+    )
+    rotate(var(--r));
 }
 /* The middle card sits on top of the stack (Figma order). */
 .v6-op-card:nth-child(2) {
@@ -51,12 +50,44 @@
 @media (hover: hover) and (pointer: fine) {
   .v6-op-stage[data-revealed='true'] .v6-op-card:hover,
   .v6-op-stage[data-revealed='true'] .v6-op-card:focus-within {
-    z-index: 2;
-    transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y) - 16px))
+    /* Beats the inline stack order set by dragging. */
+    z-index: 9 !important;
+    transform: translate(
+        calc(-50% + var(--x) + var(--dx, 0px)),
+        calc(-50% + var(--y) + var(--dy, 0px) - 16px)
+      )
       rotate(calc(var(--r) + var(--hr)));
     transition-delay: 0ms;
     transition-duration: 450ms;
   }
+  /* Draggable once the fan has landed. */
+  .v6-op-stage[data-revealed='true'] .v6-op-card {
+    cursor: grab;
+    user-select: none;
+  }
+  /* While dragging the card tracks the pointer 1:1 and rides above the rest. */
+  .v6-op-stage[data-revealed='true'] .v6-op-card[data-dragging='true'] {
+    z-index: 10 !important;
+    cursor: grabbing;
+    transition: none;
+  }
+}
+
+/* The card's visible surface. The article places / drags / hovers it; the face
+   tilts toward the cursor (--rx / --ry from useCardTilt, eased in JS, so no
+   transition here). */
+.v6-op-card-face {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 32px;
+  overflow: hidden;
+  border-radius: var(--rounded-2xl);
+  background: linear-gradient(to bottom, var(--bg-accent-dark), var(--bg-neutral) 70%);
+  transform: perspective(var(--tilt-perspective, 900px)) rotateX(calc(var(--rx, 0) * 1deg))
+    rotateY(calc(var(--ry, 0) * 1deg));
 }
 
 .v6-op-card-bg {
@@ -67,14 +98,57 @@
   object-fit: cover;
   pointer-events: none;
 }
+/* Metallic sheen: repeating light bands (--sheen, built per card from the
+   "Open platform sheen" DialKit panel) on an oversized background, like a
+   softbox reflected in the plate. It slides against the card's stage position
+   (resting --x plus the drag offset --dx / --dy), so the light reads as fixed
+   while the card moves under it, and against the tilt (--ry / --rx ×
+   --sheen-shift), so it rolls across the face as the card leans. */
+.v6-op-card-face::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--sheen, none);
+  background-size: 4000px 4000px;
+  background-position: calc(
+      50% - (var(--x, 0px) + var(--dx, 0px)) * var(--sheen-travel, 0.8) + var(--ry, 0) *
+        var(--sheen-shift, 0px)
+    )
+    calc(
+      50% - (var(--y, 0px) + var(--dy, 0px)) * var(--sheen-travel, 0.8) - var(--rx, 0) *
+        var(--sheen-shift, 0px)
+    );
+  mix-blend-mode: var(--sheen-blend, screen);
+  z-index: 1;
+  opacity: var(--sheen-intensity, 1);
+  pointer-events: none;
+}
+/* Glare: a soft spot under the cursor (--gx / --gy, faded by --go). */
+.v6-op-card-face::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    var(--glare-size, 55%) var(--glare-size, 55%) at var(--gx, 50%) var(--gy, 50%),
+    var(--glare, rgba(255, 255, 255, 0.5)),
+    transparent
+  );
+  mix-blend-mode: var(--sheen-blend, screen);
+  z-index: 1;
+  opacity: var(--go, 0);
+  pointer-events: none;
+}
+/* Both layers sit over the bg image, under the copy + CTA. */
 .v6-op-card-copy {
   position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 .v6-op-overline {
   margin: 0;
+  font-family: var(--font-overline);
   color: var(--text-highlight);
   font-size: 12px;
   font-weight: 500;
@@ -97,6 +171,7 @@
 }
 .v6-op-card-cta {
   position: relative;
+  z-index: 2;
   align-self: flex-start;
   text-decoration: none;
 }
@@ -118,8 +193,10 @@
     width: min(100%, 420px);
     height: auto;
     min-height: 300px;
-    gap: 32px;
     transform: none;
+  }
+  .v6-op-card-face {
+    gap: 32px;
   }
 }
 
@@ -129,6 +206,10 @@
   }
   .v6-op-stage[data-revealed='true'] .v6-op-card:hover,
   .v6-op-stage[data-revealed='true'] .v6-op-card:focus-within {
-    transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(var(--r));
+    transform: translate(
+        calc(-50% + var(--x) + var(--dx, 0px)),
+        calc(-50% + var(--y) + var(--dy, 0px))
+      )
+      rotate(var(--r));
   }
 }

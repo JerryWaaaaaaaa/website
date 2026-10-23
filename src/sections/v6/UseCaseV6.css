@@ -16,7 +16,12 @@
 .v6-uc-tabs::-webkit-scrollbar {
   display: none;
 }
+.v6-uc {
+  --v6-uc-cycle: var(--psuite-v5c-cycle, 10000ms);
+}
 .v6-uc-tab {
+  position: relative;
+  overflow: hidden;
   flex: 0 0 auto;
   flex-grow: 0;
   padding: 16px clamp(20px, 2.7vw, 48px);
@@ -45,6 +50,40 @@
     background: var(--glass-fill-hover);
   }
 }
+/* 1px divider between neighbouring tabs (as the product slideshow). */
+.v6-uc-tab + .v6-uc-tab::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  width: 1px;
+  background: rgba(12, 92, 255, 0.15);
+  pointer-events: none;
+}
+/* Countdown fill: grows left → right across the active tab over one cycle;
+   its animationend advances to the next role (see UseCaseV6.tsx). */
+.v6-uc-fill {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  background: color-mix(in srgb, var(--text-highlight) 10%, var(--bg-highlight-pink));
+  pointer-events: none;
+  animation: v6-uc-fill var(--v6-uc-cycle) linear forwards;
+}
+.v6-uc-fill[data-paused='true'] {
+  animation-play-state: paused;
+}
+@keyframes v6-uc-fill {
+  to {
+    width: 100%;
+  }
+}
+.v6-uc-tab-label {
+  position: relative;
+  z-index: 1;
+}
 .v6-uc-tab:focus-visible {
   outline: 2px solid var(--text-highlight);
   outline-offset: -2px;
@@ -69,14 +108,11 @@
 }
 .v6-uc-headline {
   margin: 0;
-  font-size: var(--v6-title);
+  font-size: var(--v6-heading-3);
   font-weight: 500;
-  line-height: 1;
+  line-height: 1.1;
   letter-spacing: -0.01em;
   animation: v6-uc-in 400ms var(--ease-out);
-}
-.v6-uc-headline .v6-text-gradient {
-  display: block;
 }
 @keyframes v6-uc-in {
   from {
@@ -125,6 +161,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* No countdown or auto-advance: the active tab shows fully filled. */
+  .v6-uc-fill {
+    width: 100%;
+    animation: none;
+  }
   .v6-uc-tab,
   .v6-uc-shot {
     transition: none;

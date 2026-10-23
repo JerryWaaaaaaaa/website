@@ -1,5 +1,7 @@
 import { AgentCta } from './AgentCta';
+import { AsciiTrail } from './halftone/AsciiTrail';
 import { HalftoneImage, type HalftoneParams, type ImagePlacement } from './halftone/HalftoneImage';
+import { useShaderDials } from './halftone/useShaderDials';
 import './CtaV6.css';
 
 // Figma 260:56525 effect stack: "Gradient map" then "Halftone" (values as exported).
@@ -11,10 +13,11 @@ const CTA_HALFTONE: HalftoneParams = {
     { position: 0.754808, color: [0.798963, 0.734289, 0.978929, 1] },
     { position: 1, color: [0.533004, 0.875131, 0.852323, 1] },
   ],
-  dotSize: 5.5,
+  dotSize: 2.6, // spec 5.5, tuned
   dotScale: 1,
   softness: 1,
   rotation: 0,
+  rotationSpeed: 0.7, // deg/s — subtle loop
   center: [50, 50],
 };
 
@@ -28,21 +31,24 @@ const CTA_PLACEMENT: ImagePlacement = {
 };
 
 /**
- * V6 closing CTA (Figma 260:56524). The background is the Figma halftone shader
- * rebuilt in WebGL; dots swell around the cursor on desktop. The exported
- * render (bg.webp) is the fallback.
+ * V6 closing CTA (Figma 607:45685; shader + photo placement as 260:56524). The background is the Figma halftone shader
+ * rebuilt in WebGL with the hero's ASCII heat trail following the cursor on
+ * desktop. The exported render (bg.webp) is the fallback.
  */
+const CTA_DIALS = { params: CTA_HALFTONE };
+
 export function CtaV6() {
+  const { params, ascii, asciiOn } = useShaderDials('CTA shader', CTA_DIALS);
   return (
     <section className="v6-panel v6-cta" aria-labelledby="v6-cta-title">
       <HalftoneImage
         className="v6-cta-bg"
         src="/v6/cta/source.webp"
         fallbackSrc="/v6/cta/bg.webp"
-        params={CTA_HALFTONE}
+        params={params}
         placement={CTA_PLACEMENT}
-        interactive
       />
+      {asciiOn && <AsciiTrail params={ascii} />}
       <div className="v6-cta-copy">
         <h2 className="v6-chips v6-cta-title" id="v6-cta-title">
           <span className="v6-chips-row">
@@ -52,7 +58,7 @@ export function CtaV6() {
             <span className="v6-chip-line v6-chip-line--pink">keep the hours</span>
           </span>
         </h2>
-        <div className="v6-prompt-pill">
+        <div className="v6-tagline v6-cta-tagline">
           <p>Join 10,000+ top performers from 100+ customers who’ve transformed their meeting flow</p>
           <AgentCta>Get started for free</AgentCta>
         </div>

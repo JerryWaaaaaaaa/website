@@ -75,13 +75,24 @@
   --rounded-2xl: 24px;
   --rounded-3xl: 32px;
 
-  /* V6 (Microsite Stylized) — see DESIGN.md → V6 */
+  /* Fonts — Geist Mono carries the Overline role (eyebrows, chips, card
+     overlines) plus V6 nav links and footer headings. See DESIGN.md → Typography. */
   --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-overline: var(--font-mono);
+
+  /* V6 (Microsite Stylized) — see DESIGN.md → V6 */
   --v6-nav-glass: rgba(8, 59, 130, 0.1);
   --v6-tab-fill: rgba(12, 92, 255, 0.05);
   --v6-text-gradient: linear-gradient(90deg, #0c5cff 0%, #c5b0ff 80.4%);
   --v6-body-max-width: 1800px;
   --v6-content-max-width: 1480px;
+  /* Panel dot grid (.v6-dot-grid) — 1px dots at double the Figma density
+     (26.67px → 13px; kept integer so every dot lands on a whole pixel). */
+  --v6-dot-color: #9cb6e6;
+  /* Hottest shade under the cursor (DotGrid lerps rest → hot by heat). */
+  --v6-dot-color-hot: #0c5cff;
+  --v6-dot-size: 1px;
+  --v6-dot-gap: 13px;
 
   /* Layout — controlled live by the Section Variant Dial */
   --page-max-width: 1200px;
@@ -300,7 +311,7 @@ body {
   padding: 6px 12px;
   background: var(--bg-accent-light);
   color: var(--text-highlight);
-  font-family: 'General Sans', sans-serif;
+  font-family: var(--font-overline);
   font-size: 12px;
   font-weight: 500;
   line-height: 1;

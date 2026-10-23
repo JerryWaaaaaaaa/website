@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PERSONAS } from '../useCaseV5/shared';
 import { Button } from '../../components/Button';
 import { PanelDot } from './AgentCta';
@@ -16,18 +16,37 @@ const TABS = PERSONAS.map((p) => ({
   image: IMAGES[p.key] ?? p.image,
 }));
 
-/** V6 use cases (Figma 200:75601): role tabs over a copy + media panel. */
+/**
+ * V6 use cases (Figma 200:75601): role tabs over a copy + media panel.
+ * Auto-plays like the product slideshow: the active tab's background fills as
+ * it counts down and the fill's animationend moves to the next role (looping).
+ */
 export function UseCaseV6() {
-  const [active, setActive] = useState(TABS[0].key);
-  const current = TABS.find((t) => t.key === active) ?? TABS[0];
+  const [index, setIndex] = useState(0);
+  const [runId, setRunId] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const current = TABS[index];
+  const active = current.key;
+
+  useEffect(() => {
+    const onVisibility = () => setPaused(document.hidden);
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => document.removeEventListener('visibilitychange', onVisibility);
+  }, []);
+
+  const advance = () => setIndex((i) => (i + 1) % TABS.length);
+  const select = (i: number) => {
+    setIndex(i);
+    setRunId((n) => n + 1);
+  };
 
   return (
     <section className="v6-panel v6-uc" aria-label="Use cases by role">
       <PanelDot />
       <div className="v6-uc-inner">
         <div className="v6-uc-tabs" role="tablist" aria-label="Roles">
-          {TABS.map((t) => {
-            const isActive = t.key === active;
+          {TABS.map((t, i) => {
+            const isActive = i === index;
             return (
               <button
                 key={t.key}
@@ -38,9 +57,18 @@ export function UseCaseV6() {
                 aria-controls="v6-uc-panel"
                 className="v6-uc-tab"
                 data-active={isActive ? 'true' : undefined}
-                onClick={() => setActive(t.key)}
+                onClick={() => select(i)}
               >
-                {t.label}
+                {isActive && (
+                  <span
+                    key={`${index}-${runId}`}
+                    className="v6-uc-fill"
+                    data-paused={paused ? 'true' : undefined}
+                    onAnimationEnd={advance}
+                    aria-hidden="true"
+                  />
+                )}
+                <span className="v6-uc-tab-label">{t.label}</span>
               </button>
             );
           })}
@@ -54,9 +82,9 @@ export function UseCaseV6() {
         >
           <div className="v6-uc-copy">
             <span className="chip v6-uc-chip">use cases</span>
-            <h2 className="v6-uc-headline" key={current.key}>
+            <h3 className="v6-uc-headline" key={current.key}>
               <span className="v6-text-gradient">{current.lead}</span> {current.rest}
-            </h2>
+            </h3>
             <Button variant="primary">Learn more</Button>
           </div>
 
