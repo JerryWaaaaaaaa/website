@@ -1,10 +1,10 @@
-/* V6 CTA — Figma 607:45685 (1800 × 941; copy top-left at 160/120). */
+/* V6 CTA — Figma 607:45685 (1800 × 941; copy top-left at 160/120); headline
+   + tagline card per 661:29171. */
 .v6-cta {
-  /* Headline is 64px, as in the hero (the shared V6 display size is 72). */
-  --v6-display: clamp(32px, 2.91vw, 64px);
   display: flex;
   align-items: flex-start;
-  min-height: min(941px, 52vw);
+  /* Half the Figma frame's 941px height. */
+  min-height: min(470px, 26vw);
 }
 .v6-cta-bg {
   /* Positioning comes from HalftoneImage (.v6-halftone: absolute, inset 0). */
@@ -14,6 +14,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 4px;
   max-width: 100%;
 }
@@ -22,23 +23,32 @@
   font-size: inherit;
   font-weight: inherit;
 }
-/* 8 / 12px block and 12px inline chip padding at the 64px size. */
+/* 8px top / 12px sides + bottom at the 72px display size. */
 .v6-cta-title .v6-chip-line {
-  padding: calc(var(--v6-display) * 0.125) calc(var(--v6-display) * 0.1875)
-    calc(var(--v6-display) * 0.1875);
+  padding: calc(var(--v6-display) * 0.111) calc(var(--v6-display) * 0.167)
+    calc(var(--v6-display) * 0.167);
 }
+/* Tagline card (661:29178): the shared glass card as a row — copy fills the
+   left, the agent CTA sits at its natural width on the right. */
 .v6-cta-tagline {
-  width: min(100%, 740px);
+  width: min(100%, 747px);
+  padding: 8px 8px 8px 16px;
 }
-.v6-cta-tagline .v6-agent {
-  border-radius: var(--rounded-lg);
+.v6-cta-tagline p {
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 @media (max-width: 639px) {
   .v6-cta {
-    min-height: 560px;
+    min-height: 280px;
   }
   .v6-cta-title .v6-chip-line {
     white-space: normal;
+  }
+  .v6-cta-tagline {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px 8px 8px;
   }
 }

@@ -334,8 +334,13 @@ export function Nav({ variant = 'default' }: { variant?: NavVariant } = {}) {
     >
       <nav className={barClass} role="navigation" aria-label="Main navigation">
         <div className={s.navRow}>
-          <Link to="/" className={s.navLogo} aria-label="Zoom AI Create — home">
-            <img src="/zm-prod-suite-stacked-color01.svg" alt="Zoom AI Create" height={36} />
+          <Link to="/" className={s.navLogo} aria-label="Zoom AI Productivity Suite — home">
+            {isV6 ? (
+              // V6: white horizontal lockup (Figma 662:29184).
+              <img src="/v6/nav/aips-logo-white.svg" alt="Zoom AI Productivity Suite" width={180} height={32} />
+            ) : (
+              <img src="/zm-prod-suite-stacked-color01.svg" alt="Zoom AI Productivity Suite" height={36} />
+            )}
           </Link>
 
           <ul className={s.navLinks} role="list">
@@ -445,10 +450,10 @@ export function Nav({ variant = 'default' }: { variant?: NavVariant } = {}) {
             <Link
               to="/"
               className={s.navLogo}
-              aria-label="Zoom AI Create — home"
+              aria-label="Zoom AI Productivity Suite — home"
               onClick={() => setDrawerOpen(false)}
             >
-              <img src="/zm-prod-suite-stacked-color01.svg" alt="Zoom AI Create" height={32} />
+              <img src="/zm-prod-suite-stacked-color01.svg" alt="Zoom AI Productivity Suite" height={32} />
             </Link>
             <button
               ref={closeBtnRef}

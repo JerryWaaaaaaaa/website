@@ -3,11 +3,15 @@ import type { GradientStop, HalftoneParams } from './HalftoneImage';
 import {
   ASCII_BLEND_MODES,
   ASCII_CHARSETS,
+  ASCII_FONTS,
   ASCII_PALETTES,
+  ASCII_STYLES,
   ASCII_TRAIL_DEFAULTS,
   type AsciiBlendMode,
   type AsciiCharset,
+  type AsciiFont,
   type AsciiPalette,
+  type AsciiStyle,
   type AsciiTrailParams,
 } from './AsciiTrail';
 
@@ -32,6 +36,83 @@ type Options = {
   asciiEnabled?: boolean;
 };
 
+/** The "ascii" DialKit folder (cursor trail), shared by every V6 background. */
+export function asciiDialConfig(ascii: AsciiTrailParams, enabled = true) {
+  return {
+    _collapsed: true,
+    enabled,
+    style: {
+      type: 'select' as const,
+      options: [...ASCII_STYLES],
+      default: ascii.style,
+    },
+    tileGap: [ascii.tileGap, 0, 8, 0.5] as Tuple, // style "tile"
+    tileRadius: [ascii.tileRadius, 0, 12, 0.5] as Tuple, // style "tile"
+    font: {
+      type: 'select' as const,
+      options: Object.keys(ASCII_FONTS) as AsciiFont[],
+      default: ascii.font,
+    },
+    // Three tile sizes (× cell), bigger where the trail is hottest.
+    multiSize: ascii.multiSize,
+    size1: [ascii.size1, 1, 4, 0.05] as Tuple,
+    size2: [ascii.size2, 1, 4, 0.05] as Tuple,
+    size3: [ascii.size3, 1, 4, 0.05] as Tuple,
+    size2Heat: [ascii.size2Heat, 0, 1, 0.01] as Tuple,
+    size3Heat: [ascii.size3Heat, 0, 1, 0.01] as Tuple,
+    charset: {
+      type: 'select' as const,
+      options: (Object.keys(ASCII_CHARSETS) as AsciiCharset[]).map((k) => ({
+        value: k,
+        label: `${k} ${ASCII_CHARSETS[k].trim().slice(0, 8)}`,
+      })),
+      default: ascii.charset,
+    },
+    byHeat: ascii.byHeat, // ramp-style: denser glyph where hotter
+    cellSize: [ascii.cellSize, 6, 40, 1] as Tuple,
+    radius: [ascii.radius, 10, 300, 5] as Tuple, // at rest
+    speedBoost: [ascii.speedBoost, 0, 8, 0.1] as Tuple, // extra radius × at full speed
+    maxSpeed: [ascii.maxSpeed, 0.5, 10, 0.1] as Tuple, // px/ms counted as full speed
+    intensity: [ascii.intensity, 0.05, 1, 0.05] as Tuple,
+    halfLife: [ascii.halfLife, 50, 3000, 25] as Tuple, // ms
+    flicker: [ascii.flicker, 0, 30, 0.5] as Tuple, // glyph re-rolls / s
+    palette: {
+      type: 'select' as const,
+      options: (Object.keys(ASCII_PALETTES) as AsciiPalette[]).map((k) => ({
+        value: k,
+        label: ASCII_PALETTES[k].label,
+      })),
+      default: ascii.palette,
+    },
+    color: { type: 'color' as const, default: ascii.color }, // palette "custom"
+    // Palette "customMix": pick each tile / glyph colour by hand.
+    mixColors: Object.fromEntries(
+      ascii.mixColors.map((c, i) => [`color${i + 1}`, { type: 'color' as const, default: c }]),
+    ) as Record<string, { type: 'color'; default: string }>,
+    blendMode: {
+      type: 'select' as const,
+      options: [...ASCII_BLEND_MODES],
+      default: ascii.blendMode,
+    },
+    opacity: [ascii.opacity, 0, 1, 0.05] as Tuple,
+  } satisfies DialConfig;
+}
+
+/** Reads an asciiDialConfig folder's live values back into trail params. */
+export function readAsciiDials(folder: Record<string, unknown> & { enabled: boolean }) {
+  const { enabled: asciiOn, mixColors, ...rest } = folder;
+  const ascii = {
+    ...rest,
+    mixColors: Object.values((mixColors ?? {}) as Record<string, string>),
+    style: rest.style as AsciiStyle,
+    font: rest.font as AsciiFont,
+    charset: rest.charset as AsciiCharset,
+    palette: rest.palette as AsciiPalette,
+    blendMode: rest.blendMode as AsciiBlendMode,
+  } as AsciiTrailParams;
+  return { ascii, asciiOn };
+}
+
 function buildConfig({ params, dotSizeUnit = 1, ascii = ASCII_TRAIL_DEFAULTS, asciiEnabled = true }: Options) {
   const stops: Record<string, DialConfig> = {};
   params.gradient.forEach((s, i) => {
@@ -54,41 +135,7 @@ function buildConfig({ params, dotSizeUnit = 1, ascii = ASCII_TRAIL_DEFAULTS, as
     },
     ...stops,
     // Cursor trail: a decaying heatmap drawn as ASCII glyphs.
-    ascii: {
-      _collapsed: true,
-      enabled: asciiEnabled,
-      charset: {
-        type: 'select' as const,
-        options: (Object.keys(ASCII_CHARSETS) as AsciiCharset[]).map((k) => ({
-          value: k,
-          label: `${k} ${ASCII_CHARSETS[k].trim().slice(0, 8)}`,
-        })),
-        default: ascii.charset,
-      },
-      byHeat: ascii.byHeat, // ramp-style: denser glyph where hotter
-      cellSize: [ascii.cellSize, 6, 40, 1] as Tuple,
-      radius: [ascii.radius, 10, 300, 5] as Tuple, // at rest
-      speedBoost: [ascii.speedBoost, 0, 8, 0.1] as Tuple, // extra radius × at full speed
-      maxSpeed: [ascii.maxSpeed, 0.5, 10, 0.1] as Tuple, // px/ms counted as full speed
-      intensity: [ascii.intensity, 0.05, 1, 0.05] as Tuple,
-      halfLife: [ascii.halfLife, 50, 3000, 25] as Tuple, // ms
-      flicker: [ascii.flicker, 0, 30, 0.5] as Tuple, // glyph re-rolls / s
-      palette: {
-        type: 'select' as const,
-        options: (Object.keys(ASCII_PALETTES) as AsciiPalette[]).map((k) => ({
-          value: k,
-          label: ASCII_PALETTES[k].label,
-        })),
-        default: ascii.palette,
-      },
-      color: { type: 'color' as const, default: ascii.color }, // palette "custom"
-      blendMode: {
-        type: 'select' as const,
-        options: [...ASCII_BLEND_MODES],
-        default: ascii.blendMode,
-      },
-      opacity: [ascii.opacity, 0, 1, 0.05] as Tuple,
-    },
+    ascii: asciiDialConfig(ascii, asciiEnabled),
   } satisfies DialConfig;
 }
 
@@ -121,13 +168,5 @@ export function useShaderDials(name: string, opts: Options) {
     rotationSpeed: d.spin,
     center: [d.center.x, d.center.y],
   };
-  const { enabled: asciiOn, ...rest } = d.ascii;
-  const ascii = {
-    ...rest,
-    charset: rest.charset as AsciiCharset,
-    palette: rest.palette as AsciiPalette,
-    blendMode: rest.blendMode as AsciiBlendMode,
-  } as AsciiTrailParams;
-
-  return { params, ascii, asciiOn };
+  return { params, ...readAsciiDials(d.ascii) };
 }

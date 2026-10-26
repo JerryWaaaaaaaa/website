@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type RefObject } from 'react';
 import './AsciiTrail.css';
 
 /** Character sets for the trail. "Ramp" sets read light → dense. */
@@ -9,6 +9,8 @@ export const ASCII_CHARSETS = {
   symbols: '!@#$%^&*()[]{}<>?/\\|~',
   slashes: '/\\|-_+',
   letters: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  // Letters with symbols mixed in (~2:1), for the tile trail.
+  mixed: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*+=?!@/<>{}[]',
   alnum: 'abcdefghijklmnopqrstuvwxyz0123456789',
   dots: '.:·•oO0@',
   code: '{}[]()<>;:=+-*/&|!?',
@@ -17,11 +19,16 @@ export type AsciiCharset = keyof typeof ASCII_CHARSETS;
 
 /**
  * Glyph colouring. solid: one colour; mix: each glyph picks one of the colours
- * at random; heat: cool → hot by the cell's heat. "custom" uses params.color.
+ * at random; heat: cool → hot by the cell's heat. "custom" uses params.color;
+ * "customMix" uses params.mixColors (the four pickers in the dial kit);
+ * "background" samples the colorSource canvas under each tile (falling back to
+ * customMix until there is one).
  */
 type Palette = { label: string; kind: 'solid' | 'mix' | 'heat'; colors: string[] };
 export const ASCII_PALETTES = {
   custom: { label: 'Custom (Color)', kind: 'solid', colors: [] },
+  customMix: { label: 'Custom mix (Colors 1–4)', kind: 'mix', colors: [] },
+  background: { label: 'Sample background', kind: 'solid', colors: [] },
   white: { label: 'White', kind: 'solid', colors: ['#ffffff'] },
   black: { label: 'Black', kind: 'solid', colors: ['#000000'] },
   blue: { label: 'Blue', kind: 'solid', colors: ['#0c5cff'] },
@@ -31,6 +38,8 @@ export const ASCII_PALETTES = {
   teal: { label: 'Teal', kind: 'solid', colors: ['#5ecbc4'] },
   heroMix: { label: 'Mix · hero gradient', kind: 'mix', colors: ['#ccbbf9', '#4674cf', '#d6e5fd', '#5ecbc4'] },
   brandMix: { label: 'Mix · brand', kind: 'mix', colors: ['#0c5cff', '#fb327e', '#e0d5ff', '#ffffff'] },
+  // brandMix with lavender and white deepened so white glyphs read on the tiles.
+  tileMix: { label: 'Mix · brand (tiles)', kind: 'mix', colors: ['#0c5cff', '#fb327e', '#8b6cf0', '#4674cf'] },
   heatBlueRose: { label: 'Heat · blue → rose', kind: 'heat', colors: ['#0c5cff', '#fb327e'] },
   heatLavenderWhite: { label: 'Heat · lavender → white', kind: 'heat', colors: ['#ccbbf9', '#ffffff'] },
   heatTealWhite: { label: 'Heat · blue → teal → white', kind: 'heat', colors: ['#4674cf', '#5ecbc4', '#ffffff'] },
@@ -59,7 +68,34 @@ export const ASCII_BLEND_MODES = [
 ] as const;
 export type AsciiBlendMode = (typeof ASCII_BLEND_MODES)[number];
 
+/** glyph: coloured letters; tile: a coloured square per cell with a white letter. */
+export const ASCII_STYLES = ['glyph', 'tile'] as const;
+export type AsciiStyle = (typeof ASCII_STYLES)[number];
+
+/** Glyph typeface. General Sans is loaded site-wide (Fontshare, 400/500). */
+export const ASCII_FONTS = {
+  mono: "ui-monospace, 'SF Mono', Menlo, monospace",
+  generalSans: "'General Sans', sans-serif",
+} as const;
+export type AsciiFont = keyof typeof ASCII_FONTS;
+
 export type AsciiTrailParams = {
+  style: AsciiStyle;
+  /** Tile style: gap between squares, CSS px. */
+  tileGap: number;
+  /** Tile style: square corner radius, CSS px. */
+  tileRadius: number;
+  font: AsciiFont;
+  /** Three tile sizes, picked by heat (bigger where hotter). */
+  multiSize: boolean;
+  /** Tile sizes per tier, as multiples of cellSize (≥ 1, ascending). */
+  size1: number;
+  size2: number;
+  size3: number;
+  /** Average heat (0–1) an area needs to draw as one tier-2 tile. */
+  size2Heat: number;
+  /** Average heat (0–1) an area needs to draw as one tier-3 tile. */
+  size3Heat: number;
   charset: AsciiCharset;
   /** Pick the glyph by heat (light chars as it cools) instead of at random. */
   byHeat: boolean;
@@ -80,12 +116,24 @@ export type AsciiTrailParams = {
   palette: AsciiPalette;
   /** Used when palette is "custom". */
   color: string;
+  /** Used when palette is "customMix": each lit cell picks one at random. */
+  mixColors: string[];
   blendMode: AsciiBlendMode;
   opacity: number;
 };
 
 /** The tuned V6 trail (hero DialKit defaults); the CTA reuses it as-is. */
 export const ASCII_TRAIL_DEFAULTS: AsciiTrailParams = {
+  style: 'glyph',
+  tileGap: 1,
+  tileRadius: 2,
+  font: 'mono',
+  multiSize: false,
+  size1: 1,
+  size2: 1.5,
+  size3: 2.5,
+  size2Heat: 0.3,
+  size3Heat: 0.55,
   charset: 'letters',
   byHeat: true,
   cellSize: 10,
@@ -97,11 +145,29 @@ export const ASCII_TRAIL_DEFAULTS: AsciiTrailParams = {
   flicker: 3,
   palette: 'brandMix',
   color: '#e5fffb',
+  mixColors: ['#0c5cff', '#fb327e', '#8b6cf0', '#4674cf'], // = tileMix
   blendMode: 'lighten',
   opacity: 0.9,
 };
 
-type Props = { params: AsciiTrailParams; className?: string };
+/** The mesh variant's trail: coloured squares with white letters, drawn normally. */
+export const ASCII_TILE_DEFAULTS: AsciiTrailParams = {
+  ...ASCII_TRAIL_DEFAULTS,
+  style: 'tile',
+  font: 'generalSans',
+  multiSize: true,
+  palette: 'background',
+  blendMode: 'normal',
+  opacity: 1,
+  cellSize: 14,
+};
+
+type Props = {
+  params: AsciiTrailParams;
+  className?: string;
+  /** Canvas under the trail (e.g. the mesh) for the "background" palette. */
+  colorSource?: RefObject<HTMLCanvasElement | null>;
+};
 
 const MAX_DPR = 2;
 const MIN_HEAT = 0.02; // below this a cell is dark and dropped
@@ -130,11 +196,13 @@ function ramp(stops: RGB[], t: number): RGB {
  * only animates while something is lit. Desktop pointers only; off for
  * reduced motion.
  */
-export function AsciiTrail({ params, className }: Props) {
+export function AsciiTrail({ params, className, colorSource }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const paramsRef = useRef(params);
   paramsRef.current = params;
   const resetRef = useRef<(() => void) | null>(null);
+  const colorSourceRef = useRef(colorSource);
+  colorSourceRef.current = colorSource;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -145,6 +213,8 @@ export function AsciiTrail({ params, className }: Props) {
     if (!canHover || reduceMotion) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    // Canvas text won't trigger a webfont load; warm General Sans up front.
+    document.fonts?.load(`500 16px ${ASCII_FONTS.generalSans}`).catch(() => {});
 
     let w = 0;
     let h = 0;
@@ -210,35 +280,209 @@ export function AsciiTrail({ params, className }: Props) {
       }
     };
 
+    // Ink offsets for optical centring, per (font, char): [dx, dy] from the
+    // cell centre to the fillText origin (left / alphabetic).
+    const inkCache = new Map<string, [number, number]>();
+    const inkOffset = (ch: string, font: string) => {
+      const key = `${font}|${ch}`;
+      let o = inkCache.get(key);
+      if (!o) {
+        const m = ctx.measureText(ch);
+        const inkW = m.actualBoundingBoxLeft + m.actualBoundingBoxRight;
+        o = [m.actualBoundingBoxLeft - inkW / 2, (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2];
+        inkCache.set(key, o);
+      }
+      return o;
+    };
+
+    /** A tile to draw: top-left corner and side (CSS px), size tier, heat, and the cell lending its glyph + tint. */
+    type Tile = { x: number; y: number; side: number; tier: number; heat: number; src: number };
+
+    /**
+     * Lit cells as tiles. With multiSize, each tier tiles the canvas with its
+     * own lattice (pitch = size × cell). Biggest first: a lattice square whose
+     * base cells (centres inside it) average size3Heat becomes a tier-3 tile
+     * and claims those cells; then tier 2 on unclaimed cells at size2Heat; the
+     * rest falls to tier 1. Empty cells count as cold, so big tiles only form
+     * where the trail is solidly hot. Non-integer sizes can overlap slightly
+     * at the edges; tiles draw smallest first so big ones sit on top.
+     */
+    const collectTiles = (p: AsciiTrailParams): Tile[] => {
+      if (!p.multiSize) {
+        return lit.map((i) => ({
+          x: (i % cols) * cell,
+          y: Math.floor(i / cols) * cell,
+          side: cell,
+          tier: 0,
+          heat: heat[i],
+          src: i,
+        }));
+      }
+      const pitch = [p.size1, p.size2, p.size3].map((m) => Math.max(1, m) * cell);
+      const threshold = [0, p.size2Heat, p.size3Heat];
+      const claimed = new Uint8Array(cols * rows);
+      const out: Tile[] = [];
+      for (let tier = 2; tier >= 0; tier--) {
+        const P = pitch[tier];
+        const lcols = Math.ceil((cols * cell) / P);
+        const squares = new Set<number>();
+        for (const i of lit) {
+          if (claimed[i]) continue;
+          const cx = ((i % cols) + 0.5) * cell;
+          const cy = (Math.floor(i / cols) + 0.5) * cell;
+          squares.add(Math.floor(cy / P) * lcols + Math.floor(cx / P));
+        }
+        for (const key of squares) {
+          const x0 = (key % lcols) * P;
+          const y0 = Math.floor(key / lcols) * P;
+          // Base cells whose centres fall inside [x0, x0 + P).
+          const c0 = Math.ceil(x0 / cell - 0.5);
+          const c1 = Math.min(cols - 1, Math.ceil((x0 + P) / cell - 0.5) - 1);
+          const r0 = Math.ceil(y0 / cell - 0.5);
+          const r1 = Math.min(rows - 1, Math.ceil((y0 + P) / cell - 0.5) - 1);
+          let sum = 0;
+          let n = 0;
+          let src = -1;
+          let blocked = false;
+          for (let r = r0; r <= r1 && !blocked; r++) {
+            for (let c = c0; c <= c1; c++) {
+              const i = r * cols + c;
+              if (claimed[i]) {
+                blocked = true;
+                break;
+              }
+              sum += heat[i];
+              n++;
+              if (isLit[i] && (src < 0 || heat[i] > heat[src])) src = i;
+            }
+          }
+          if (blocked || src < 0 || !n) continue;
+          const avg = sum / n;
+          if (tier > 0 && avg < threshold[tier]) continue;
+          out.push({ x: x0, y: y0, side: P, tier, heat: tier > 0 ? avg : Math.max(avg, MIN_HEAT), src });
+          for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) claimed[r * cols + c] = 1;
+        }
+      }
+      return out;
+    };
+
+    // Background sampling: the source canvas scaled down to one pixel per
+    // grid cell (the browser averages each cell's area), read back once a frame.
+    const sampleCanvas = document.createElement('canvas');
+    const sampleCtx = sampleCanvas.getContext('2d', { willReadFrequently: true });
+    const sampleBackground = (): Uint8ClampedArray | null => {
+      const src = colorSourceRef.current?.current;
+      if (!src || !src.width || !src.height || !sampleCtx) return null;
+      const tr = canvas.getBoundingClientRect();
+      const sr = src.getBoundingClientRect();
+      if (!sr.width || !sr.height) return null;
+      const kx = src.width / sr.width;
+      const ky = src.height / sr.height;
+      if (sampleCanvas.width !== cols || sampleCanvas.height !== rows) {
+        sampleCanvas.width = cols;
+        sampleCanvas.height = rows;
+      }
+      sampleCtx.clearRect(0, 0, cols, rows);
+      sampleCtx.drawImage(
+        src,
+        (tr.left - sr.left) * kx,
+        (tr.top - sr.top) * ky,
+        cols * cell * kx,
+        rows * cell * ky,
+        0,
+        0,
+        cols,
+        rows,
+      );
+      return sampleCtx.getImageData(0, 0, cols, rows).data;
+    };
+
     const draw = () => {
       const p = paramsRef.current;
       const chars = charset();
-      const pal: Palette = ASCII_PALETTES[p.palette] ?? ASCII_PALETTES.custom;
-      const colors = (pal.colors.length ? pal.colors : [p.color]).map(hexToRgb);
-      // Solid / heat: one group. Mix: one group per colour, picked per cell.
+      const bg = p.palette === 'background' ? sampleBackground() : null;
+      // "background" without a source yet behaves as customMix.
+      const palKey = p.palette === 'background' && !bg ? 'customMix' : p.palette;
+      const pal: Palette = ASCII_PALETTES[palKey] ?? ASCII_PALETTES.custom;
+      const own = palKey === 'customMix' && p.mixColors.length ? p.mixColors : [p.color];
+      const colors = (pal.colors.length ? pal.colors : own).map(hexToRgb);
+      // Solid / heat / background: one group. Mix: one group per colour, picked per cell.
       const groups = pal.kind === 'mix' ? colors.length : 1;
+      const tiles = p.style === 'tile';
+      const family = ASCII_FONTS[p.font] ?? ASCII_FONTS.mono;
+      const weight = tiles && p.font === 'mono' ? 600 : 500;
       ctx.clearRect(0, 0, w, h);
-      ctx.font = `500 ${cell}px ui-monospace, 'SF Mono', Menlo, monospace`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      // Bucket by (colour group, heat) so fillStyle changes per bucket, not per cell.
-      const buckets: number[][] = Array.from({ length: BUCKETS * groups }, () => []);
-      for (const i of lit) {
-        const b = Math.min(BUCKETS - 1, Math.floor(heat[i] * BUCKETS));
-        buckets[(tint[i] % groups) * BUCKETS + b].push(i);
+      // Bucket by (tier, colour group, heat) so fillStyle / font change per
+      // bucket, not per tile (sampled colours set fillStyle per tile).
+      const perTier = BUCKETS * groups;
+      const buckets: Tile[][] = Array.from({ length: perTier * 3 }, () => []);
+      for (const tile of collectTiles(p)) {
+        const b = Math.min(BUCKETS - 1, Math.floor(tile.heat * BUCKETS));
+        buckets[tile.tier * perTier + (tint[tile.src] % groups) * BUCKETS + b].push(tile);
       }
-      buckets.forEach((cells, key) => {
-        if (!cells.length) return;
-        const t = ((key % BUCKETS) + 0.5) / BUCKETS;
-        const [cr, cg, cb] =
-          pal.kind === 'heat' ? ramp(colors, t) : colors[Math.floor(key / BUCKETS)];
-        ctx.fillStyle = `rgba(${cr},${cg},${cb},${Math.min(1, t * 1.4) * p.opacity})`;
-        for (const i of cells) {
+      /** Sampled background colour at a tile's centre, as rgba. */
+      const bgStyle = (tile: Tile, alpha: number) => {
+        const c = Math.min(cols - 1, Math.floor((tile.x + tile.side / 2) / cell));
+        const r = Math.min(rows - 1, Math.floor((tile.y + tile.side / 2) / cell));
+        const o = (r * cols + c) * 4;
+        return `rgba(${bg![o]},${bg![o + 1]},${bg![o + 2]},${alpha})`;
+      };
+      buckets.forEach((list, key) => {
+        if (!list.length) return;
+        const side = list[0].side;
+        const k = key % perTier;
+        const t = ((k % BUCKETS) + 0.5) / BUCKETS;
+        const [cr, cg, cb] = pal.kind === 'heat' ? ramp(colors, t) : colors[Math.floor(k / BUCKETS)];
+        const alpha = Math.min(1, t * 1.4) * p.opacity;
+        const fill = `rgba(${cr},${cg},${cb},${alpha})`;
+        ctx.fillStyle = fill;
+        if (tiles) {
+          // Squares in the cell's colour, then white glyphs on top.
+          const gap = Math.min(side - 1, Math.max(0, p.tileGap));
+          const inner = side - gap;
+          const radius = Math.min(inner / 2, Math.max(0, p.tileRadius) * (side / cell));
+          const square = (tile: Tile) => {
+            const x = tile.x + gap / 2;
+            const y = tile.y + gap / 2;
+            if (radius > 0) ctx.roundRect(x, y, inner, inner, radius);
+            else ctx.rect(x, y, inner, inner);
+          };
+          if (bg) {
+            for (const tile of list) {
+              ctx.fillStyle = bgStyle(tile, alpha);
+              ctx.beginPath();
+              square(tile);
+              ctx.fill();
+            }
+          } else {
+            ctx.beginPath();
+            list.forEach(square);
+            ctx.fill();
+          }
+          ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+        }
+        // Tiles: the glyph sits inside its square, so it's set a little smaller.
+        const fontPx = tiles ? Math.round(side * 0.72) : side;
+        const font = `${weight} ${fontPx}px ${family}`;
+        ctx.font = font;
+        // Tiles centre each glyph's ink in its square; plain glyphs keep the
+        // advance-box centring they've always had.
+        ctx.textAlign = tiles ? 'left' : 'center';
+        ctx.textBaseline = tiles ? 'alphabetic' : 'middle';
+        for (const tile of list) {
           const ch = p.byHeat
-            ? chars[Math.min(chars.length - 1, Math.floor(heat[i] * chars.length))]
-            : chars[glyph[i] % chars.length];
+            ? chars[Math.min(chars.length - 1, Math.floor(tile.heat * chars.length))]
+            : chars[glyph[tile.src] % chars.length];
           if (ch === ' ') continue;
-          ctx.fillText(ch, ((i % cols) + 0.5) * cell, (Math.floor(i / cols) + 0.5) * cell);
+          const cx = tile.x + side / 2;
+          const cy = tile.y + side / 2;
+          if (tiles) {
+            const [dx, dy] = inkOffset(ch, font);
+            ctx.fillText(ch, cx + dx, cy + dy);
+          } else {
+            if (bg) ctx.fillStyle = bgStyle(tile, alpha);
+            ctx.fillText(ch, cx, cy);
+          }
         }
       });
     };

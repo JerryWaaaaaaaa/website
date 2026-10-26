@@ -170,6 +170,32 @@
   border-radius: 27px;
   object-fit: cover;
 }
+/* Orb (Figma 659:29154): a cropped base image under the orb render. */
+.v6-agent-orb {
+  position: relative;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 18px;
+  overflow: hidden;
+}
+.v6-agent-orb img {
+  position: absolute;
+  display: block;
+  max-width: none;
+}
+.v6-agent-orb-base {
+  top: -158.97%;
+  left: -87.34%;
+  width: 265.62%;
+  height: 352.73%;
+}
+.v6-agent-orb-top {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 .v6-agent-icon {
   position: relative;
   display: grid;
@@ -191,28 +217,59 @@
 .v6-agent-icon img + img {
   transform: translateX(-36px);
 }
-/* Label shuffle (AgentCta's useShuffle): the real label keeps the width and
-   hides while the scrambled overlay plays on top of it. Mono, so the overlay
-   (same letter count) covers the label exactly whatever glyphs it shows. */
-.v6-agent-label {
+/* Hover glow (dark CTAs): a wavy band of the brand gradient rising inside
+   the bottom edge — an inner glow with a rippling top. The outer span blurs
+   the inner one, which carries the gradient under a repeating wave mask (blur
+   must come after the mask, or the wave edge would stay crisp). */
+.v6-agent {
   position: relative;
-  font-family: var(--font-mono);
+  isolation: isolate;
+  overflow: hidden;
 }
-.v6-agent-label-shuffle {
+.v6-agent > * {
+  position: relative;
+  z-index: 1;
+}
+.v6-agent > .v6-agent-glow {
   position: absolute;
-  top: 0;
-  left: 0;
-  white-space: pre;
-  visibility: hidden;
+  z-index: 0;
+  inset: auto -12% -6px;
+  height: 80%;
+  filter: blur(9px);
+  opacity: 0;
+  transform: translateY(45%);
+  transition:
+    opacity 320ms var(--ease-out),
+    transform 480ms var(--ease-out);
+  pointer-events: none;
 }
-.v6-agent-label[data-shuffling] .v6-agent-label-text {
-  visibility: hidden;
+.v6-agent-glow > span {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #0c5cff 0%, #c5b0ff 35%, #fb327e 65%, #5ecbc4 100%);
+  -webkit-mask: var(--v6-agent-wave) 0 0 / 96px 100% repeat-x;
+  mask: var(--v6-agent-wave) 0 0 / 96px 100% repeat-x;
+  animation: v6-agent-wave 2.2s linear infinite paused;
 }
-.v6-agent-label[data-shuffling] .v6-agent-label-shuffle {
-  visibility: visible;
+.v6-agent {
+  /* One seamless wave period (96 × 40): the start and end slopes match. */
+  --v6-agent-wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 40' preserveAspectRatio='none'%3E%3Cpath d='M0 14C16 4 32 4 48 14S80 24 96 14V40H0Z'/%3E%3C/svg%3E");
+}
+@keyframes v6-agent-wave {
+  to {
+    -webkit-mask-position: -96px 0;
+    mask-position: -96px 0;
+  }
 }
 @media (hover: hover) and (pointer: fine) {
-  .v6-agent:hover {
+  .v6-agent:hover .v6-agent-glow {
+    opacity: 0.9;
+    transform: none;
+  }
+  .v6-agent:hover .v6-agent-glow > span {
+    animation-play-state: running;
+  }
+  .v6-agent--pink:hover {
     opacity: 0.88;
   }
   /* Arrow swap: the arrow slides out right as its twin slides in from the
@@ -227,32 +284,29 @@
   }
 }
 
-/* Tagline (hero, CTA): a light body-copy chip and the agent CTA side by side,
-   4px apart. Width is set per section. */
-.v6-tagline {
+/* Glass tagline card (hero 659:29151, CTA 661:29178): the shared V6 glass
+   holding white body copy and a black agent CTA, 16px apart. Layout (row vs
+   stacked), width and padding are set per section. */
+.v6-glass-card {
   display: flex;
-  gap: 4px;
-}
-.v6-tagline p {
-  display: flex;
-  flex: 1 1 0;
   align-items: center;
-  min-width: 0;
-  margin: 0;
-  padding: 12px 16px;
+  gap: 16px;
   border-radius: var(--rounded-lg);
-  background: var(--bg-accent-light);
+  background: var(--v6-glass);
+  -webkit-backdrop-filter: var(--v6-glass-blur);
+  backdrop-filter: var(--v6-glass-blur);
+}
+.v6-glass-card p {
+  margin: 0;
+  color: var(--text-contrast);
   font-size: var(--v6-body);
   line-height: 1.4;
 }
-.v6-tagline .v6-agent {
+.v6-glass-card .v6-agent {
   padding: 16px 20px;
 }
 
 @media (max-width: 639px) {
-  .v6-tagline {
-    flex-direction: column;
-  }
   .v6-agent {
     justify-content: flex-start;
   }
@@ -270,5 +324,13 @@
   }
   .v6-agent:hover .v6-agent-icon img + img {
     transform: translateX(-36px);
+  }
+  /* Glow still fades in, but doesn't rise or ripple. */
+  .v6-agent > .v6-agent-glow {
+    transform: none;
+    transition: opacity 200ms ease;
+  }
+  .v6-agent-glow > span {
+    animation: none;
   }
 }

@@ -627,6 +627,10 @@
 .navWrap[data-version='v6'] .navLogo {
   padding: 0 18px 0 9px;
 }
+/* White lockup at its native 180 × 32. */
+.navWrap[data-version='v6'] .navRow .navLogo img {
+  height: 32px;
+}
 .navWrap[data-version='v6'] .navLinks {
   justify-content: flex-end;
   gap: 20px;
@@ -634,6 +638,8 @@
 .navWrap[data-version='v6'] .navLink {
   gap: 5px;
   padding: 5px 0;
+  /* White, to match the white logo lockup. */
+  color: var(--text-contrast);
   font-family: var(--font-mono);
   font-size: 16px;
   font-weight: 500;
@@ -644,16 +650,24 @@
 .navWrap[data-version='v6'] .navLink:hover,
 .navWrap[data-version='v6'] .navTrigger.isOpen .navLink {
   background: none;
-  color: var(--text-highlight);
+  color: rgba(255, 255, 255, 0.72);
+}
+.navWrap[data-version='v6'] .navRow .navChevron {
+  color: currentColor;
+}
+.navWrap[data-version='v6'] .navHamburger {
+  color: var(--text-contrast);
 }
 .navWrap[data-version='v6'] .navCta :global(.btn) {
   border-radius: var(--rounded-md);
 }
+/* Sign in: white text on a translucent white fill, so it sits on the glass. */
 .navWrap[data-version='v6'] .navCta :global(.btn-secondary) {
-  background: var(--bg-accent-light);
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--text-contrast);
 }
 .navWrap[data-version='v6'] .navCta :global(.btn-secondary):hover {
-  background: var(--bg-accent-medium);
+  background: rgba(255, 255, 255, 0.26);
 }
 .navWrap[data-version='v6'] .exploreMenu {
   right: 0;
@@ -664,8 +678,8 @@
   border-radius: var(--rounded-sm);
 }
 
-/* Scrolled: tinted glass bar, inset 8px, 12px corners (Figma bg rgba(8,59,130,.1)
-   with a 24px backdrop blur over an 8px blur on the wrapper). */
+/* Scrolled: glass bar, inset 8px, 12px corners — the shared V6 glass (Figma
+   started as rgba(8,59,130,.1) with a 24px blur). */
 .navWrap[data-version='v6'].isScrolled {
   padding: 8px 8px 0;
 }
@@ -673,9 +687,10 @@
 .navWrap[data-version='v6'].isScrolled .navBar.productsOpen {
   max-width: 100%;
   border-radius: var(--rounded-md);
-  background: var(--v6-nav-glass);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  /* The shared V6 glass (index.css --v6-glass). */
+  background: var(--v6-glass);
+  backdrop-filter: var(--v6-glass-blur);
+  -webkit-backdrop-filter: var(--v6-glass-blur);
   border-color: transparent;
 }
 .navWrap[data-version='v6'].isScrolled .navRow {
@@ -683,6 +698,10 @@
 }
 .navWrap[data-version='v6'] .navBar.productsOpen {
   border-radius: 0 0 var(--rounded-md) var(--rounded-md);
+  /* Glass rather than the light neutral fill, so the white links still read. */
+  background: var(--v6-glass);
+  backdrop-filter: var(--v6-glass-blur);
+  -webkit-backdrop-filter: var(--v6-glass-blur);
 }
 .navWrap[data-version='v6'] .productsPanel .productGrid {
   max-width: 1200px;
