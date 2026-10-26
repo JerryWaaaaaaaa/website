@@ -74,10 +74,11 @@ export const SECTION_VARIANT_GROUPS: SectionVariantGroup[] = [
     ],
   },
   // V6 groups get their own ids so their URL params never collide with V5's.
+  // Mesh + tiles is the default; the halftone build stays available as "a".
   {
     id: 'heroV6',
     label: 'Hero',
-    defaultId: 'a',
+    defaultId: 'b', // Mesh + tiles
     appliesTo: ['v6'],
     variants: [
       { id: 'a', label: 'Halftone', render: () => <HeroV6 /> },
@@ -87,7 +88,7 @@ export const SECTION_VARIANT_GROUPS: SectionVariantGroup[] = [
   {
     id: 'ctaV6',
     label: 'CTA',
-    defaultId: 'a',
+    defaultId: 'b', // Mesh + tiles
     appliesTo: ['v6'],
     variants: [
       { id: 'a', label: 'Halftone', render: () => <CtaV6 /> },
