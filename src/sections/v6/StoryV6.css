@@ -9,7 +9,8 @@
   position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  height: clamp(640px, 100vh, 1050px);
+  /* No fixed height: the square media sets the row, and the title column
+     stretches to match it. */
   overflow: hidden;
 }
 
@@ -92,6 +93,9 @@
 .v6-story-copy {
   position: relative;
   overflow: hidden;
+  /* Don't let the title list size the row: the square media sets the height
+     and this column stretches to it (titles past the edge are clipped). */
+  contain: size;
   padding: 0 clamp(20px, 6.67vw, 120px) 0 var(--v6-inline);
   /* Fade titles out at the column edges. */
   -webkit-mask: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
@@ -103,7 +107,8 @@
   gap: clamp(44px, 4.2vw, 76px);
   margin: 0;
   /* Anchor line for the active title (~38% down, as in the Figma frame). */
-  padding: 38vh 0 50vh;
+  /* Percent padding is of the column width, so this tracks the square. */
+  padding: 38% 0 50%;
   list-style: none;
   transition: transform 600ms var(--ease-emphasized);
 }
@@ -161,6 +166,7 @@
 /* --- Media ----------------------------------------------------------------- */
 .v6-story-media {
   position: relative;
+  aspect-ratio: 1;
   overflow: hidden;
 }
 .v6-story-frame {
@@ -178,12 +184,13 @@
 @media (max-width: 899px) {
   .v6-story-stage {
     grid-template-columns: 1fr;
-    grid-template-rows: 44% 56%;
+    grid-template-rows: clamp(280px, 44vh, 420px) auto;
   }
   .v6-story-list {
     padding: 14vh 0 30vh;
   }
   .v6-story-copy {
+    contain: none;
     /* Room for the dot slider in the left gutter. */
     padding-inline: calc(var(--gutter) + 24px) var(--gutter);
   }

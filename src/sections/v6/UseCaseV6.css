@@ -127,31 +127,21 @@
   aspect-ratio: 1;
   overflow: hidden;
 }
-.v6-uc-media-bg {
-  position: absolute;
-  top: -16.35%;
-  left: 0;
-  width: 100%;
-  height: 132.7%;
-  object-fit: cover;
-}
 .v6-uc-shot {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 74.2%;
-  height: 75.1%;
-  border-radius: 18.5px;
-  object-fit: contain;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   opacity: 0;
-  transform: translate(-50%, -50%) scale(0.98);
+  transform: scale(0.98);
   transition:
     opacity 350ms var(--ease-out),
     transform 350ms var(--ease-out);
 }
 .v6-uc-shot[data-active] {
   opacity: 1;
-  transform: translate(-50%, -50%);
+  transform: none;
 }
 
 @media (max-width: 899px) {
