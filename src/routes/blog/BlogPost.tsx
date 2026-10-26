@@ -20,9 +20,9 @@ export function BlogPost() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = `${post.title} — Zoom AI Create Blog`;
+    document.title = `${post.title} — Zoom AI Productivity Suite Blog`;
     return () => {
-      document.title = 'Zoom AI Create';
+      document.title = 'Zoom AI Productivity Suite: Turn Meetings Into Deliverables';
     };
   }, [post.title]);
 

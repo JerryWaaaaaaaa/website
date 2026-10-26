@@ -81,7 +81,11 @@
   --font-overline: var(--font-mono);
 
   /* V6 (Microsite Stylized) — see DESIGN.md → V6 */
-  --v6-nav-glass: rgba(8, 59, 130, 0.1);
+  /* V6 glass material: navy tint + backdrop blur. Used by the nav bar (once
+     scrolled), the hero self view and browser frame, and the tagline cards;
+     tuned live from the Glass dial panel (useGlassDials). */
+  --v6-glass: rgba(20, 49, 118, 0.3);
+  --v6-glass-blur: blur(20px);
   --v6-tab-fill: rgba(12, 92, 255, 0.05);
   --v6-text-gradient: linear-gradient(90deg, #0c5cff 0%, #c5b0ff 80.4%);
   --v6-body-max-width: 1800px;

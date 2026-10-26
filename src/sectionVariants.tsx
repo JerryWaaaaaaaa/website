@@ -11,6 +11,8 @@ import { ProductSuiteV5D } from './sections/ProductSuiteV5D';
 import { BuiltDifferentiateV5A } from './sections/builtDifferentiate/BuiltDifferentiateV5A';
 import { BuiltDifferentiateV5C } from './sections/builtDifferentiate/BuiltDifferentiateV5C';
 import { BuiltDifferentiateV5D } from './sections/builtDifferentiate/BuiltDifferentiateV5D';
+import { HeroV6 } from './sections/v6/HeroV6';
+import { CtaV6 } from './sections/v6/CtaV6';
 
 export interface SectionVariant {
   /** Stable id used as the dialkit select option value. */
@@ -69,6 +71,27 @@ export const SECTION_VARIANT_GROUPS: SectionVariantGroup[] = [
       { id: 'a', label: 'Scroll', render: () => <BuiltDifferentiateV5A /> },
       { id: 'c', label: 'Zigzag', render: () => <BuiltDifferentiateV5C /> },
       { id: 'd', label: 'Pinned carousel', render: () => <BuiltDifferentiateV5D /> },
+    ],
+  },
+  // V6 groups get their own ids so their URL params never collide with V5's.
+  {
+    id: 'heroV6',
+    label: 'Hero',
+    defaultId: 'a',
+    appliesTo: ['v6'],
+    variants: [
+      { id: 'a', label: 'Halftone', render: () => <HeroV6 /> },
+      { id: 'b', label: 'Mesh + tiles', render: () => <HeroV6 background="mesh" /> },
+    ],
+  },
+  {
+    id: 'ctaV6',
+    label: 'CTA',
+    defaultId: 'a',
+    appliesTo: ['v6'],
+    variants: [
+      { id: 'a', label: 'Halftone', render: () => <CtaV6 /> },
+      { id: 'b', label: 'Mesh + tiles', render: () => <CtaV6 background="mesh" /> },
     ],
   },
 ];

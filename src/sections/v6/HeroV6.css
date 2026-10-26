@@ -1,8 +1,6 @@
 /* V6 hero — Figma 606:45464 (2200 × 1361: 240px top / 100px bottom padding,
-   64px gap). */
+   64px gap); headline + tagline row per 659:29142. */
 .v6-hero {
-  /* Hero headline is 64px (the shared V6 display size is 72). */
-  --v6-display: clamp(32px, 2.91vw, 64px);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -19,61 +17,47 @@
   bottom: -4.92%;
 }
 
+/* Figma 659:29142 (1200 wide): headline on the left, tagline card on the
+   right, bottoms aligned; wraps to a stack only when the two don't fit. */
 .v6-hero-copy {
   position: relative;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  max-width: 100%;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  width: min(100%, 1200px);
 }
 
 .v6-hero-title {
-  align-items: center;
+  align-items: flex-start;
   margin: 0;
   font-size: inherit;
   font-weight: inherit;
 }
-.v6-hero-title .v6-chips-row {
-  justify-content: center;
-}
-/* 8 / 12px block and 12px inline chip padding at the 64px size. */
-.v6-hero-title .v6-chip-line {
-  padding: calc(var(--v6-display) * 0.125) calc(var(--v6-display) * 0.1875)
-    calc(var(--v6-display) * 0.1875);
-}
+/* Display 1: the shared V6 display size (72px) and chip padding. */
 
-/* Square tile with the AI Companion emblem, matching the chip height. */
-.v6-hero-emblem {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  /* Same height as a chip line (64px type + 8/12px padding = 84px). */
-  width: calc(var(--v6-display) * 1.3125);
-  height: calc(var(--v6-display) * 1.3125);
-  border-radius: var(--rounded-lg);
-  /* Figma 607:45592: radial gradient anchored off the tile's top-left corner
-     (a skewed ellipse, so it's kept as Figma's SVG rather than CSS). */
-  background:
-    url("data:image/svg+xml;utf8,<svg viewBox='0 0 84 84' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect width='100%' height='100%' fill='url(%23g)'/><defs><radialGradient id='g' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(11.6 10.1 -5.4992 9.2732 -36.5 -17)'><stop stop-color='%23f8f2ff' offset='0.068953'/><stop stop-color='%23e9f5ff' offset='0.69015'/><stop stop-color='%23bfd1fb' offset='0.92649'/><stop stop-color='%2398b6f5' offset='1'/></radialGradient></defs></svg>")
-      center / 100% 100% no-repeat,
-    #e3edfc;
-}
-.v6-hero-emblem img {
-  display: block;
-  width: 66.7%; /* 56 / 84 */
-  height: auto;
-}
-
-/* Tagline (606:45478): shared .v6-tagline, 706px wide here. */
+/* Tagline card (659:29151): the shared glass card, stacked — centred copy
+   over a full-width agent CTA. */
 .v6-hero-tagline {
-  width: min(100%, 706px);
+  flex-direction: column;
+  width: min(100%, 412px);
+  padding: 16px 8px 8px;
+}
+.v6-hero-tagline p {
+  text-align: center;
+  text-wrap: balance;
+}
+.v6-hero-tagline .v6-agent {
+  width: 100%;
 }
 
 /* --- Product UI ---------------------------------------------------------- */
+/* As wide as the headline + tagline row above it (Figma 659:29142). Everything
+   inside is sized in cqw with a fixed-ratio screen, so it scales as one piece. */
 .v6-hero-ui {
   position: relative;
-  width: min(100%, 1024px);
+  width: min(100%, 1200px);
   container-type: inline-size;
 }
 /* Browser frame (Figma project-tracker render, 2400 × 1642): sized in cqw of
@@ -87,10 +71,10 @@
   overflow: hidden;
   padding: 0 1.083cqw 1.083cqw;
   border-radius: 1.67cqw;
-  /* Same tinted glass as the scrolled V6 nav bar. */
-  background: var(--v6-nav-glass);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  /* The shared V6 glass (the self view's). */
+  background: var(--v6-glass);
+  backdrop-filter: var(--v6-glass-blur);
+  -webkit-backdrop-filter: var(--v6-glass-blur);
 }
 .v6-hero-browser-bar {
   position: relative;
@@ -265,10 +249,10 @@
   min-width: 150px;
   padding: 6px;
   border-radius: var(--rounded-md);
-  /* Dark glass. */
-  background: rgba(13, 13, 13, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  /* The shared V6 glass. */
+  background: var(--v6-glass);
+  backdrop-filter: var(--v6-glass-blur);
+  -webkit-backdrop-filter: var(--v6-glass-blur);
   transform: translate(var(--dx, 0px), var(--dy, 0px));
 }
 /* Draggable around the hero on desktop. */
@@ -365,6 +349,9 @@
   }
   .v6-hero-title .v6-chip-line {
     white-space: normal;
+  }
+  .v6-hero-tagline {
+    width: 100%;
   }
   .v6-selfview {
     top: auto;
