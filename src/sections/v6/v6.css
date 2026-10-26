@@ -217,10 +217,18 @@
 .v6-agent-icon img + img {
   transform: translateX(-36px);
 }
-/* Hover glow (dark CTAs): a wavy band of the brand gradient rising inside
-   the bottom edge — an inner glow with a rippling top. The outer span blurs
-   the inner one, which carries the gradient under a repeating wave mask (blur
-   must come after the mask, or the wave edge would stay crisp). */
+/* Hover glow (dark CTAs): an inner glow of the brand gradient hugging all
+   four edges so the button seems to glow from within. The inner span carries a
+   slowly turning conic gradient masked to a ring (border-box minus
+   content-box, so the ring follows the pill's radius); its padding — the ring's
+   thickness — breathes out of step on each side, so the glow swells and thins
+   around the edge. The outer span blurs it (blur must come after the mask, or
+   the inner edge would stay crisp). */
+@property --v6-glow-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
 .v6-agent {
   position: relative;
   isolation: isolate;
@@ -233,38 +241,61 @@
 .v6-agent > .v6-agent-glow {
   position: absolute;
   z-index: 0;
-  inset: auto -12% -6px;
-  height: 80%;
-  filter: blur(9px);
+  inset: 0;
+  border-radius: inherit;
+  filter: blur(4px);
   opacity: 0;
-  transform: translateY(45%);
-  transition:
-    opacity 320ms var(--ease-out),
-    transform 480ms var(--ease-out);
+  transition: opacity 360ms var(--ease-out);
   pointer-events: none;
 }
 .v6-agent-glow > span {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, #0c5cff 0%, #c5b0ff 35%, #fb327e 65%, #5ecbc4 100%);
-  -webkit-mask: var(--v6-agent-wave) 0 0 / 96px 100% repeat-x;
-  mask: var(--v6-agent-wave) 0 0 / 96px 100% repeat-x;
-  animation: v6-agent-wave 2.2s linear infinite paused;
+  box-sizing: border-box;
+  padding: 9px 12px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--v6-glow-angle),
+    #0c5cff,
+    #c5b0ff,
+    #fb327e,
+    #5ecbc4,
+    #0c5cff
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  animation:
+    v6-glow-spin 6s linear infinite paused,
+    v6-glow-breathe 5.2s ease-in-out infinite alternate paused;
 }
-.v6-agent {
-  /* One seamless wave period (96 × 40): the start and end slopes match. */
-  --v6-agent-wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 40' preserveAspectRatio='none'%3E%3Cpath d='M0 14C16 4 32 4 48 14S80 24 96 14V40H0Z'/%3E%3C/svg%3E");
-}
-@keyframes v6-agent-wave {
+@keyframes v6-glow-spin {
   to {
-    -webkit-mask-position: -96px 0;
-    mask-position: -96px 0;
+    --v6-glow-angle: 360deg;
+  }
+}
+/* Each side peaks at a different moment, so the band never pulses evenly. */
+@keyframes v6-glow-breathe {
+  0% {
+    padding: 8px 10px 12px 16px;
+  }
+  35% {
+    padding: 12px 16px 8px 10px;
+  }
+  70% {
+    padding: 10px 12px 11px 18px;
+  }
+  100% {
+    padding: 13px 18px 9px 12px;
   }
 }
 @media (hover: hover) and (pointer: fine) {
   .v6-agent:hover .v6-agent-glow {
     opacity: 0.9;
-    transform: none;
   }
   .v6-agent:hover .v6-agent-glow > span {
     animation-play-state: running;

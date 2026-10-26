@@ -4,16 +4,13 @@ import { Button } from '../../components/Button';
 import { PanelDot } from './AgentCta';
 import './UseCaseV6.css';
 
-// Copy and images are the V5 personas (useCaseV5/shared.tsx); Sales swaps in
-// the Figma screenshot.
-const IMAGES: Record<string, string> = { sales: '/v6/use-case/sales-conversation.png' };
-
+// Copy and images are the V5 personas (useCaseV5/shared.tsx).
 const TABS = PERSONAS.map((p) => ({
   key: p.key,
   label: p.label,
   lead: p.headlineLead,
   rest: p.headlineRest.trim(),
-  image: IMAGES[p.key] ?? p.image,
+  image: p.image,
 }));
 
 /**
@@ -89,7 +86,6 @@ export function UseCaseV6() {
           </div>
 
           <div className="v6-uc-media">
-            <img className="v6-uc-media-bg" src="/v6/use-case/bg-halftone.webp" alt="" aria-hidden="true" />
             {TABS.map((t) => (
               <img
                 key={t.key}

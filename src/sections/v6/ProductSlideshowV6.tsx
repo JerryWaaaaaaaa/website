@@ -30,14 +30,13 @@ import './ProductSlideshowV6.css';
 const ORDER: ProductKey[] = ['slides', 'sheets', 'paper', 'canvas', 'datatable'];
 const PRODUCTS = ORDER.map((k) => productFor(k)!) as Product[];
 
-// Halftone background per slide. Figma only exports Slides and Sheets, so the
-// other products reuse those two until their own artwork is swapped in.
+// Halftone background per slide.
 const BACKGROUNDS: Record<ProductKey, string> = {
   slides: '/v6/slideshow/bg-slides.webp',
   sheets: '/v6/slideshow/bg-sheets.webp',
-  paper: '/v6/slideshow/bg-slides.webp',
-  canvas: '/v6/slideshow/bg-sheets.webp',
-  datatable: '/v6/slideshow/bg-slides.webp',
+  paper: '/v6/slideshow/bg-paper.webp',
+  canvas: '/v6/slideshow/bg-canvas.webp',
+  datatable: '/v6/slideshow/bg-datatable.webp',
 };
 const N = PRODUCTS.length;
 

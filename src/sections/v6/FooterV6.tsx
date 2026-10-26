@@ -40,7 +40,6 @@ const COLUMNS: { heading: string; links: FooterLink[] }[] = [
 
 const SOCIAL = [
   { label: 'LinkedIn', icon: 'linkedin' },
-  { label: 'Instagram', icon: 'instagram' },
   { label: 'X/Twitter', icon: 'x' },
 ];
 

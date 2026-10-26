@@ -148,6 +148,8 @@
 }
 .v6-op-overline {
   margin: 0;
+  /* Optical nudge: caps sit flush-left of the title below without it. */
+  padding-left: 2px;
   font-family: var(--font-overline);
   color: var(--text-highlight);
   font-size: 12px;
