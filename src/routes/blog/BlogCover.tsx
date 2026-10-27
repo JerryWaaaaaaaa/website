@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
-import { MeshCanvas } from '../gradient-generator/MeshCanvas';
+import { MeshCanvas } from './CoverMeshCanvas';
 import { DEFAULT_PALETTE } from '../gradient-generator/presets';
 import { GRAIN_DATA_URI, meshFor } from './cover';
 
 /**
- * A generated blog cover: a mesh gradient (reused from the gradient generator)
+ * A generated blog cover: a mesh gradient (point-based, see coverMesh.ts)
  * + grain/dither texture. Deterministic per `slug`. Aspect comes from
  * `className` (bc--card / bc--featured / bc--hero); `size` is the canvas render
  * resolution (square; CSS scales it to fit).

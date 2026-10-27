@@ -5,12 +5,11 @@ import { asciiDialConfig, readAsciiDials } from '../halftone/useShaderDials';
 import {
   GRAIN_BLENDS,
   MESH_MODES,
-  PATCH_COLS,
-  PATCH_ROWS,
   type GrainBlend,
   type MeshGradientParams,
   type MeshMode,
 } from './MeshGradient';
+import { patchAxes, patchGrid } from './meshRenderer';
 
 type Tuple = [number, number, number, number];
 
@@ -21,7 +20,7 @@ type Options = {
 };
 
 /** Patch point key, e.g. r1c2 = row 1, column 2. */
-const patchKey = (i: number) => `r${Math.floor(i / PATCH_COLS) + 1}c${(i % PATCH_COLS) + 1}`;
+const patchKey = (i: number, cols: number) => `r${Math.floor(i / cols) + 1}c${(i % cols) + 1}`;
 
 /** Panel config with only the controls the given mode uses. */
 function buildConfig(mesh: MeshGradientParams, ascii: AsciiTrailParams, mode: MeshMode) {
@@ -42,20 +41,20 @@ function buildConfig(mesh: MeshGradientParams, ascii: AsciiTrailParams, mode: Me
     });
     modeControls.ramp = ramp;
   } else {
-    // A 3 × 3 mesh of coloured control points. Edge points only slide along
+    // A grid of coloured control points. Here edge points only slide along
     // their edge (corners are fixed), so each point only gets sliders for the
-    // axes it can move on.
+    // axes it can move on; the gradient generator moves them freely.
+    const { cols, rows } = patchGrid(mesh);
     const patches: DialConfig = {
       drift: [mesh.drift, 0, 30, 0.5] as Tuple, // % the free points wander
-      grain: [mesh.patchGrain, 0, 0.3, 0.005] as Tuple,
+      dither: [mesh.patchDither, 0, 0.2, 0.002] as Tuple, // speckle radius, × shorter side
     };
     mesh.patches.forEach((p, i) => {
-      const r = Math.floor(i / PATCH_COLS);
-      const c = i % PATCH_COLS;
+      const axes = patchAxes(i, cols, rows);
       const point: DialConfig = { _collapsed: true, color: { type: 'color', default: p.color } };
-      if (c > 0 && c < PATCH_COLS - 1) point.x = [p.x, 0, 100, 0.5] as Tuple;
-      if (r > 0 && r < PATCH_ROWS - 1) point.y = [p.y, 0, 100, 0.5] as Tuple;
-      patches[patchKey(i)] = point;
+      if (axes.x) point.x = [p.x, 0, 100, 0.5] as Tuple;
+      if (axes.y) point.y = [p.y, 0, 100, 0.5] as Tuple;
+      patches[patchKey(i, cols)] = point;
     });
     modeControls.patches = patches;
   }
@@ -120,10 +119,11 @@ export function useMeshDials(name: string, opts: Options) {
   if (mode === 'patches' && d.patches) {
     const pt = d.patches;
     if (typeof pt.drift === 'number') next.drift = pt.drift;
-    if (typeof pt.grain === 'number') next.patchGrain = pt.grain;
+    if (typeof pt.dither === 'number') next.patchDither = pt.dither;
+    const { cols } = patchGrid(prev);
     next.patches = prev.patches.map((home, i) => {
-      const v = (pt[patchKey(i)] ?? {}) as { color?: string; x?: number; y?: number };
-      return { color: v.color ?? home.color, x: v.x ?? home.x, y: v.y ?? home.y };
+      const v = (pt[patchKey(i, cols)] ?? {}) as { color?: string; x?: number; y?: number };
+      return { ...home, color: v.color ?? home.color, x: v.x ?? home.x, y: v.y ?? home.y };
     });
   }
   const mesh: MeshGradientParams = { ...prev, ...next };

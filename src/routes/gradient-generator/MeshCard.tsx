@@ -1,16 +1,14 @@
 import { useState } from 'react';
-import { MeshCanvas } from './MeshCanvas';
+import { MeshGradient } from '../../sections/v6/mesh/MeshGradient';
 import { downloadMeshPng } from './meshExport';
 import type { MeshPreset } from './mesh';
-import type { Palette } from './presets';
 
 type Props = {
   preset: MeshPreset;
-  palette: Palette;
   onEdit: () => void;
 };
 
-export function MeshCard({ preset, palette, onEdit }: Props) {
+export function MeshCard({ preset, onEdit }: Props) {
   const [downloading, setDownloading] = useState(false);
 
   const handleDownload = async (event: React.MouseEvent) => {
@@ -18,7 +16,7 @@ export function MeshCard({ preset, palette, onEdit }: Props) {
     if (downloading) return;
     setDownloading(true);
     try {
-      await downloadMeshPng(preset, palette, 2);
+      await downloadMeshPng(preset, 'hero', 2);
     } finally {
       setDownloading(false);
     }
@@ -27,14 +25,13 @@ export function MeshCard({ preset, palette, onEdit }: Props) {
   return (
     <button
       type="button"
-      className="gg-card"
+      className="gg-card gg-card-mesh"
       onClick={onEdit}
       aria-label={`Edit ${preset.name} mesh`}
     >
       <div className="gg-card-surface">
-        <MeshCanvas preset={preset} palette={palette} />
+        <MeshGradient params={preset.params} />
       </div>
-      <div className="gg-card-noise" aria-hidden="true" />
       <div className="gg-card-name">{preset.name}</div>
       <div className="gg-card-actions">
         <span className="gg-card-name-hover">{preset.name}</span>

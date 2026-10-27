@@ -1,14 +1,15 @@
 /**
  * Automatic blog-cover helpers.
  *
- * Covers reuse the gradient generator's **mesh** presets (point-based Gaussian
- * blends, rendered by <MeshCanvas>) with the generator's default palette;
+ * Covers use the point-based Gaussian mesh presets in coverMesh.ts (the
+ * gradient generator's former mesh mode, rendered by <MeshCanvas>) with the
+ * generator's default palette;
  * <BlogCover> layers a grain/dither texture and a title overlay on top.
  *
  * Deterministic per seed: a small string hash picks the mesh preset, so a
  * post's cover is stable across reloads.
  */
-import { DEFAULT_MESH_PRESETS, type MeshPreset } from '../gradient-generator/mesh';
+import { DEFAULT_MESH_PRESETS, type MeshPreset } from './coverMesh';
 
 function hash(str: string): number {
   let h = 5381;
