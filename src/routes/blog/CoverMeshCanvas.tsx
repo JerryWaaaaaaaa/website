@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
-import type { MeshPreset } from './mesh';
-import type { Palette } from './presets';
-import { resolveToken } from './tokens';
+import type { MeshPreset } from './coverMesh';
+import type { Palette } from '../gradient-generator/presets';
+import { resolveToken } from '../gradient-generator/tokens';
 
 type Rgb = { r: number; g: number; b: number };
 

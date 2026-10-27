@@ -32,7 +32,7 @@ export function GradientGenerator() {
     if (mode === 'css') {
       payload = serializeAllAsJson(palette, presets);
     } else if (mode === 'mesh') {
-      payload = JSON.stringify({ palette, meshPresets }, null, 2);
+      payload = JSON.stringify({ meshPresets }, null, 2);
     } else {
       payload = JSON.stringify({ palette, blob }, null, 2);
     }
@@ -48,7 +48,7 @@ export function GradientGenerator() {
   if (mode === 'css') {
     subtitle = `${presets.length} mesh-style CSS gradients · click to edit · hover to copy`;
   } else if (mode === 'mesh') {
-    subtitle = `${meshPresets.length} mesh gradients · click any card to edit live · drag the dots to move points`;
+    subtitle = `${meshPresets.length} WebGL mesh gradients · seeded from the V6 hero / CTA · click a card to edit live`;
   } else {
     subtitle = `Blob playground · drag the dots to move shapes · load a starter to begin`;
   }
@@ -81,6 +81,7 @@ export function GradientGenerator() {
           onCopyAllCss={copyAllCss}
           onCopyAllJson={copyAllJson}
           onCopyBlobSvg={copyBlobSvg}
+          onAddMesh={() => setEditingMeshId(store.addMesh())}
         />
 
         {mode === 'css' && (
@@ -102,7 +103,6 @@ export function GradientGenerator() {
               <MeshCard
                 key={preset.id}
                 preset={preset}
-                palette={palette}
                 onEdit={() => setEditingMeshId(preset.id)}
               />
             ))}
@@ -127,7 +127,6 @@ export function GradientGenerator() {
       {mode === 'mesh' && editingMesh && (
         <MeshEditorDrawer
           preset={editingMesh}
-          palette={palette}
           store={store}
           onClose={() => setEditingMeshId(null)}
           onDuplicated={(newId) => setEditingMeshId(newId)}

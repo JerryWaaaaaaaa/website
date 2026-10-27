@@ -9,13 +9,12 @@ import {
 } from './presets';
 import {
   DEFAULT_MESH_PRESETS,
-  POINTS_MAX,
-  POINTS_MIN,
-  SOFTNESS_MAX,
-  SOFTNESS_MIN,
-  type MeshPoint,
+  cloneMesh,
+  newMeshPreset,
+  normalizeMeshParams,
   type MeshPreset,
 } from './mesh';
+import type { MeshGradientParams } from '../../sections/v6/mesh/meshRenderer';
 import {
   BLOB_MAX,
   BLOB_MIN,
@@ -27,8 +26,10 @@ import {
 } from './blob';
 import type { TokenId } from './tokens';
 
-const STORAGE_KEY = 'gradient-generator:v3';
-const LEGACY_KEY_V2 = 'gradient-generator:v2';
+const STORAGE_KEY = 'gradient-generator:v4';
+// Older saves keep their palette / CSS presets / blob; their point-based
+// meshes don't map onto the V6 mesh, so mesh presets restart from defaults.
+const LEGACY_KEYS = ['gradient-generator:v3', 'gradient-generator:v2'];
 
 export type GeneratorMode = 'css' | 'mesh' | 'blob';
 
@@ -50,131 +51,15 @@ function defaultState(): StoredState {
   };
 }
 
-// --- Legacy v2 grid-mesh shape (for migration only) -------------------------
-
-type LegacyMeshPreset = {
-  id: string;
-  name: string;
-  rows: number;
-  cols: number;
-  cells: PaletteKey[];
-};
-
-function looksLikeLegacyMesh(value: unknown): value is LegacyMeshPreset {
-  if (!value || typeof value !== 'object') return false;
-  const v = value as Record<string, unknown>;
-  return (
-    typeof v.rows === 'number' &&
-    typeof v.cols === 'number' &&
-    Array.isArray(v.cells)
-  );
-}
-
-const LEGACY_V2_MESH_IDS = new Set([
-  'aurora-mesh',
-  'dusk-mesh',
-  'bloom-mesh',
-  'horizon-mesh',
-  'prism-mesh',
-  'iris-mesh',
-]);
-
-/**
- * Returns true when the mesh list is the unmodified v2 default set:
- * exactly the legacy ids with no additions, copies, or new presets.
- * Used to silently upgrade users to the new 22 defaults without
- * clobbering anyone who customized their list.
- */
-function isStaleLegacyMeshSet(presets: MeshPreset[]): boolean {
-  if (presets.length === 0) return true;
-  if (presets.length > LEGACY_V2_MESH_IDS.size) return false;
-  return presets.every((p) => LEGACY_V2_MESH_IDS.has(p.id));
-}
-
-/**
- * Convert a v2 grid-based mesh preset into a v3 point-based mesh preset.
- * For grids that fit within POINTS_MAX we sample every cell centroid; for
- * larger grids we sample 4 corners + center to stay within bounds.
- */
-function migrateLegacyMesh(legacy: LegacyMeshPreset): MeshPreset {
-  const { rows, cols, cells } = legacy;
-  const cellCount = rows * cols;
-  const points: MeshPoint[] = [];
-
-  if (cellCount <= POINTS_MAX) {
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < cols; col++) {
-        const idx = row * cols + col;
-        const key = cells[idx];
-        if (!key) continue;
-        points.push({
-          x: ((col + 0.5) / cols) * 100,
-          y: ((row + 0.5) / rows) * 100,
-          paletteKey: key,
-          weight: 1,
-        });
-      }
-    }
-  } else {
-    const positions: Array<[number, number]> = [
-      [0, 0],
-      [0, cols - 1],
-      [rows - 1, 0],
-      [rows - 1, cols - 1],
-      [Math.floor(rows / 2), Math.floor(cols / 2)],
-    ];
-    for (const [row, col] of positions) {
-      const idx = row * cols + col;
-      const key = cells[idx];
-      if (!key) continue;
-      points.push({
-        x: ((col + 0.5) / cols) * 100,
-        y: ((row + 0.5) / rows) * 100,
-        paletteKey: key,
-        weight: 1,
-      });
-    }
-  }
-
-  if (points.length < POINTS_MIN) {
-    points.push({ x: 25, y: 25, paletteKey: 'c1', weight: 1 });
-    points.push({ x: 75, y: 75, paletteKey: 'c4', weight: 1 });
-  }
-
-  return {
-    id: legacy.id,
-    name: legacy.name,
-    softness: 0.4,
-    points,
-  };
-}
-
-function migrateMeshPresets(value: unknown): MeshPreset[] {
+function normalizeMeshPresets(value: unknown): MeshPreset[] {
   if (!Array.isArray(value)) return DEFAULT_MESH_PRESETS.map(cloneMesh);
-  return value.map((entry) => {
-    if (looksLikeLegacyMesh(entry)) return migrateLegacyMesh(entry);
-    if (
-      entry &&
-      typeof entry === 'object' &&
-      Array.isArray((entry as MeshPreset).points)
-    ) {
-      const m = entry as MeshPreset;
-      return {
-        id: String(m.id),
-        name: String(m.name ?? 'Untitled'),
-        softness: clampSoftness(Number(m.softness ?? 0.4)),
-        points: m.points
-          .map((point) => ({
-            x: Math.max(0, Math.min(100, Number(point.x))),
-            y: Math.max(0, Math.min(100, Number(point.y))),
-            paletteKey: point.paletteKey,
-            weight: Math.max(0, Math.min(1, Number(point.weight ?? 1))),
-          }))
-          .slice(0, POINTS_MAX),
-      };
-    }
-    return cloneMesh(DEFAULT_MESH_PRESETS[0]);
-  });
+  return value
+    .filter((entry): entry is MeshPreset => !!entry && typeof entry === 'object' && 'params' in entry)
+    .map((m) => ({
+      id: String(m.id),
+      name: String(m.name ?? 'Untitled mesh'),
+      params: normalizeMeshParams(m.params),
+    }));
 }
 
 // ---------------------------------------------------------------------------
@@ -182,39 +67,30 @@ function migrateMeshPresets(value: unknown): MeshPreset[] {
 function loadInitial(): StoredState {
   if (typeof window === 'undefined') return defaultState();
   try {
-    const rawV3 = window.localStorage.getItem(STORAGE_KEY);
-    if (rawV3) {
-      const parsed = JSON.parse(rawV3) as Partial<StoredState>;
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as Partial<StoredState>;
       if (parsed && parsed.palette && parsed.presets) {
-        const migrated = migrateMeshPresets(parsed.meshPresets);
-        const meshPresets = isStaleLegacyMeshSet(migrated)
-          ? DEFAULT_MESH_PRESETS.map(cloneMesh)
-          : migrated;
         return {
           mode: normalizeMode(parsed.mode),
           palette: { ...DEFAULT_PALETTE, ...parsed.palette },
           presets: parsed.presets,
-          meshPresets,
+          meshPresets: normalizeMeshPresets(parsed.meshPresets),
           blob: normalizeBlob(parsed.blob),
         };
       }
     }
 
-    const rawV2 = window.localStorage.getItem(LEGACY_KEY_V2);
-    if (rawV2) {
-      const parsed = JSON.parse(rawV2) as Partial<StoredState> & {
-        meshPresets?: unknown;
-      };
-      const migrated = migrateMeshPresets(parsed.meshPresets);
-      const meshPresets = isStaleLegacyMeshSet(migrated)
-        ? DEFAULT_MESH_PRESETS.map(cloneMesh)
-        : migrated;
+    for (const key of LEGACY_KEYS) {
+      const legacy = window.localStorage.getItem(key);
+      if (!legacy) continue;
+      const parsed = JSON.parse(legacy) as Partial<StoredState>;
       return {
         mode: normalizeMode(parsed.mode),
         palette: { ...DEFAULT_PALETTE, ...(parsed.palette ?? {}) },
         presets: parsed.presets ?? DEFAULT_PRESETS.map(clonePreset),
-        meshPresets,
-        blob: defaultBlob(),
+        meshPresets: DEFAULT_MESH_PRESETS.map(cloneMesh),
+        blob: normalizeBlob(parsed.blob),
       };
     }
 
@@ -257,24 +133,8 @@ function clonePreset(preset: GradientPreset): GradientPreset {
   };
 }
 
-function cloneMesh(preset: MeshPreset): MeshPreset {
-  return {
-    ...preset,
-    points: preset.points.map((point) => ({ ...point })),
-  };
-}
-
-function clampSoftness(value: number): number {
-  if (Number.isNaN(value)) return 0.4;
-  return Math.max(SOFTNESS_MIN, Math.min(SOFTNESS_MAX, value));
-}
-
 function clampPct(value: number): number {
   return Math.max(0, Math.min(100, value));
-}
-
-function clampWeight(value: number): number {
-  return Math.max(0, Math.min(1, value));
 }
 
 // ---------------------------------------------------------------------------
@@ -295,15 +155,14 @@ export type GradientStore = {
   duplicatePreset: (id: string) => string;
   deletePreset: (id: string) => void;
 
-  // Mesh presets (point-based, v3)
+  // Mesh presets (V6 WebGL mesh params)
   meshPresets: MeshPreset[];
   updateMesh: (id: string, updater: (preset: MeshPreset) => MeshPreset) => void;
-  movePoint: (presetId: string, pointIndex: number, x: number, y: number) => void;
-  setPointPaletteKey: (presetId: string, pointIndex: number, key: PaletteKey) => void;
-  setPointWeight: (presetId: string, pointIndex: number, weight: number) => void;
-  setMeshSoftness: (presetId: string, softness: number) => void;
-  addPoint: (presetId: string) => void;
-  removePoint: (presetId: string, pointIndex: number) => void;
+  updateMeshParams: (
+    id: string,
+    update: Partial<MeshGradientParams> | ((params: MeshGradientParams) => MeshGradientParams),
+  ) => void;
+  addMesh: () => string;
   duplicateMesh: (id: string) => string;
   deleteMesh: (id: string) => void;
 
@@ -438,103 +297,30 @@ export function useGradientStore(): GradientStore {
     [],
   );
 
-  const movePoint = useCallback(
-    (presetId: string, pointIndex: number, x: number, y: number) => {
+  const updateMeshParams = useCallback(
+    (
+      id: string,
+      update: Partial<MeshGradientParams> | ((params: MeshGradientParams) => MeshGradientParams),
+    ) => {
       setState((prev) => ({
         ...prev,
-        meshPresets: prev.meshPresets.map((preset) => {
-          if (preset.id !== presetId) return preset;
-          if (pointIndex < 0 || pointIndex >= preset.points.length) return preset;
-          const points = preset.points.slice();
-          points[pointIndex] = {
-            ...points[pointIndex],
-            x: clampPct(x),
-            y: clampPct(y),
-          };
-          return { ...preset, points };
-        }),
+        meshPresets: prev.meshPresets.map((p) =>
+          p.id === id
+            ? {
+                ...p,
+                params: typeof update === 'function' ? update(p.params) : { ...p.params, ...update },
+              }
+            : p,
+        ),
       }));
     },
     [],
   );
 
-  const setPointPaletteKey = useCallback(
-    (presetId: string, pointIndex: number, key: PaletteKey) => {
-      setState((prev) => ({
-        ...prev,
-        meshPresets: prev.meshPresets.map((preset) => {
-          if (preset.id !== presetId) return preset;
-          if (pointIndex < 0 || pointIndex >= preset.points.length) return preset;
-          const points = preset.points.slice();
-          points[pointIndex] = { ...points[pointIndex], paletteKey: key };
-          return { ...preset, points };
-        }),
-      }));
-    },
-    [],
-  );
-
-  const setPointWeight = useCallback(
-    (presetId: string, pointIndex: number, weight: number) => {
-      setState((prev) => ({
-        ...prev,
-        meshPresets: prev.meshPresets.map((preset) => {
-          if (preset.id !== presetId) return preset;
-          if (pointIndex < 0 || pointIndex >= preset.points.length) return preset;
-          const points = preset.points.slice();
-          points[pointIndex] = {
-            ...points[pointIndex],
-            weight: clampWeight(weight),
-          };
-          return { ...preset, points };
-        }),
-      }));
-    },
-    [],
-  );
-
-  const setMeshSoftness = useCallback(
-    (presetId: string, softness: number) => {
-      setState((prev) => ({
-        ...prev,
-        meshPresets: prev.meshPresets.map((preset) => {
-          if (preset.id !== presetId) return preset;
-          return { ...preset, softness: clampSoftness(softness) };
-        }),
-      }));
-    },
-    [],
-  );
-
-  const addPoint = useCallback((presetId: string) => {
-    setState((prev) => ({
-      ...prev,
-      meshPresets: prev.meshPresets.map((preset) => {
-        if (preset.id !== presetId) return preset;
-        if (preset.points.length >= POINTS_MAX) return preset;
-        const newPoint: MeshPoint = {
-          x: 50,
-          y: 50,
-          paletteKey: 'c3',
-          weight: 1,
-        };
-        return { ...preset, points: [...preset.points, newPoint] };
-      }),
-    }));
-  }, []);
-
-  const removePoint = useCallback((presetId: string, pointIndex: number) => {
-    setState((prev) => ({
-      ...prev,
-      meshPresets: prev.meshPresets.map((preset) => {
-        if (preset.id !== presetId) return preset;
-        if (preset.points.length <= POINTS_MIN) return preset;
-        return {
-          ...preset,
-          points: preset.points.filter((_, idx) => idx !== pointIndex),
-        };
-      }),
-    }));
+  const addMesh = useCallback((): string => {
+    const preset = newMeshPreset();
+    setState((prev) => ({ ...prev, meshPresets: [...prev.meshPresets, preset] }));
+    return preset.id;
   }, []);
 
   const duplicateMesh = useCallback((id: string): string => {
@@ -655,12 +441,8 @@ export function useGradientStore(): GradientStore {
     deletePreset,
     meshPresets: state.meshPresets,
     updateMesh,
-    movePoint,
-    setPointPaletteKey,
-    setPointWeight,
-    setMeshSoftness,
-    addPoint,
-    removePoint,
+    updateMeshParams,
+    addMesh,
     duplicateMesh,
     deleteMesh,
     blob: state.blob,

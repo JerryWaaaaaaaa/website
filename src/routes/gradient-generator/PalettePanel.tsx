@@ -13,6 +13,7 @@ type Props = {
   onCopyAllCss?: () => void;
   onCopyAllJson: () => void;
   onCopyBlobSvg?: () => void;
+  onAddMesh?: () => void;
 };
 
 const MODE_OPTIONS: Array<{ value: GeneratorMode; label: string }> = [
@@ -30,6 +31,7 @@ export function PalettePanel({
   onCopyAllCss,
   onCopyAllJson,
   onCopyBlobSvg,
+  onAddMesh,
 }: Props) {
   const [feedback, setFeedback] = useState<string | null>(null);
 
@@ -41,7 +43,7 @@ export function PalettePanel({
   return (
     <div className="gg-palette-panel">
       <div className="gg-palette-panel-head">
-        <div className="gg-panel-eyebrow">Palette</div>
+        <div className="gg-panel-eyebrow">{mode === 'mesh' ? 'Mesh' : 'Palette'}</div>
 
         <div className="gg-mode-toggle" role="tablist" aria-label="Generator mode">
           {MODE_OPTIONS.map((option) => (
@@ -69,6 +71,11 @@ export function PalettePanel({
               }}
             >
               Copy all as CSS
+            </button>
+          )}
+          {mode === 'mesh' && onAddMesh && (
+            <button type="button" className="gg-btn" onClick={onAddMesh}>
+              + New mesh
             </button>
           )}
           {mode === 'blob' && onCopyBlobSvg && (
@@ -104,16 +111,19 @@ export function PalettePanel({
         </div>
       </div>
 
-      <div className="gg-palette-row">
-        {PALETTE_KEYS.map((key) => (
-          <TokenPicker
-            key={key}
-            label={key}
-            value={palette[key]}
-            onChange={(token) => onChange(key, token)}
-          />
-        ))}
-      </div>
+      {/* Mesh gradients carry their own hex colours (as on the V6 hero / CTA). */}
+      {mode !== 'mesh' && (
+        <div className="gg-palette-row">
+          {PALETTE_KEYS.map((key) => (
+            <TokenPicker
+              key={key}
+              label={key}
+              value={palette[key]}
+              onChange={(token) => onChange(key, token)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

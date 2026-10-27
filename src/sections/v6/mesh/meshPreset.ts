@@ -29,7 +29,7 @@ export const V6_MESH: MeshGradientParams = {
     { x: 62, y: 100, color: '#3d8bff' },
     { x: 100, y: 100, color: '#b3fff6' },
   ],
-  patchGrain: 0.06,
+  patchDither: 0.02,
   speed: 0.95,
   drift: 8,
   grain: 1,
