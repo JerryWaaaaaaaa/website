@@ -1,9 +1,12 @@
+import { useRef } from 'react';
+import { useLinearBeam } from './useLinearBeam';
+
 /**
  * The V6 "Agent prompt" button (Figma "Agent prompt"): a circular media slot
  * followed by a Heading-4 label. Used by the hero + CTA tagline cards (black,
  * 32px orb — Figma 659:29154) and the template gallery (pink, arrow icon);
- * the 48px halftone avatar is the default media. On hover the dark buttons light a wavy gradient glow
- * along their inside bottom edge; the arrow variant slides its arrow out to
+ * the 48px halftone avatar is the default media. The dark buttons carry a
+ * travelling border beam in the brand colours (see v6.css / useBeamDials); the arrow variant slides its arrow out to
  * the right as a new one slides in from the left.
  */
 export function AgentCta({
@@ -17,11 +20,15 @@ export function AgentCta({
   media?: 'avatar' | 'orb' | 'arrow';
   href?: string;
 }) {
+  const beamRef = useRef<HTMLSpanElement>(null);
+  useLinearBeam(beamRef);
   return (
     <a className={`v6-agent${tone === 'pink' ? ' v6-agent--pink' : ''}`} href={href}>
       {tone === 'dark' && (
-        <span className="v6-agent-glow" aria-hidden="true">
-          <span />
+        <span className="v6-agent-beam" ref={beamRef} aria-hidden="true">
+          <span className="v6-beam-inner" />
+          <span className="v6-beam-stroke" />
+          <span className="v6-beam-bloom" />
         </span>
       )}
       {media === 'avatar' ? (

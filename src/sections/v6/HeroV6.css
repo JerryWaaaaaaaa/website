@@ -238,105 +238,27 @@
 /* Screenshare self view (Figma 606:45488): 252px card overlapping the right
    edge of the browser frame, at (898, 255) of the 1024 × 701 UI frame.
    --dx / --dy: the drag offset written by useCardDrag. */
-.v6-selfview {
+.v6-hero-selfview {
   position: absolute;
   top: 36.38%;
   left: 87.7%;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
   width: 24.6%;
   min-width: 150px;
-  padding: 6px;
-  border-radius: var(--rounded-md);
-  /* The shared V6 glass. */
-  background: var(--v6-glass);
-  backdrop-filter: var(--v6-glass-blur);
-  -webkit-backdrop-filter: var(--v6-glass-blur);
   transform: translate(var(--dx, 0px), var(--dy, 0px));
 }
 /* Draggable around the hero on desktop. */
 @media (min-width: 640px) and (pointer: fine) {
-  .v6-selfview {
+  .v6-hero-selfview {
     cursor: grab;
     user-select: none;
     touch-action: none;
   }
-  .v6-selfview[data-dragging='true'] {
+  .v6-hero-selfview[data-dragging='true'] {
     cursor: grabbing;
   }
 }
-.v6-selfview-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 8px;
-}
-.v6-selfview-layouts {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  gap: 8px;
-}
-.v6-layout {
-  position: relative;
-  display: block;
-  width: 16px;
-  height: 16px;
-}
-.v6-layout--strip::after,
-.v6-layout--wide::after,
-.v6-layout--split::before,
-.v6-layout--split::after {
-  content: '';
-  position: absolute;
-  left: 1px;
-  width: 14px;
-  border-radius: 1px;
-}
-.v6-layout--strip::after {
-  top: 10px;
-  height: 4px;
-  background: #dfe3e8;
-}
-.v6-layout--wide::after {
-  top: 4px;
-  height: 10px;
-  background: #dfe3e8;
-}
-.v6-layout--split::before {
-  top: 2px;
-  height: 5.5px;
-  background: #3b90f7;
-}
-.v6-layout--split::after {
-  top: 8.5px;
-  height: 5.5px;
-  background: #3b90f7;
-}
-
-.v6-selfview-video {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 16 / 9;
-  border-radius: 14px;
-}
-.v6-selfview-video video {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.v6-selfview-video::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.25);
-  pointer-events: none;
-}
 @media (max-width: 1199px) {
-  .v6-selfview {
+  .v6-hero-selfview {
     left: auto;
     right: -2%;
   }
@@ -353,7 +275,7 @@
   .v6-hero-tagline {
     width: 100%;
   }
-  .v6-selfview {
+  .v6-hero-selfview {
     top: auto;
     bottom: -12%;
     width: 42%;

@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type AnimationEvent,
@@ -15,6 +16,7 @@ import {
   Underline,
 } from '../builtDifferentiate/TitleDecorations';
 import { PanelDot } from './AgentCta';
+import { MeetingSelfView } from './MeetingSelfView';
 import './StoryV6.css';
 
 type Step = {
@@ -60,10 +62,19 @@ const N = STEPS.length;
 // Opacity of a title by its distance from the active one (Figma: 100/16/8/5%).
 const FADE = [1, 0.16, 0.08, 0.05];
 
+// Titles kept above the active one; the other N - 1 - ABOVE trail below it.
+const ABOVE = 2;
+/** Slot of title i relative to the active one on the looping title ring. */
+const ringPos = (i: number, active: number) => {
+  const d = (i - active + N) % N;
+  return d < N - ABOVE ? d : d - N;
+};
+
 /**
  * V6 key-features story (Figma 200:75530).
  * The titles are a vertical tab list: clicking one (or ↑/↓/Home/End) makes it
- * active, the column slides so it sits on the anchor line, and the image on the
+ * active, the titles slide so it sits on the anchor line (looping, like an
+ * endless carousel), and the image on the
  * right crossfades to match. A vertical stack of dots on the left tracks the
  * active step like a slider and is clickable too.
  * The steps auto-advance (looping): the active bar fills over one dwell and its
@@ -78,16 +89,13 @@ export function StoryV6() {
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [active, setActive] = useState(0);
   const [prev, setPrev] = useState(0);
-  // Each title's decorations draw on the first time it becomes active.
-  const [entered, setEntered] = useState<boolean[]>(() => STEPS.map((_, i) => i === 0));
 
   const select = (next: number, focus = false) => {
-    const i = Math.max(0, Math.min(N - 1, next));
-    if (focus) tabRefs.current[i]?.focus();
+    const i = (next + N) % N;
+    if (focus) tabRefs.current[i]?.focus({ preventScroll: true });
     if (i === active) return;
     setPrev(active);
     setActive(i);
-    setEntered((e) => (e[i] ? e : e.map((v, k) => v || k === i)));
   };
 
   // Pause the auto-advance while the section is off screen or the tab is hidden.
@@ -113,19 +121,51 @@ export function StoryV6() {
     if (e.animationName === 'v6-story-fill') select((active + 1) % N);
   };
 
-  // Keep the active title on the column's anchor line (re-measured on resize,
-  // since titles reflow with the column width).
-  useEffect(() => {
+  // Lay the titles out as a ring around the active one (ABOVE before it, the
+  // rest after), so the stack never runs out: as the story advances, the title
+  // leaving the top repopulates at the bottom. Re-measured on resize, since
+  // titles reflow with the column width.
+  const lastRing = useRef<number[] | null>(null);
+  useLayoutEffect(() => {
     const list = listRef.current;
     if (!list) return;
     const place = () => {
-      const base = titleRefs.current[0]?.offsetTop ?? 0;
-      const y = (titleRefs.current[active]?.offsetTop ?? base) - base;
-      list.style.transform = `translate3d(0, ${-y}px, 0)`;
+      const els = titleRefs.current;
+      const cs = getComputedStyle(list);
+      const anchor = parseFloat(cs.paddingTop) || 0;
+      const gap = parseFloat(cs.rowGap) || 0;
+      const ring = STEPS.map((_, i) => ringPos(i, active));
+      const at = (r: number) => ring.indexOf(r);
+      const y: number[] = [];
+      for (let r = 0, acc = 0; r < N - ABOVE; r++) {
+        y[at(r)] = acc;
+        acc += (els[at(r)]?.offsetHeight ?? 0) + gap;
+      }
+      for (let r = -1, acc = 0; r >= -ABOVE; r--) {
+        acc -= (els[at(r)]?.offsetHeight ?? 0) + gap;
+        y[at(r)] = acc;
+      }
+      // Titles slide by the same number of slots the active one moved; any
+      // that would have to cross the ring's seam jump there instead of flying
+      // across the column (they're at the faded edges, so it reads as a wrap).
+      const prev = lastRing.current;
+      const shift = prev ? prev[active] : 0;
+      els.forEach((el, i) => {
+        if (!el) return;
+        const jump = !prev || prev[i] - shift !== ring[i];
+        if (jump) el.style.transition = 'none';
+        el.style.transform = `translate3d(0, ${anchor + y[i]}px, 0)`;
+        if (jump) {
+          void el.offsetHeight;
+          el.style.transition = '';
+        }
+      });
+      lastRing.current = ring;
     };
     place();
     const ro = new ResizeObserver(place);
     ro.observe(list);
+    titleRefs.current.forEach((el) => el && ro.observe(el));
     return () => ro.disconnect();
   }, [active]);
 
@@ -182,8 +222,10 @@ export function StoryV6() {
                   role="presentation"
                   className="v6-story-title"
                   data-active={isActive ? 'true' : undefined}
-                  data-enter={entered[i] ? 'true' : 'false'}
-                  style={{ opacity: FADE[Math.min(Math.abs(i - active), 3)] }}
+                  // Decorations play their intro each time the title becomes
+                  // active; inactive titles read as plain greyed-out text.
+                  data-enter={isActive ? 'true' : 'false'}
+                  style={{ opacity: FADE[Math.min(Math.abs(ringPos(i, active)), 3)] }}
                 >
                   <h3>
                     <button
@@ -226,7 +268,11 @@ export function StoryV6() {
                 aria-hidden="true"
                 style={{ opacity: isActive || isPrev ? 1 : 0, zIndex: isActive ? 2 : isPrev ? 1 : 0 }}
               >
-                <StepMedia media={KEY_POINTS[i].media} isActive={isActive} />
+                <StepMedia
+                  media={KEY_POINTS[i].media}
+                  isActive={isActive}
+                  meetingVideo={<MeetingSelfView className="v6-story-selfview" />}
+                />
               </div>
             );
           })}

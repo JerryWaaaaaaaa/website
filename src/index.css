@@ -65,6 +65,16 @@
   --glass-fill: rgba(12, 92, 255, 0.05);
   --glass-fill-hover: rgba(12, 92, 255, 0.12);
 
+  /* Dark glass — one navy tint at two strengths (Figma 698:17570). "Dark glass"
+     is the background surface: the 30% tint always paired with the backdrop blur
+     (apply both via the `glass-dark` utility). "Dark glass overlay" is the 16% fill
+     for cards/pills that sit ON dark glass (`glass-dark-overlay`); it carries no
+     blur of its own because the surface beneath already blurs. */
+  --glass-dark-tint: 20, 49, 118; /* #143176 */
+  --glass-dark-bg: rgba(var(--glass-dark-tint), 0.3);
+  --glass-dark-overlay: rgba(var(--glass-dark-tint), 0.16);
+  --glass-dark-blur: blur(24px);
+
   /* Radius scale — climbs with surface size. Mirrors DESIGN.md → Shapes.
      --radius-pill (999px) lives in the @theme bridge below so it also
      resolves as the `rounded-pill` utility class. */
@@ -84,8 +94,8 @@
   /* V6 glass material: navy tint + backdrop blur. Used by the nav bar (once
      scrolled), the hero self view and browser frame, and the tagline cards;
      tuned live from the Glass dial panel (useGlassDials). */
-  --v6-glass: rgba(20, 49, 118, 0.3);
-  --v6-glass-blur: blur(20px);
+  --v6-glass: var(--glass-dark-bg);
+  --v6-glass-blur: var(--glass-dark-blur);
   --v6-tab-fill: rgba(12, 92, 255, 0.05);
   --v6-text-gradient: linear-gradient(90deg, #0c5cff 0%, #c5b0ff 80.4%);
   --v6-body-max-width: 1800px;
@@ -174,6 +184,16 @@
     Roboto, 'Helvetica Neue', Arial, sans-serif;
 
   --radius-pill: 999px;
+}
+
+/* Dark glass material utilities — color + blur travel together. */
+@utility glass-dark {
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--glass-dark-blur);
+  -webkit-backdrop-filter: var(--glass-dark-blur);
+}
+@utility glass-dark-overlay {
+  background: var(--glass-dark-overlay);
 }
 
 /* =============================================================================

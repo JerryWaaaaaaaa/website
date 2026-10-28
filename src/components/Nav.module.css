@@ -616,7 +616,7 @@
 /* =============================================================================
    V6 — Microsite Stylized nav (Figma 260:39476 nav-desktop-scroll)
    Same structure and behavior as the default bar; only the skin changes. Links
-   sit right-aligned in Geist Mono caps, buttons use 12px corners, and the
+   sit centered in Geist Mono caps, buttons use 12px corners, and the
    scrolled state is a full-width tinted glass bar inset 8px from the viewport
    (instead of the 1024px pill).
    ========================================================================== */
@@ -632,12 +632,14 @@
   height: 32px;
 }
 .navWrap[data-version='v6'] .navLinks {
-  justify-content: flex-end;
-  gap: 20px;
+  justify-content: center;
+  gap: 8px;
 }
+/* Tab: 12px block padding, 12px corners. The open tab sits in a
+   dark-glass-overlay pill. */
 .navWrap[data-version='v6'] .navLink {
   gap: 5px;
-  padding: 5px 0;
+  padding: 12px 20px;
   /* White, to match the white logo lockup. */
   color: var(--text-contrast);
   font-family: var(--font-mono);
@@ -645,12 +647,11 @@
   font-weight: 500;
   letter-spacing: -0.01em;
   text-transform: uppercase;
-  border-radius: 0;
+  border-radius: var(--rounded-md);
 }
 .navWrap[data-version='v6'] .navLink:hover,
 .navWrap[data-version='v6'] .navTrigger.isOpen .navLink {
-  background: none;
-  color: rgba(255, 255, 255, 0.72);
+  background: var(--glass-dark-overlay);
 }
 .navWrap[data-version='v6'] .navRow .navChevron {
   color: currentColor;
@@ -661,50 +662,85 @@
 .navWrap[data-version='v6'] .navCta :global(.btn) {
   border-radius: var(--rounded-md);
 }
-/* Sign in: white text on a translucent white fill, so it sits on the glass. */
+/* Sign in: the solid light secondary (Figma), not the nav's glass fill. */
 .navWrap[data-version='v6'] .navCta :global(.btn-secondary) {
-  background: rgba(255, 255, 255, 0.16);
-  color: var(--text-contrast);
+  background: var(--bg-accent-light);
+  color: var(--text-primary);
 }
 .navWrap[data-version='v6'] .navCta :global(.btn-secondary):hover {
-  background: rgba(255, 255, 255, 0.26);
-}
-.navWrap[data-version='v6'] .exploreMenu {
-  right: 0;
-  left: auto;
-  border-radius: var(--rounded-lg);
-}
-.navWrap[data-version='v6'] .exploreMenuItem {
-  border-radius: var(--rounded-sm);
+  background: var(--bg-accent-medium);
 }
 
-/* Scrolled: glass bar, inset 8px, 12px corners — the shared V6 glass (Figma
-   started as rgba(8,59,130,.1) with a 24px blur). */
+/* Products dropdown: a dark-glass panel, 10px below the bar and left-aligned
+   to the tab (Figma 696:17376). Cards are transparent at rest and pick up the
+   dark-glass overlay on hover. */
+.navWrap[data-version='v6'] .productsMenu {
+  top: calc(100% + 22px);
+  left: 0;
+  gap: 0;
+  width: 420px;
+  padding: 12px;
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--glass-dark-blur);
+  -webkit-backdrop-filter: var(--glass-dark-blur);
+  border: none;
+  border-radius: 26px;
+  box-shadow: none;
+}
+.navWrap[data-version='v6'] .productsMenu .productCard {
+  background: transparent;
+  border-radius: var(--rounded-xl);
+  padding: 12px;
+  opacity: 1;
+  transition: background var(--duration-feedback) ease;
+}
+.navWrap[data-version='v6'] .productsMenu .productCard:hover,
+.navWrap[data-version='v6'] .productsMenu .productCard:focus-visible {
+  background: var(--glass-dark-overlay);
+}
+.navWrap[data-version='v6'] .productsMenu .productIcon,
+.navWrap[data-version='v6'] .productsMenu .productCard:hover .productIcon {
+  width: 56px;
+  height: 56px;
+  background: rgba(5, 37, 77, 0.12);
+}
+.navWrap[data-version='v6'] .productsMenu .productText {
+  padding: 4px;
+}
+.navWrap[data-version='v6'] .productsMenu .productName,
+.navWrap[data-version='v6'] .productsMenu .productDesc {
+  color: var(--text-contrast);
+}
+
+/* Scrolled: dark-glass bar, inset 8px, 12px corners. */
 .navWrap[data-version='v6'].isScrolled {
   padding: 8px 8px 0;
 }
-.navWrap[data-version='v6'].isScrolled .navBar,
-.navWrap[data-version='v6'].isScrolled .navBar.productsOpen {
+.navWrap[data-version='v6'].isScrolled .navBar {
   max-width: 100%;
   border-radius: var(--rounded-md);
-  /* The shared V6 glass (index.css --v6-glass). */
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: transparent;
+}
+/* The glass lives on a pseudo layer, not the bar: a backdrop-filter on the bar
+   would make it the backdrop root for its dropdowns, so their own blur would
+   only see the (empty) bar instead of the page. Dark glass via the V6 alias
+   (index.css --v6-glass → --glass-dark-bg), so the Glass dial still tunes it. */
+.navWrap[data-version='v6'].isScrolled .navBar::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
   background: var(--v6-glass);
   backdrop-filter: var(--v6-glass-blur);
   -webkit-backdrop-filter: var(--v6-glass-blur);
-  border-color: transparent;
+  pointer-events: none;
 }
 .navWrap[data-version='v6'].isScrolled .navRow {
   padding: 12px 18px 12px 24px;
-}
-.navWrap[data-version='v6'] .navBar.productsOpen {
-  border-radius: 0 0 var(--rounded-md) var(--rounded-md);
-  /* Glass rather than the light neutral fill, so the white links still read. */
-  background: var(--v6-glass);
-  backdrop-filter: var(--v6-glass-blur);
-  -webkit-backdrop-filter: var(--v6-glass-blur);
-}
-.navWrap[data-version='v6'] .productsPanel .productGrid {
-  max-width: 1200px;
 }
 @media (max-width: 900px) {
   .navWrap[data-version='v6'] .navRow,

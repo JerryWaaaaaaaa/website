@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { AgentCta } from './AgentCta';
 import { ProductBrowser, ProductChip, useProductRotation } from './HeroProducts';
+import { MeetingSelfView } from './MeetingSelfView';
 import { HalftoneImage, type HalftoneParams, type ImagePlacement } from './halftone/HalftoneImage';
 import { AsciiTrail } from './halftone/AsciiTrail';
 import { useShaderDials } from './halftone/useShaderDials';
@@ -72,12 +73,6 @@ function HeroMeshBg() {
   );
 }
 
-// meeting-floating.mp4 (the V5 hero's meeting video) is three 16:9 speaker
-// tiles stacked in one portrait frame; the self view crops to one tile at a
-// time and cuts between them like Zoom's active-speaker view.
-const SPEAKER_CROPS = ['0%', '50%', '100%'];
-const SPEAKER_MS = 3200;
-
 /**
  * V6 hero (Figma 606:45464): chip headline over a halftone photo + product UI.
  * As in V5, the product name in the headline loops through the suite and the
@@ -93,15 +88,6 @@ export function HeroV6({ background = 'halftone' }: { background?: 'halftone' | 
   const product = useProductRotation();
   const heroRef = useRef<HTMLElement | null>(null);
   const drag = useCardDrag(heroRef, '(min-width: 640px) and (pointer: fine)');
-  const [speaker, setSpeaker] = useState(0);
-
-  useEffect(() => {
-    const id = window.setInterval(
-      () => setSpeaker((s) => (s + 1) % SPEAKER_CROPS.length),
-      SPEAKER_MS,
-    );
-    return () => window.clearInterval(id);
-  }, []);
 
   return (
     <section className="v6-hero" aria-labelledby="v6-hero-title" ref={heroRef}>
@@ -127,33 +113,11 @@ export function HeroV6({ background = 'halftone' }: { background?: 'halftone' | 
       <div className="v6-hero-ui">
         <ProductBrowser index={product} />
 
-        <div
-          className="v6-selfview"
-          aria-hidden="true"
+        <MeetingSelfView
+          className="v6-hero-selfview"
           data-card="selfview"
           onPointerDown={drag.onPointerDown}
-        >
-          <div className="v6-selfview-bar">
-            <span className="v6-selfview-layouts">
-              <span className="v6-layout v6-layout--strip" />
-              <span className="v6-layout v6-layout--wide" />
-              <span className="v6-layout v6-layout--split" />
-              <img className="v6-layout" src="/v6/hero/layout-grid.svg" alt="" draggable={false} />
-            </span>
-            <img className="v6-layout" src="/v6/hero/resize.svg" alt="" draggable={false} />
-          </div>
-          <div className="v6-selfview-video">
-            <video
-              src="/hero-may-images/meeting-floating.mp4"
-              style={{ objectPosition: `50% ${SPEAKER_CROPS[speaker]}` }}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-            />
-          </div>
-        </div>
+        />
       </div>
     </section>
   );

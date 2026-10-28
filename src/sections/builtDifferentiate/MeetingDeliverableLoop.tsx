@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import './MeetingDeliverableLoop.css';
 
 const BASE = '/core-features/meeting-deliverable';
@@ -18,11 +19,16 @@ const CARDS = [
  * The floating video window stays fixed on the left while the deliverable cards
  * loop vertically on the right — a seamless, continuously drifting marquee that
  * fades at the top and bottom edges. Fills its (positioned, 5:4) media wrapper.
+ * `video` replaces the static video-window still (e.g. with a live self view).
  */
-export function MeetingDeliverableLoop() {
+export function MeetingDeliverableLoop({ video }: { video?: ReactNode }) {
   return (
     <div className="md-loop" aria-hidden="true">
-      <img className="md-loop-video" src={`${BASE}/video-window.png`} alt="" draggable={false} />
+      {video ? (
+        <div className="md-loop-video">{video}</div>
+      ) : (
+        <img className="md-loop-video" src={`${BASE}/video-window.png`} alt="" draggable={false} />
+      )}
 
       <div className="md-loop-lane">
         {/* The card set is rendered twice back-to-back; translating the track up

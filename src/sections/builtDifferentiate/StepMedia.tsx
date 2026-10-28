@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import type { Media } from './keyPoints';
 import { MeetingDeliverableLoop } from './MeetingDeliverableLoop';
 import './StepMedia.css';
@@ -63,9 +63,12 @@ function SequenceMedia({
 export function StepMedia({
   media,
   isActive,
+  meetingVideo,
 }: {
   media: Media;
   isActive: boolean;
+  /** Swaps the meeting-deliverable loop's static video window for this node. */
+  meetingVideo?: ReactNode;
 }) {
   switch (media.kind) {
     case 'image':
@@ -73,7 +76,7 @@ export function StepMedia({
       // animated illustration whose cards loop vertically. (Intercepted here by
       // src rather than via the `layers` kind because keyPoints.tsx is locked.)
       if (media.src === '/core-features/meeting-deliverable.png')
-        return <MeetingDeliverableLoop />;
+        return <MeetingDeliverableLoop video={meetingVideo} />;
       return (
         <img
           src={media.src}
@@ -92,7 +95,8 @@ export function StepMedia({
         />
       );
     case 'layers':
-      if (media.animation === 'meeting-deliverable') return <MeetingDeliverableLoop />;
+      if (media.animation === 'meeting-deliverable')
+        return <MeetingDeliverableLoop video={meetingVideo} />;
       // No renderer for other layered animations yet.
       return null;
   }

@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useDialKit } from 'dialkit';
 import { useDialUrlSync } from './dialUrlSync';
 import s from './Nav.module.css';
 
-type Panel = 'products' | 'features' | 'explore' | null;
+type Panel = 'products' | 'explore' | null;
 
 // Each card carries its own brand color as an "R, G, B" triplet, exposed as the
 // --card-rgb CSS var on the card. The navbar style variants below apply their own
@@ -55,6 +55,17 @@ const PRODUCT_CARDS = [
   },
 ];
 
+// V6 Products menu (Figma 698:17483): white glyphs on a dark-glass list, in the
+// design's order and copy. V1–V5 keep PRODUCT_CARDS above.
+const V6_PRODUCT_CARDS = [
+  { key: 'canvas', name: 'Canvas', desc: 'Think. Write. Refine.', icon: '/v6/nav/products/canvas.svg' },
+  { key: 'slides', name: 'Slides', desc: 'Ideas to presentations', icon: '/v6/nav/products/slides.svg' },
+  { key: 'sheets', name: 'Sheets', desc: 'Spreadsheets, automated', icon: '/v6/nav/products/sheets.svg' },
+  { key: 'datatable', name: 'AI Data table', desc: 'From data to insight', icon: '/v6/nav/products/datatable.svg' },
+  { key: 'paper', name: 'Paper', desc: 'Professional writing, refined', icon: '/v6/nav/products/paper.svg' },
+  { key: 'hub', name: 'Hub', desc: 'Home of your Zoom assets', icon: '/v6/nav/products/hub.svg' },
+];
+
 // Navbar product-card background styles, switchable live from the dial "Navbar"
 // panel. Drives the `data-nav-variant` attribute on <header>; see Nav.module.css.
 //  - accent:  each card shows its brand tint (the original look)
@@ -78,15 +89,13 @@ const EXPLORE_ITEMS: MenuItem[] = [
   { label: 'Help center', href: '#' },
 ];
 
-// V6 only — the redesign swaps the Templates / Blog links for a Features menu
-// listing the six key features from the scroll story.
-const FEATURE_ITEMS: MenuItem[] = [
-  { label: 'Meeting deliverables', href: '#' },
-  { label: 'Editable AI outputs', href: '#' },
-  { label: 'Inline AI', href: '#' },
-  { label: 'Share live', href: '#' },
-  { label: 'Team permissions', href: '#' },
-  { label: 'AI templates', href: '#' },
+// V6 only (Figma 696:16874) — Products is the one dropdown; Blog and Templates
+// are plain links. There's no Templates page yet, so it jumps to the V6
+// Templates section on the home page.
+// Templates is a native anchor so the browser scrolls to the hash.
+const V6_LINKS: MenuItem[] = [
+  { label: 'Blog', to: '/blog' },
+  { label: 'Templates', href: '/#templates' },
 ];
 
 /** `default` is the V1–V5 bar; `v6` is the Microsite Stylized restyle. */
@@ -232,8 +241,9 @@ export function Nav({ variant = 'default' }: { variant?: NavVariant } = {}) {
   const barClass = [
     s.navBar,
     // Only Products expands the bar itself; Explore is a floating dropdown that
-    // doesn't reshape the bar. On mobile the drawer owns the accordion.
-    !isMobile && openPanel === 'products' ? s.productsOpen : '',
+    // doesn't reshape the bar. On mobile the drawer owns the accordion. V6 renders
+    // Products as a floating dropdown too, so the bar never expands there.
+    !isV6 && !isMobile && openPanel === 'products' ? s.productsOpen : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -243,7 +253,13 @@ export function Nav({ variant = 'default' }: { variant?: NavVariant } = {}) {
 
   const ctaLabel = isV6 ? 'Get started now' : 'Get started today';
 
-  const renderDropdown = (panel: 'features' | 'explore', label: string, items: MenuItem[]) => (
+  // A trigger with a floating dropdown card anchored beneath it.
+  const renderFloating = (
+    panel: Exclude<Panel, null>,
+    label: string,
+    menuClass: string,
+    children: ReactNode
+  ) => (
     <li className={triggerClass(panel)}>
       <button
         className={s.navLink}
@@ -259,34 +275,61 @@ export function Nav({ variant = 'default' }: { variant?: NavVariant } = {}) {
         <Chevron />
       </button>
       <div
-        className={s.exploreMenu}
+        className={menuClass}
         id={`menu-${panel}`}
         role="menu"
         aria-label={`${label} menu`}
         onClick={(e) => e.stopPropagation()}
       >
-        {items.map((item) =>
-          item.to ? (
-            <Link
-              key={item.label}
-              to={item.to}
-              className={s.exploreMenuItem}
-              role="menuitem"
-              onClick={() => setOpenPanel(null)}
-            >
-              {item.label}
-            </Link>
-          ) : (
-            <a key={item.label} href={item.href} className={s.exploreMenuItem} role="menuitem">
-              {item.label}
-            </a>
-          )
-        )}
+        {children}
       </div>
     </li>
   );
 
-  const renderDrawerMenu = (panel: 'features' | 'explore', label: string, items: MenuItem[]) => (
+  const renderDropdown = (panel: 'explore', label: string, items: MenuItem[]) =>
+    renderFloating(
+      panel,
+      label,
+      s.exploreMenu,
+      items.map((item) =>
+        item.to ? (
+          <Link
+            key={item.label}
+            to={item.to}
+            className={s.exploreMenuItem}
+            role="menuitem"
+            onClick={() => setOpenPanel(null)}
+          >
+            {item.label}
+          </Link>
+        ) : (
+          <a key={item.label} href={item.href} className={s.exploreMenuItem} role="menuitem">
+            {item.label}
+          </a>
+        )
+      )
+    );
+
+  // V6 Products: the same floating dropdown, listing product cards.
+  const renderV6Products = () =>
+    renderFloating(
+      'products',
+      'Products',
+      [s.exploreMenu, s.productsMenu].join(' '),
+      V6_PRODUCT_CARDS.map((p) => (
+        <a key={p.key} className={s.productCard} href="#" role="menuitem">
+          <div className={s.productIcon}>
+            <img src={p.icon} width={32} height={32} alt="" />
+          </div>
+          <div className={s.productText}>
+            <span className={s.productName}>{p.name}</span>
+            <span className={s.productDesc}>{p.desc}</span>
+          </div>
+        </a>
+      ))
+    );
+
+  const renderDrawerMenu = (panel: 'explore', label: string, items: MenuItem[]) => (
     <div
       className={[s.mDrawerSection, openPanel === panel ? s.isExpanded : '']
         .filter(Boolean)
@@ -344,23 +387,40 @@ export function Nav({ variant = 'default' }: { variant?: NavVariant } = {}) {
           </Link>
 
           <ul className={s.navLinks} role="list">
-            <li className={triggerClass('products')}>
-              <button
-                className={s.navLink}
-                aria-expanded={openPanel === 'products'}
-                aria-haspopup="true"
-                aria-controls="menu-products"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggle('products');
-                }}
-              >
-                Products
-                <Chevron />
-              </button>
-            </li>
-            {isV6 && renderDropdown('features', 'Features', FEATURE_ITEMS)}
-            {renderDropdown('explore', 'Explore', EXPLORE_ITEMS)}
+            {isV6 ? (
+              renderV6Products()
+            ) : (
+              <li className={triggerClass('products')}>
+                <button
+                  className={s.navLink}
+                  aria-expanded={openPanel === 'products'}
+                  aria-haspopup="true"
+                  aria-controls="menu-products"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggle('products');
+                  }}
+                >
+                  Products
+                  <Chevron />
+                </button>
+              </li>
+            )}
+            {isV6 &&
+              V6_LINKS.map((l) => (
+                <li key={l.label} className={s.navTrigger}>
+                  {l.to ? (
+                    <Link className={s.navLink} to={l.to}>
+                      {l.label}
+                    </Link>
+                  ) : (
+                    <a className={s.navLink} href={l.href}>
+                      {l.label}
+                    </a>
+                  )}
+                </li>
+              ))}
+            {!isV6 && renderDropdown('explore', 'Explore', EXPLORE_ITEMS)}
             {!isV6 && (
               <>
                 <li className={s.navTrigger}>
@@ -401,34 +461,36 @@ export function Nav({ variant = 'default' }: { variant?: NavVariant } = {}) {
           </button>
         </div>
 
-        <div
-          className={s.productsPanel}
-          id="menu-products"
-          role="region"
-          aria-label="Products menu"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className={s.productsPanelInner}>
-            <div className={s.productGrid}>
-              {PRODUCT_CARDS.map((p) => (
-                <a
-                  key={p.key}
-                  className={s.productCard}
-                  href="#"
-                  style={{ '--card-rgb': p.tint } as CSSProperties}
-                >
-                  <div className={s.productIcon}>
-                    <img src={p.icon} width={32} height={32} alt="" />
-                  </div>
-                  <div className={s.productText}>
-                    <span className={s.productName}>{p.name}</span>
-                    <span className={s.productDesc}>{p.desc}</span>
-                  </div>
-                </a>
-              ))}
+        {!isV6 && (
+          <div
+            className={s.productsPanel}
+            id="menu-products"
+            role="region"
+            aria-label="Products menu"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={s.productsPanelInner}>
+              <div className={s.productGrid}>
+                {PRODUCT_CARDS.map((p) => (
+                  <a
+                    key={p.key}
+                    className={s.productCard}
+                    href="#"
+                    style={{ '--card-rgb': p.tint } as CSSProperties}
+                  >
+                    <div className={s.productIcon}>
+                      <img src={p.icon} width={32} height={32} alt="" />
+                    </div>
+                    <div className={s.productText}>
+                      <span className={s.productName}>{p.name}</span>
+                      <span className={s.productDesc}>{p.desc}</span>
+                    </div>
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
       </nav>
 
@@ -511,8 +573,29 @@ export function Nav({ variant = 'default' }: { variant?: NavVariant } = {}) {
               </div>
             </div>
 
-            {isV6 && renderDrawerMenu('features', 'Features', FEATURE_ITEMS)}
-            {renderDrawerMenu('explore', 'Explore', EXPLORE_ITEMS)}
+            {isV6 &&
+              V6_LINKS.map((l) => (
+                <div key={l.label} className={s.mDrawerSection}>
+                  {l.to ? (
+                    <Link
+                      className={s.mDrawerTrigger}
+                      to={l.to}
+                      onClick={() => setDrawerOpen(false)}
+                    >
+                      {l.label}
+                    </Link>
+                  ) : (
+                    <a
+                      className={s.mDrawerTrigger}
+                      href={l.href}
+                      onClick={() => setDrawerOpen(false)}
+                    >
+                      {l.label}
+                    </a>
+                  )}
+                </div>
+              ))}
+            {!isV6 && renderDrawerMenu('explore', 'Explore', EXPLORE_ITEMS)}
 
             {!isV6 && (
               <>

@@ -217,16 +217,20 @@
 .v6-agent-icon img + img {
   transform: translateX(-36px);
 }
-/* Hover glow (dark CTAs): an inner glow of the brand gradient hugging all
-   four edges so the button seems to glow from within. The inner span carries a
-   slowly turning conic gradient masked to a ring (border-box minus
-   content-box, so the ring follows the pill's radius); its padding — the ring's
-   thickness — breathes out of step on each side, so the glow swells and thins
-   around the edge. The outer span blurs it (blur must come after the mask, or
-   the inner edge would stay crisp). */
+/* Border beam (dark CTAs), after libraries.dev "border-beam" (md). The
+   colour is painted, not spun: --beam-blobs is a set of brand-colour radial
+   ellipses parked around the perimeter, and only a conic *window* mask
+   (--beam-window, rotating with --v6-glow-angle) travels round to reveal them.
+   Three layers share that window:
+   - inner: the blobs over the whole box, masked to fade inward from every
+     edge (--beam-depth) — so colour is strongest at the border pixel itself
+     instead of a blurred ring whose outer half gets clipped (no dark gap);
+   - stroke: a crisp ring of the blobs exactly on the edge (--beam-stroke);
+   - bloom: a blurred white highlight at the beam's head.
+   Tuned live by the "CTA beam" dial panel (useBeamDials → --beam-* on <html>). */
 @property --v6-glow-angle {
   syntax: '<angle>';
-  inherits: false;
+  inherits: true;
   initial-value: 0deg;
 }
 .v6-agent {
@@ -238,67 +242,80 @@
   position: relative;
   z-index: 1;
 }
-.v6-agent > .v6-agent-glow {
+.v6-agent > .v6-agent-beam {
   position: absolute;
   z-index: 0;
   inset: 0;
   border-radius: inherit;
-  filter: blur(4px);
-  opacity: 0;
-  transition: opacity 360ms var(--ease-out);
+  opacity: calc(var(--beam-rest, 0) * var(--beam-strength, 1));
+  transition: opacity var(--beam-fade-out, 300ms) ease;
   pointer-events: none;
+  animation: v6-glow-spin var(--beam-speed, 3s) linear infinite;
 }
-.v6-agent-glow > span {
+.v6-agent-beam > span {
   position: absolute;
   inset: 0;
   box-sizing: border-box;
-  padding: 9px 12px;
   border-radius: inherit;
-  background: conic-gradient(
-    from var(--v6-glow-angle),
-    #0c5cff,
-    #c5b0ff,
-    #fb327e,
-    #5ecbc4,
-    #0c5cff
-  );
+}
+.v6-beam-inner {
+  background: var(--beam-blobs);
+  box-shadow: inset 0 0 9px 1px rgba(255, 255, 255, var(--beam-edge-shadow, 0.27));
+  opacity: var(--beam-inner-opacity, 0.8);
+  -webkit-mask-image:
+    conic-gradient(from var(--v6-glow-angle), var(--beam-window)),
+    linear-gradient(#fff, transparent var(--beam-depth, 18px), transparent calc(100% - var(--beam-depth, 18px)), #fff),
+    linear-gradient(to right, #fff, transparent var(--beam-depth, 18px), transparent calc(100% - var(--beam-depth, 18px)), #fff);
+  -webkit-mask-composite: source-in, source-over;
+  mask-image:
+    conic-gradient(from var(--v6-glow-angle), var(--beam-window)),
+    linear-gradient(#fff, transparent var(--beam-depth, 18px), transparent calc(100% - var(--beam-depth, 18px)), #fff),
+    linear-gradient(to right, #fff, transparent var(--beam-depth, 18px), transparent calc(100% - var(--beam-depth, 18px)), #fff);
+  mask-composite: intersect, add;
+}
+.v6-beam-stroke,
+.v6-beam-bloom {
   -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
+    conic-gradient(from var(--v6-glow-angle), var(--beam-window)),
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: source-in, xor;
   mask:
-    linear-gradient(#000 0 0) content-box exclude,
-    linear-gradient(#000 0 0);
-  animation:
-    v6-glow-spin 6s linear infinite paused,
-    v6-glow-breathe 5.2s ease-in-out infinite alternate paused;
+    conic-gradient(from var(--v6-glow-angle), var(--beam-window)),
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: intersect, exclude;
+}
+.v6-beam-stroke {
+  padding: var(--beam-stroke, 1.5px);
+  background: var(--beam-blobs);
+  opacity: var(--beam-stroke-opacity, 1);
+}
+.v6-beam-bloom {
+  padding: calc(var(--beam-stroke, 1.5px) * 2);
+  background: conic-gradient(from var(--v6-glow-angle), var(--beam-bloom-stops));
+  filter: blur(var(--beam-bloom-blur, 6px));
+  opacity: var(--beam-bloom-opacity, 0.5);
+}
+/* useLinearBeam takes over with border-following keyframes (constant speed). */
+.v6-agent > .v6-agent-beam[data-linear] {
+  animation: none;
 }
 @keyframes v6-glow-spin {
   to {
     --v6-glow-angle: 360deg;
   }
 }
-/* Each side peaks at a different moment, so the band never pulses evenly. */
-@keyframes v6-glow-breathe {
-  0% {
-    padding: 8px 10px 12px 16px;
-  }
-  35% {
-    padding: 12px 16px 8px 10px;
-  }
-  70% {
-    padding: 10px 12px 11px 18px;
-  }
-  100% {
-    padding: 13px 18px 9px 12px;
+@media (prefers-reduced-motion: reduce) {
+  .v6-agent > .v6-agent-beam {
+    animation: none;
   }
 }
 @media (hover: hover) and (pointer: fine) {
-  .v6-agent:hover .v6-agent-glow {
-    opacity: 0.9;
-  }
-  .v6-agent:hover .v6-agent-glow > span {
-    animation-play-state: running;
+  /* Lights up: a beat's delay, then a slow ease-out fade (fade-out is quicker). */
+  .v6-agent:hover .v6-agent-beam {
+    opacity: var(--beam-strength, 1);
+    transition: opacity var(--beam-fade-in, 700ms) var(--ease-out) var(--beam-delay, 120ms);
   }
   .v6-agent--pink:hover {
     opacity: 0.88;
@@ -355,13 +372,5 @@
   }
   .v6-agent:hover .v6-agent-icon img + img {
     transform: translateX(-36px);
-  }
-  /* Glow still fades in, but doesn't rise or ripple. */
-  .v6-agent > .v6-agent-glow {
-    transform: none;
-    transition: opacity 200ms ease;
-  }
-  .v6-agent-glow > span {
-    animation: none;
   }
 }

@@ -102,22 +102,30 @@
   mask: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
 }
 .v6-story-list {
+  /* Titles are absolutely placed on a looping ring by StoryV6.tsx; the list
+     only supplies the anchor line (padding-top) and the spacing (row-gap). */
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: clamp(44px, 4.2vw, 76px);
+  height: 100%;
   margin: 0;
   /* Anchor line for the active title (~38% down, as in the Figma frame). */
   /* Percent padding is of the column width, so this tracks the square. */
-  padding: 38% 0 50%;
+  padding: 38% 0 0;
   list-style: none;
-  transition: transform 600ms var(--ease-emphasized);
 }
 .v6-story-title {
+  position: absolute;
+  top: 0;
+  left: 0;
   /* Sized so the 1.2× active title still fits the column (672px when active). */
   width: calc(100% / 1.2);
   max-width: 560px;
   opacity: 0.16;
-  transition: opacity 400ms var(--ease-out);
+  transition:
+    transform 600ms var(--ease-emphasized),
+    opacity 400ms var(--ease-out);
 }
 /* Each title is a tab button styled as the plain heading. */
 .v6-story-tab {
@@ -187,7 +195,7 @@
     grid-template-rows: clamp(280px, 44vh, 420px) auto;
   }
   .v6-story-list {
-    padding: 14vh 0 30vh;
+    padding: 14vh 0 0;
   }
   .v6-story-copy {
     contain: none;
@@ -219,4 +227,38 @@
 /* The meeting-deliverable card loop drifts at 0.6× its default (24s) speed here. */
 .v6-story-frame .md-loop-track {
   animation-duration: 40s;
+}
+
+/* Title decorations replay their intro (TitleDecorations.css) each time a title
+   becomes active. Inactive titles are plain text: no tint, and the pieces reset
+   quickly with no stagger so they're cleared before the title comes back. */
+.v6-story-title[data-enter='false'] .kp-highlight-text {
+  color: inherit;
+}
+.v6-story-title .kp-highlight-text {
+  transition: color 300ms var(--ease-out) 280ms;
+}
+.v6-story-title[data-enter='false'] :is(.kp-badge, .kp-underline-line, .kp-highlight-fill, .kp-sparkle, .kp-highlight-text) {
+  transition-duration: 150ms;
+  transition-delay: 0s;
+}
+
+/* The meeting-deliverable frame shows the hero's live self view in place of the
+   static video-window still. */
+.v6-story-frame .md-loop-video:has(.v6-story-selfview) {
+  width: 34%;
+}
+.v6-story-selfview {
+  width: 100%;
+}
+
+/* Intro timing here: every piece eases out over 500ms (the stagger delays from
+   TitleDecorations.css are kept, so they still land in sequence). */
+.v6-story-title[data-enter='true'] :is(.kp-badge, .kp-underline-line, .kp-highlight-fill, .kp-sparkle, .kp-highlight-text) {
+  transition-duration: 500ms;
+  transition-timing-function: var(--ease-out);
+}
+.v6-story-title[data-enter='true'] .kp-hand {
+  animation-duration: 500ms;
+  animation-timing-function: var(--ease-out);
 }
