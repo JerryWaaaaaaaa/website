@@ -1,0 +1,81 @@
+/* Meeting self view card (Figma 606:45488). Look only; callers place it. */
+.v6-selfview {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+  border-radius: var(--rounded-md);
+  /* The shared V6 glass. */
+  background: var(--v6-glass);
+  backdrop-filter: var(--v6-glass-blur);
+  -webkit-backdrop-filter: var(--v6-glass-blur);
+}
+.v6-selfview-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+}
+.v6-selfview-layouts {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+}
+.v6-layout {
+  position: relative;
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+.v6-layout--strip::after,
+.v6-layout--wide::after,
+.v6-layout--split::before,
+.v6-layout--split::after {
+  content: '';
+  position: absolute;
+  left: 1px;
+  width: 14px;
+  border-radius: 1px;
+}
+.v6-layout--strip::after {
+  top: 10px;
+  height: 4px;
+  background: #dfe3e8;
+}
+.v6-layout--wide::after {
+  top: 4px;
+  height: 10px;
+  background: #dfe3e8;
+}
+.v6-layout--split::before {
+  top: 2px;
+  height: 5.5px;
+  background: #3b90f7;
+}
+.v6-layout--split::after {
+  top: 8.5px;
+  height: 5.5px;
+  background: #3b90f7;
+}
+
+.v6-selfview-video {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+}
+.v6-selfview-video video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.v6-selfview-video::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}

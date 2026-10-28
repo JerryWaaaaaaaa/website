@@ -51,6 +51,10 @@ tokens:
       glass-border: '1px solid var(--border-subtle)'
       glass-fill: 'rgba(12, 92, 255, 0.05)'
       glass-fill-hover: 'rgba(12, 92, 255, 0.12)'
+      # Dark glass — one navy (#143176) at two strengths. See "Dark glass" below.
+      glass-dark-bg: 'rgba(20, 49, 118, 0.30)'
+      glass-dark-overlay: 'rgba(20, 49, 118, 0.16)'
+      glass-dark-blur: 'blur(24px)'
   typography:
     family:
       sans: '"General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
@@ -106,7 +110,8 @@ tokens:
     color-rose: '#FB327E'
     bg-highlight-rose: 'var(--color-rose-light)'
     text-highlight-rose: 'var(--color-rose)'
-    nav-glass: 'rgba(8, 59, 130, 0.10)'
+    glass: 'var(--glass-dark-bg)'       # alias, tuned live by the Glass dial
+    glass-blur: 'var(--glass-dark-blur)'
     tab-fill: 'rgba(12, 92, 255, 0.05)'
     text-gradient: 'linear-gradient(90deg, #0C5CFF 0%, #C5B0FF 80.4%)'
     font-mono: '"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace'
@@ -340,6 +345,36 @@ fill so they read as a single family and let the frosted backdrop show through i
 of stacking opaque blocks. `--glass-fill-hover` (`rgba(12, 92, 255, 0.12)`) is the
 hover / press step. Over white `--glass-fill` composites to ≈ `--bg-accent-light`, but
 always reference the token (not the solid) wherever the surface can overlap glass.
+
+### Dark glass
+
+The dark counterpart of the frosted surface, for glass over saturated or dark
+backgrounds (the V6 nav, its dropdowns, hero tagline cards). One navy —
+`#143176` (`--glass-dark-tint: 20, 49, 118`) — at two strengths:
+
+| Name | Token | Value | Blur | Use |
+|---|---|---|---|---|
+| **Dark glass** | `--glass-dark-bg` | `rgba(20,49,118,0.30)` | `--glass-dark-blur` (`blur(24px)`) | The background surface: bars, panels, dropdowns |
+| **Dark glass overlay** | `--glass-dark-overlay` | `rgba(20,49,118,0.16)` | none | Cards, pills and active tabs that sit **on** dark glass |
+
+The color and blur of dark glass always travel together, so apply them with the
+utilities rather than by hand:
+
+```html
+<div class="glass-dark">              <!-- 30% tint + 24px backdrop blur -->
+  <a class="glass-dark-overlay">…</a>  <!-- 16% tint; inherits the blur beneath -->
+</div>
+```
+
+In CSS Modules, set all three declarations (`background`, `backdrop-filter`,
+`-webkit-backdrop-filter`) from the tokens. The overlay has no blur of its own,
+because the surface under it already blurs. Text on either level is
+`--text-contrast` (white).
+
+**Nesting caveat:** an element with `backdrop-filter` becomes the backdrop root
+for its descendants. If a blurred child (like a dropdown) overflows a blurred
+parent, put the parent's glass on a `::before` layer instead (see the V6 nav
+bar in `Nav.module.css`).
 
 ## Motion
 

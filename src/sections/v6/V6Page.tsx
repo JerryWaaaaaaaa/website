@@ -6,6 +6,7 @@ import { OpenPlatformV6 } from './OpenPlatformV6';
 import { UseCaseV6 } from './UseCaseV6';
 import { TemplatesV6 } from './TemplatesV6';
 import { useGlassDials } from './useGlassDials';
+import { useBeamDials } from './useBeamDials';
 import './v6.css';
 
 /**
@@ -18,6 +19,7 @@ import './v6.css';
  */
 export function V6Page() {
   useGlassDials();
+  useBeamDials();
   return (
     <div className="v6-page">
       <SectionVariantSlot groupId="heroV6" />

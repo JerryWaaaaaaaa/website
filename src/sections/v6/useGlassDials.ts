@@ -4,7 +4,7 @@ import { useDialKit } from 'dialkit';
 type Tuple = [number, number, number, number];
 
 /** The V6 glass material (matches the index.css --v6-glass / --v6-glass-blur defaults). */
-const GLASS = { color: '#143176', opacity: 0.3, blur: 20 };
+const GLASS = { color: '#143176', opacity: 0.3, blur: 24 };
 
 const rgba = (hex: string, a: number) => {
   const n = parseInt(hex.slice(1, 7), 16);

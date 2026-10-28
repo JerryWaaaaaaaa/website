@@ -26,7 +26,7 @@ export function TemplatesV6() {
   const drag = useCardDrag(stageRef, '(min-width: 1200px) and (pointer: fine)');
 
   return (
-    <section className="v6-panel v6-tpl" aria-labelledby="v6-tpl-title">
+    <section id="templates" className="v6-panel v6-tpl" aria-labelledby="v6-tpl-title">
       <DotGrid />
       <div className="v6-header-wash" aria-hidden="true" />
       <PanelDot />
