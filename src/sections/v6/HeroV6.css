@@ -73,8 +73,8 @@
   border-radius: 1.67cqw;
   /* The shared V6 glass (the self view's). */
   background: var(--v6-glass);
-  backdrop-filter: var(--v6-glass-blur);
   -webkit-backdrop-filter: var(--v6-glass-blur);
+  backdrop-filter: var(--v6-glass-blur);
 }
 .v6-hero-browser-bar {
   position: relative;
