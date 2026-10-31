@@ -7,8 +7,8 @@
   border-radius: var(--rounded-md);
   /* The shared V6 glass. */
   background: var(--v6-glass);
-  backdrop-filter: var(--v6-glass-blur);
   -webkit-backdrop-filter: var(--v6-glass-blur);
+  backdrop-filter: var(--v6-glass-blur);
 }
 .v6-selfview-bar {
   display: flex;

@@ -190,13 +190,13 @@
 /* Dark glass material utilities — color + blur travel together on both levels. */
 @utility glass-dark {
   background: var(--glass-dark-bg);
-  backdrop-filter: var(--glass-dark-blur);
   -webkit-backdrop-filter: var(--glass-dark-blur);
+  backdrop-filter: var(--glass-dark-blur);
 }
 @utility glass-dark-overlay {
   background: var(--glass-dark-overlay);
-  backdrop-filter: var(--glass-dark-blur);
   -webkit-backdrop-filter: var(--glass-dark-blur);
+  backdrop-filter: var(--glass-dark-blur);
 }
 
 /* =============================================================================

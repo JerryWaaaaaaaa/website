@@ -652,8 +652,8 @@
 .navWrap[data-version='v6'] .navLink:hover,
 .navWrap[data-version='v6'] .navTrigger.isOpen .navLink {
   background: var(--glass-dark-overlay);
-  backdrop-filter: var(--glass-dark-blur);
   -webkit-backdrop-filter: var(--glass-dark-blur);
+  backdrop-filter: var(--glass-dark-blur);
 }
 .navWrap[data-version='v6'] .navRow .navChevron {
   color: currentColor;
@@ -684,8 +684,8 @@
   padding: 12px;
   /* The shared V6 glass, so the Glass dial tunes it with the bar. */
   background: var(--v6-glass);
-  backdrop-filter: var(--v6-glass-blur);
   -webkit-backdrop-filter: var(--v6-glass-blur);
+  backdrop-filter: var(--v6-glass-blur);
   border: none;
   border-radius: 26px;
   box-shadow: none;
@@ -700,8 +700,8 @@
 .navWrap[data-version='v6'] .productsMenu .productCard:hover,
 .navWrap[data-version='v6'] .productsMenu .productCard:focus-visible {
   background: var(--glass-dark-overlay);
-  backdrop-filter: var(--glass-dark-blur);
   -webkit-backdrop-filter: var(--glass-dark-blur);
+  backdrop-filter: var(--glass-dark-blur);
 }
 .navWrap[data-version='v6'] .productsMenu .productIcon,
 .navWrap[data-version='v6'] .productsMenu .productCard:hover .productIcon {
@@ -725,8 +725,8 @@
   max-width: 100%;
   border-radius: var(--rounded-md);
   background: none;
-  backdrop-filter: none;
   -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   border-color: transparent;
 }
 /* The glass lives on a pseudo layer, not the bar: a backdrop-filter on the bar
@@ -740,8 +740,8 @@
   z-index: -1;
   border-radius: inherit;
   background: var(--v6-glass);
-  backdrop-filter: var(--v6-glass-blur);
   -webkit-backdrop-filter: var(--v6-glass-blur);
+  backdrop-filter: var(--v6-glass-blur);
   pointer-events: none;
 }
 .navWrap[data-version='v6'].isScrolled .navRow {

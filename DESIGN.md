@@ -369,7 +369,10 @@ than by hand:
 ```
 
 In CSS, set all three declarations from the tokens — `background`,
-`backdrop-filter`, `-webkit-backdrop-filter`. V6 sections use the
+`-webkit-backdrop-filter`, then `backdrop-filter`. **Order matters:** with a
+`var()` value, the production minifier keeps only the *last* of the pair, so the
+unprefixed one must come last or Chrome builds lose the blur (dev doesn't
+minify, so it only shows up when deployed). V6 sections use the
 `--v6-glass` / `--v6-glass-blur` aliases so the Glass dial panel tunes the tint and blur of every surface at
 once (nav bar, Products menu, browser frame, self view, tagline cards). Text on
 either level is `--text-contrast` (white).
