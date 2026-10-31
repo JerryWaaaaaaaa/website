@@ -65,11 +65,11 @@
   --glass-fill: rgba(12, 92, 255, 0.05);
   --glass-fill-hover: rgba(12, 92, 255, 0.12);
 
-  /* Dark glass — one navy tint at two strengths (Figma 698:17570). "Dark glass"
-     is the background surface: the 30% tint always paired with the backdrop blur
-     (apply both via the `glass-dark` utility). "Dark glass overlay" is the 16% fill
-     for cards/pills that sit ON dark glass (`glass-dark-overlay`); it carries no
-     blur of its own because the surface beneath already blurs. */
+  /* Dark glass — one navy tint at two strengths (Figma 698:17570). Every level
+     is tint + backdrop blur; neither ever ships without the other. "Dark glass"
+     is the background surface: the 30% tint + blur (`glass-dark` utility).
+     "Dark glass overlay" is the 16% tint + the same blur for cards/pills/tabs
+     that sit ON dark glass (`glass-dark-overlay`). */
   --glass-dark-tint: 20, 49, 118; /* #143176 */
   --glass-dark-bg: rgba(var(--glass-dark-tint), 0.3);
   --glass-dark-overlay: rgba(var(--glass-dark-tint), 0.16);
@@ -91,9 +91,10 @@
   --font-overline: var(--font-mono);
 
   /* V6 (Microsite Stylized) — see DESIGN.md → V6 */
-  /* V6 glass material: navy tint + backdrop blur. Used by the nav bar (once
-     scrolled), the hero self view and browser frame, and the tagline cards;
-     tuned live from the Glass dial panel (useGlassDials). */
+  /* V6 glass material: dark glass (tint + backdrop blur). Used by the
+     nav bar (once scrolled) and its Products menu, the hero self view and
+     browser frame, and the tagline cards; tint and blur are tuned live from the
+     Glass dial panel (useGlassDials). */
   --v6-glass: var(--glass-dark-bg);
   --v6-glass-blur: var(--glass-dark-blur);
   --v6-tab-fill: rgba(12, 92, 255, 0.05);
@@ -186,7 +187,7 @@
   --radius-pill: 999px;
 }
 
-/* Dark glass material utilities — color + blur travel together. */
+/* Dark glass material utilities — color + blur travel together on both levels. */
 @utility glass-dark {
   background: var(--glass-dark-bg);
   backdrop-filter: var(--glass-dark-blur);
@@ -194,6 +195,8 @@
 }
 @utility glass-dark-overlay {
   background: var(--glass-dark-overlay);
+  backdrop-filter: var(--glass-dark-blur);
+  -webkit-backdrop-filter: var(--glass-dark-blur);
 }
 
 /* =============================================================================
