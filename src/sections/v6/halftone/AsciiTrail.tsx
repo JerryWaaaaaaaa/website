@@ -188,6 +188,66 @@ function ramp(stops: RGB[], t: number): RGB {
 }
 
 /**
+ * Cells that land outside the colour source read back transparent (rgb 0), so
+ * they'd draw black. Fill each one in place from its nearest valid neighbour:
+ * up/down in its column first, then left/right along its row.
+ */
+function fillEmptyCells(data: Uint8ClampedArray, cols: number, rows: number) {
+  const n = cols * rows;
+  const ok = new Uint8Array(n);
+  let empty = 0;
+  for (let i = 0; i < n; i++) {
+    const o = i * 4;
+    ok[i] = data[o + 3] > 127 && data[o] + data[o + 1] + data[o + 2] > 24 ? 1 : 0;
+    if (!ok[i]) empty++;
+  }
+  if (!empty || empty === n) return;
+  const copy = (to: number, from: number) => {
+    data.copyWithin(to * 4, from * 4, from * 4 + 3);
+    data[to * 4 + 3] = 255;
+  };
+  // Nearest valid cell along a line of `len` cells starting at `start`.
+  const fillLine = (start: number, step: number, len: number) => {
+    let prev = -1;
+    const dist = new Array<number>(len).fill(Infinity);
+    for (let k = 0; k < len; k++) {
+      const i = start + k * step;
+      if (ok[i]) prev = k;
+      else if (prev >= 0) {
+        copy(i, start + prev * step);
+        dist[k] = k - prev;
+      }
+    }
+    prev = -1;
+    for (let k = len - 1; k >= 0; k--) {
+      const i = start + k * step;
+      if (ok[i]) prev = k;
+      else if (prev >= 0 && prev - k < dist[k]) copy(i, start + prev * step);
+    }
+  };
+  const filled = (start: number, step: number, len: number) => {
+    for (let k = 0; k < len; k++) if (ok[start + k * step]) return true;
+    return false;
+  };
+  const colOk = new Uint8Array(cols);
+  for (let c = 0; c < cols; c++) {
+    if (!filled(c, cols, rows)) continue;
+    fillLine(c, cols, rows);
+    colOk[c] = 1;
+  }
+  // Columns with no valid cell at all borrow from the nearest filled column.
+  for (let c = 0; c < cols; c++) {
+    if (colOk[c]) continue;
+    let src = -1;
+    for (let d = 1; d < cols && src < 0; d++) {
+      if (c - d >= 0 && colOk[c - d]) src = c - d;
+      else if (c + d < cols && colOk[c + d]) src = c + d;
+    }
+    if (src >= 0) for (let r = 0; r < rows; r++) copy(r * cols + c, r * cols + src);
+  }
+}
+
+/**
  * Cursor heatmap rendered as ASCII: moving the pointer deposits heat into a
  * character grid, each lit cell shows a glyph whose opacity follows its heat,
  * and the heat decays exponentially so the trail fades out behind the cursor.
@@ -394,7 +454,9 @@ export function AsciiTrail({ params, className, colorSource }: Props) {
         cols,
         rows,
       );
-      return sampleCtx.getImageData(0, 0, cols, rows).data;
+      const data = sampleCtx.getImageData(0, 0, cols, rows).data;
+      fillEmptyCells(data, cols, rows);
+      return data;
     };
 
     const draw = () => {

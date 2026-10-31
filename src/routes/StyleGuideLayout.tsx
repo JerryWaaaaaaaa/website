@@ -16,6 +16,7 @@ const SECTIONS: SidebarSection[] = [
     links: [
       { label: 'Color Tokens', to: '/style-guide/colors' },
       { label: 'Typography', to: '/style-guide/typography' },
+      { label: 'Glass', to: '/style-guide/glass' },
     ],
   },
   {

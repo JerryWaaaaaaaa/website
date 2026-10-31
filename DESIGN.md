@@ -349,27 +349,30 @@ always reference the token (not the solid) wherever the surface can overlap glas
 ### Dark glass
 
 The dark counterpart of the frosted surface, for glass over saturated or dark
-backgrounds (the V6 nav, its dropdowns, hero tagline cards). One navy —
-`#143176` (`--glass-dark-tint: 20, 49, 118`) — at two strengths:
+backgrounds (the V6 nav bar and its Products menu, the hero browser frame and
+meeting self view, the tagline cards). One navy — `#143176`
+(`--glass-dark-tint: 20, 49, 118`) — at two strengths. **Both levels always
+carry the backdrop blur**; a tint without blur is not glass.
 
 | Name | Token | Value | Blur | Use |
 |---|---|---|---|---|
-| **Dark glass** | `--glass-dark-bg` | `rgba(20,49,118,0.30)` | `--glass-dark-blur` (`blur(24px)`) | The background surface: bars, panels, dropdowns |
-| **Dark glass overlay** | `--glass-dark-overlay` | `rgba(20,49,118,0.16)` | none | Cards, pills and active tabs that sit **on** dark glass |
+| **Dark glass** | `--glass-dark-bg` | `rgba(20,49,118,0.30)` | `--glass-dark-blur` (`blur(24px)`) | The background surface: bars, panels, dropdowns, frames, floating cards |
+| **Dark glass overlay** | `--glass-dark-overlay` | `rgba(20,49,118,0.16)` | `--glass-dark-blur` (`blur(24px)`) | Cards, pills and active tabs that sit **on** dark glass |
 
-The color and blur of dark glass always travel together, so apply them with the
-utilities rather than by hand:
+Color and blur always travel together, so apply them with the utilities rather
+than by hand:
 
 ```html
-<div class="glass-dark">              <!-- 30% tint + 24px backdrop blur -->
-  <a class="glass-dark-overlay">…</a>  <!-- 16% tint; inherits the blur beneath -->
+<div class="glass-dark">              <!-- 30% tint + 24px blur -->
+  <a class="glass-dark-overlay">…</a>  <!-- 16% tint + 24px blur -->
 </div>
 ```
 
-In CSS Modules, set all three declarations (`background`, `backdrop-filter`,
-`-webkit-backdrop-filter`) from the tokens. The overlay has no blur of its own,
-because the surface under it already blurs. Text on either level is
-`--text-contrast` (white).
+In CSS, set all three declarations from the tokens — `background`,
+`backdrop-filter`, `-webkit-backdrop-filter`. V6 sections use the
+`--v6-glass` / `--v6-glass-blur` aliases so the Glass dial panel tunes the tint and blur of every surface at
+once (nav bar, Products menu, browser frame, self view, tagline cards). Text on
+either level is `--text-contrast` (white).
 
 **Nesting caveat:** an element with `backdrop-filter` becomes the backdrop root
 for its descendants. If a blurred child (like a dropdown) overflows a blurred

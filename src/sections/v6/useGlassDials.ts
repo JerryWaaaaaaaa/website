@@ -13,9 +13,9 @@ const rgba = (hex: string, a: number) => {
 
 /**
  * "Glass" DialKit panel: tint colour, tint opacity and backdrop blur of the V6
- * glass (nav bar, self view, hero browser frame, tagline cards). Writes the
- * custom properties on <html> — the nav sits outside the page wrapper — and
- * removes them on unmount so other versions keep the stylesheet defaults.
+ * glass (nav bar + Products menu, self view, hero browser frame, tagline
+ * cards). Writes the custom properties on <html> — the nav sits outside the
+ * page wrapper — and removes them on unmount so other versions keep the stylesheet defaults.
  */
 export function useGlassDials() {
   const d = useDialKit('Glass', {
